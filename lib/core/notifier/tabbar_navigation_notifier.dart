@@ -5,6 +5,8 @@ class TabbarNavigationProvider with ChangeNotifier {
 
   int _currentDenemeIndex = 0;
 
+  int _currentEditDenemeIndex = 0;
+
   int get getLessonCurrentIndex => _currentIndex;
 
   set setLessonCurrentIndex(int index) {
@@ -18,4 +20,11 @@ class TabbarNavigationProvider with ChangeNotifier {
     _currentDenemeIndex = index;
     notifyListeners();
   }
+
+  set setCurrentEditDeneme(int index) {
+    _currentEditDenemeIndex = index;
+    notifyListeners();
+  }
+
+  int get getCurrentEditDeneme => _currentEditDenemeIndex;
 }

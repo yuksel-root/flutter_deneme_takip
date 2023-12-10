@@ -1,6 +1,10 @@
 name: flutter_deneme_takip
 description: "A new Flutter project."
 
+linter:
+  rules:
+    avoid_print: false
+
 version: 1.0.0+1
 
 environment:
@@ -21,6 +25,7 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   font_awesome_flutter: ^10.6.0
   intl: ^0.18.1
+  sqflite_common_ffi_web: ^0.4.2+2
 
 dev_dependencies:
   flutter_test:

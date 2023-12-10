@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
-import 'package:flutter_deneme_takip/view/bottom_tabbar_view.dart';
-import 'package:flutter_deneme_takip/view/lesson_views/tarih_view.dart';
+import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 
 class NavigationRoute {
   static final NavigationRoute _instance = NavigationRoute._init();
@@ -12,7 +11,7 @@ class NavigationRoute {
   Route<dynamic> generateRoute(RouteSettings? settings) {
     switch (settings?.name) {
       case NavigationConstants.homeView:
-        return pageNavigate(BottomTabbarView(), settings!);
+        return pageNavigate(const BottomTabbarView(), settings!);
 
       default:
         return MaterialPageRoute(

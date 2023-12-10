@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_route.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/provider_list.dart';
-import 'package:flutter_deneme_takip/view/bottom_tabbar_view.dart';
+import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -36,7 +36,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          appBarTheme: AppBarTheme(backgroundColor: Colors.transparent)),
+          appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent)),
       onGenerateRoute: NavigationRoute.instance.generateRoute,
       navigatorKey: NavigationService.instance.navigatorKey,
       home: const BottomTabbarView(),
