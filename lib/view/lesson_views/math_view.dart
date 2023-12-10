@@ -22,13 +22,13 @@ class _TarihViewState extends State<MathView> {
             children: <Widget>[
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: mathArr.length,
                 itemBuilder: (BuildContext context, int idx) {
                   return Card(
                       child: ListTile(
                           title: Text(mathArr[idx]),
-                          subtitle: Text(
+                          subtitle: const Text(
                             'Doğru: 5 - Yanlış: 10',
                           )));
                 },

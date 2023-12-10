@@ -1,5 +1,6 @@
 class LessonList {
-  static List<dynamic> tarihKonular = <dynamic>[
+  static List<String> tarihKonular = <String>[
+    "Konu Seçiniz",
     "İslamiyet’ten Önceki Türk Devletleri",
     "İlk Müslüman Türk Devletleri",
     "Osmanlı Devleti Siyasi",
@@ -12,7 +13,8 @@ class LessonList {
     "Çağdaş Türk ve Dünya Tarihi"
   ];
 
-  static List<dynamic> matKonular = <dynamic>[
+  static List<String> matKonular = <String>[
+    "Konu Seçiniz.",
     "Temel Kavramlar",
     "Rasyonel Sayılar",
     "Ondalık Sayılar",
@@ -31,6 +33,8 @@ class LessonList {
     "Olasılık",
     "Sayısal Mantık ",
   ];
+
+  static List<String> lessonNameList = <String>["Tarih", "Matematik"];
 
   static List<dynamic> denemeTarih = <dynamic>[
     {
@@ -55,5 +59,19 @@ class LessonList {
       ],
       "falseCount": [5, 6, 7, 8, 9, 10],
     }
+  ];
+
+  static List<dynamic> denemeTarihx = <dynamic>[
+    {
+      "denemeId": [1, 2, 3, 4, 5],
+      "subjects": [
+        "İslamiyet’ten Önceki Türk Devletleri",
+        "İlk Müslüman Türk Devletleri",
+      ],
+      "falseCount": [
+        1,
+        2,
+      ],
+    },
   ];
 }
