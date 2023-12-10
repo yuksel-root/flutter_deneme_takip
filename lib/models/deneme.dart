@@ -1,12 +1,14 @@
-class Deneme {
-  final int denemeId;
-  final int falseCount;
-  final String lessonName;
-  final String denemeDate;
+class DenemeModel {
+  final int? falseCount;
+  final String? denemeDate;
+  final String? subjectName;
+  DenemeModel({this.falseCount, this.subjectName, this.denemeDate});
 
-  Deneme(
-      {required this.denemeId,
-      required this.falseCount,
-      required this.lessonName,
-      required this.denemeDate});
+  Map<String, dynamic> toMap() {
+    return ({
+      "falseCount": falseCount ?? 999,
+      "denemeDate": denemeDate ?? "nullDate",
+      "subjectName": subjectName ?? "nullSubjectName",
+    });
+  }
 }
