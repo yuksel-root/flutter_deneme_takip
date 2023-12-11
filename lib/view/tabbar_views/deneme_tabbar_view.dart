@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
 
     return DefaultTabController(
-      length: 2,
+      length: LessonList.lessonNameList.length,
       initialIndex: tabbarNavProv.getCurrentDenemeIndex,
       child: Builder(builder: (BuildContext context) {
         final TabController tabController = DefaultTabController.of(context);
@@ -42,27 +43,31 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
           }
         });
         return Scaffold(
-          appBar: AppBar(
-            title: const Center(
-                child:
-                    Text(style: TextStyle(color: Colors.white), 'Deneme App')),
-            backgroundColor: const Color(0xff1c0f45),
-            bottom: const TabBar(
-                indicatorColor: Colors.greenAccent,
-                isScrollable: true,
-                tabs: [
-                  Tab(text: "Tarih"),
-                  Tab(text: "Math"),
-                ]),
-          ),
-          body: const TabBarView(
-            children: [
-              DenemeView(),
-              DenemeView(),
-            ],
-          ),
-        );
+            appBar: AppBar(
+              title: const Center(
+                  child: Text(
+                      style: TextStyle(color: Colors.white), 'Deneme App')),
+              backgroundColor: const Color(0xff1c0f45),
+              bottom: TabBar(
+                  indicatorColor: Colors.greenAccent,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  tabs: tab),
+            ),
+            body: TabBarView(
+              children: List.generate(
+                LessonList.lessonNameList.length,
+                (index) =>
+                    DenemeView(lessonName: LessonList.lessonNameList[index]),
+              ),
+            ));
       }),
     );
   }
+
+  List<Widget> tab = LessonList.lessonNameList.map((tabName) {
+    return Tab(
+      text: tabName,
+    );
+  }).toList();
 }

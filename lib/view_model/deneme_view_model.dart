@@ -37,4 +37,10 @@ class DenemeViewModel extends ChangeNotifier {
       print("Save deneme Error");
     }
   }
+
+  Future<void> getAllData(String dataTable) async {
+    print("-------------$dataTable------------\n");
+    print(await DenemeDbProvider.db.getDeneme(dataTable));
+    print("-------------$dataTable------------\n");
+  }
 }

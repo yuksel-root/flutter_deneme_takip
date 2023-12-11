@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/custom_app_bar.dart';
+import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
+import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 
 class EditDeneme extends StatefulWidget {
   final String? lessonName;
@@ -18,19 +22,22 @@ class EditDeneme extends StatefulWidget {
 }
 
 class _EditDenemeState extends State<EditDeneme> {
+  final NavigationService _navigation = NavigationService.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late String _selectedSubject;
-  String? _savedSubject;
   late String _date;
   final DateTime _now = DateTime.now();
   late String? _lessonName;
   late List<String>? _subjectList;
+  late String? _initTable;
+  late int? _lastSubjectId;
+  late int? _lastDenemeId;
 
-  List<bool> _shouldShowSubject = [true];
-  List _subjectDataList = [];
+  List<bool> _shouldShowInput = [true];
+  List _inputDataList = [];
+
   List<String> _subjectSelectList = ["Konu Seçiniz"];
-
   List<String> _subjectSavedList = ["s"];
 
   final TextEditingController? falseInputCountController =
@@ -43,7 +50,7 @@ class _EditDenemeState extends State<EditDeneme> {
   void initState() {
     super.initState();
     _falseCountsIntegers.clear();
-    _subjectDataList.clear();
+    _inputDataList.clear();
     _subjectSelectList.clear();
     _subjectSavedList.clear();
     _subjectList = widget.subjectList;
@@ -53,6 +60,16 @@ class _EditDenemeState extends State<EditDeneme> {
     _lessonName = widget.lessonName;
     _date =
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(_now).toString();
+
+    _initTable = initTable();
+    _lastSubjectId = 0;
+    _lastDenemeId = 0;
+  }
+
+  String initTable() {
+    String tableName =
+        LessonList.tableNames[_lessonName] ?? DenemeTables.tarihTableName;
+    return tableName;
   }
 
   @override
@@ -70,7 +87,38 @@ class _EditDenemeState extends State<EditDeneme> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: Text('${widget.lessonName} Deneme Girişi')),
+        appBar: CustomAppBar(
+          dynamicPreferredSize: context.mediaQuery.size.height / 10,
+          appBar: AppBar(
+              flexibleSpace: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.spaceEvenly,
+            spacing: 10,
+            children: [
+              Text(
+                '${widget.lessonName} Dersi Girişi',
+                style: TextStyle(fontSize: 20),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _inputDataList =
+                        List.generate(_falseInputCount, (index) => []);
+                    _subjectSelectList = List.generate(
+                        _falseInputCount, (index) => "sl${index + 1}");
+                    _subjectSavedList =
+                        List.generate(_falseInputCount, (index) => "dl$index");
+                    _shouldShowInput =
+                        List.generate(_falseInputCount, (index) => true);
+                    _falseCountsIntegers =
+                        List.generate(_falseInputCount, (index) => null);
+                  });
+                },
+                child: const Text('Konu Ekle'),
+              ),
+            ],
+          )),
+        ),
         body: Padding(
           padding: EdgeInsets.all(context.dynamicW(0.0375)),
           child: Column(
@@ -85,8 +133,8 @@ class _EditDenemeState extends State<EditDeneme> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Container(child: falseInputCounter(context)),
-                        for (int i = 0; i < _subjectDataList.length; i++)
-                          _shouldShowSubject[i]
+                        for (int i = 0; i < _inputDataList.length; i++)
+                          _shouldShowInput[i]
                               ? Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
@@ -98,11 +146,12 @@ class _EditDenemeState extends State<EditDeneme> {
                                         Expanded(
                                             child: inputFalseCount(context, i)),
                                         IconButton(
+                                          color: Colors.red,
                                           icon: const Icon(Icons.delete),
                                           onPressed: () {
                                             setState(() {
-                                              _subjectDataList.removeAt(i);
-                                              _shouldShowSubject.removeAt(i);
+                                              _inputDataList.removeAt(i);
+                                              _shouldShowInput.removeAt(i);
                                               _falseCountsIntegers.removeAt(i);
                                               _subjectSelectList.removeAt(i);
                                               _subjectSavedList.removeAt(i);
@@ -121,24 +170,6 @@ class _EditDenemeState extends State<EditDeneme> {
                                   ],
                                 )
                               : const SizedBox(),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _subjectDataList = List.generate(
-                                  _falseInputCount, (index) => []);
-                              _subjectSelectList = List.generate(
-                                  _falseInputCount,
-                                  (index) => "sl${index + 1}");
-                              _subjectSavedList = List.generate(
-                                  _falseInputCount, (index) => "dl$index");
-                              _shouldShowSubject = List.generate(
-                                  _falseInputCount, (index) => true);
-                              _falseCountsIntegers = List.generate(
-                                  _falseInputCount, (index) => null);
-                            });
-                          },
-                          child: const Text('Konu Ekle'),
-                        ),
                         SizedBox(
                           height: context.dynamicH(0.0428),
                         ),
@@ -158,6 +189,7 @@ class _EditDenemeState extends State<EditDeneme> {
 
   TextFormField inputFalseCount(BuildContext context, int index) {
     final f = _falseCountsIntegers[index];
+
     final controller = TextEditingController(text: f?.toString());
     return TextFormField(
       controller: controller,
@@ -263,7 +295,7 @@ class _EditDenemeState extends State<EditDeneme> {
                     color: Colors.white,
                     fontSize:
                         context.dynamicH(0.00571) * context.dynamicW(0.01))),
-            onPressed: () {
+            onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
 
@@ -272,40 +304,42 @@ class _EditDenemeState extends State<EditDeneme> {
                     .format(now)
                     .toString();
                 _lessonName = widget.lessonName;
-                print("int");
+
+                /*        print("int");
                 print(_falseCountsIntegers);
                 print("int");
 
+                 */
                 print("str");
                 print(_subjectSavedList);
                 print("str");
-
-                for (int i = 0; i < _falseInputCount; i++) {
-                  print("faleS");
-                  print(_falseCountsIntegers[i]);
-                  print("faleS");
+                _lastSubjectId = await DenemeDbProvider.db
+                    .getFindLastId(_initTable!, "subjectId");
+                _lastDenemeId = await DenemeDbProvider.db
+                    .getFindLastId(_initTable!, "denemeId");
+                final int? _denemeIdClicked = (_lastDenemeId ?? 0) + 1;
+                print("-------x-----\n");
+                print(_lastSubjectId);
+                print("-------x-----\n");
+                print(_lastDenemeId);
+                print("-------x-----\n");
+                print(_denemeIdClicked);
+                print("-------x-----\n");
+                int k = 1;
+                for (int i = 0; i < _inputDataList.length; i++) {
                   DenemeModel denemeModel = DenemeModel(
+                      denemeId: _denemeIdClicked,
+                      subjectId: (_lastSubjectId ?? 0) + k,
                       falseCount: _falseCountsIntegers[i],
                       denemeDate: _date,
                       subjectName: _subjectSavedList[i]);
-                  switch (_lessonName) {
-                    case "Tarih":
-                      print("Tarhis secs");
-                      DenemeViewModel()
-                          .saveDeneme(denemeModel, DenemeTables.tarihTableName);
-                      break;
-                    case "Matematik":
-                      DenemeViewModel()
-                          .saveDeneme(denemeModel, DenemeTables.mathTableName);
-                      break;
-                    default:
-                  }
-                }
+                  DenemeViewModel().saveDeneme(denemeModel, _initTable!);
+                  _navigation.navigateToPageClear(
+                      path: NavigationConstants.homeView,
+                      data: []); //still be fixed other routes
 
-                print("db veri");
-                final deneme = DenemeDbProvider.db.getDeneme();
-                print(deneme);
-                print("db veri");
+                  k++;
+                }
               }
             },
             style: ElevatedButton.styleFrom(

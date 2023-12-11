@@ -57,18 +57,34 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
             bottom: const TabBar(
                 indicatorColor: Colors.greenAccent,
                 isScrollable: true,
+                tabAlignment: TabAlignment.start,
                 tabs: [
                   Tab(text: "Tarih"),
-                  Tab(text: "Math"),
+                  Tab(text: "Matematik"),
+                  Tab(text: "Coğrafya"),
+                  Tab(text: "Vatandaşlık"),
+                  Tab(text: "Türkçe"),
                 ]),
           ),
-          body: TabBarView(
+          body: const TabBarView(
             children: [
               EditDeneme(
-                  lessonName: "Tarih", subjectList: LessonList.tarihKonular),
+                  lessonName: "Tarih", subjectList: LessonList.historySubjects),
               EditDeneme(
                 lessonName: "Matematik",
-                subjectList: LessonList.matKonular,
+                subjectList: LessonList.mathSubject,
+              ),
+              EditDeneme(
+                lessonName: "Coğrafya",
+                subjectList: LessonList.cografySubject,
+              ),
+              EditDeneme(
+                lessonName: "Vatandaşlık",
+                subjectList: LessonList.vatandasSubject,
+              ),
+              EditDeneme(
+                lessonName: "Türkçe",
+                subjectList: LessonList.turkceSubject,
               ),
             ],
           ),
