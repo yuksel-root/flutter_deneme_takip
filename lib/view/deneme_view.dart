@@ -5,8 +5,6 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 
-import 'package:intl/intl.dart';
-
 class DenemeView extends StatefulWidget {
   final String? lessonName;
 

@@ -9,6 +9,7 @@ import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 
 class EditDeneme extends StatefulWidget {
   final String? lessonName;
@@ -34,6 +35,7 @@ class _EditDenemeState extends State<EditDeneme> {
   late int? _lastSubjectId;
   late int? _lastDenemeId;
 
+  bool _isAlertOpen = false;
   List<bool> _shouldShowInput = [true];
   List _inputDataList = [];
 
@@ -102,16 +104,18 @@ class _EditDenemeState extends State<EditDeneme> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _inputDataList =
-                        List.generate(_falseInputCount, (index) => []);
-                    _subjectSelectList = List.generate(
-                        _falseInputCount, (index) => "sl${index + 1}");
-                    _subjectSavedList =
-                        List.generate(_falseInputCount, (index) => "dl$index");
-                    _shouldShowInput =
-                        List.generate(_falseInputCount, (index) => true);
-                    _falseCountsIntegers =
-                        List.generate(_falseInputCount, (index) => null);
+                    if (_formKey.currentState!.validate()) {
+                      _inputDataList =
+                          List.generate(_falseInputCount, (index) => []);
+                      _subjectSelectList = List.generate(
+                          _falseInputCount, (index) => "sl${index + 1}");
+                      _subjectSavedList = List.generate(
+                          _falseInputCount, (index) => "dl$index");
+                      _shouldShowInput =
+                          List.generate(_falseInputCount, (index) => true);
+                      _falseCountsIntegers =
+                          List.generate(_falseInputCount, (index) => null);
+                    }
                   });
                 },
                 child: const Text('Konu Ekle'),
@@ -342,7 +346,13 @@ class _EditDenemeState extends State<EditDeneme> {
 
                     k++;
                   } else {
-                    print("Aynı konu ekleme");
+                    _isAlertOpen = true;
+                    if (_isAlertOpen) {
+                      print("Aynı konu ekleme");
+                      await _showDialog(
+                              context, "Hata!", "Aynı konu Eklemeyiniz!")
+                          .then((value) => _isAlertOpen = false);
+                    }
                   }
                 }
               }
@@ -352,6 +362,24 @@ class _EditDenemeState extends State<EditDeneme> {
               shape: const StadiumBorder(),
               foregroundColor: Colors.black,
             )));
+  }
+
+  _showDialog(BuildContext context, String title, String content) {
+    AlertView alert = AlertView(
+      title: title,
+      content: content,
+      continueFunction: () => {
+        Navigator.of(context).pop(),
+      },
+    );
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   Container buildContaierIconField(

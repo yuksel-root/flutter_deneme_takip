@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
-import 'package:intl/intl.dart';
 
 class LessonView extends StatefulWidget {
   final String? lessonName;
