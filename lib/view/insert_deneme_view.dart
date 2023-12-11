@@ -318,27 +318,32 @@ class _EditDenemeState extends State<EditDeneme> {
                 _lastDenemeId = await DenemeDbProvider.db
                     .getFindLastId(_initTable!, "denemeId");
                 final int? _denemeIdClicked = (_lastDenemeId ?? 0) + 1;
-                print("-------x-----\n");
-                print(_lastSubjectId);
-                print("-------x-----\n");
-                print(_lastDenemeId);
-                print("-------x-----\n");
-                print(_denemeIdClicked);
-                print("-------x-----\n");
+                Set<String>? setSavedSubjects = {};
+                for (int i = 0; i < _subjectSavedList.length; i++) {
+                  setSavedSubjects.add(_subjectSavedList[i]);
+                }
                 int k = 1;
                 for (int i = 0; i < _inputDataList.length; i++) {
-                  DenemeModel denemeModel = DenemeModel(
-                      denemeId: _denemeIdClicked,
-                      subjectId: (_lastSubjectId ?? 0) + k,
-                      falseCount: _falseCountsIntegers[i],
-                      denemeDate: _date,
-                      subjectName: _subjectSavedList[i]);
-                  DenemeViewModel().saveDeneme(denemeModel, _initTable!);
-                  _navigation.navigateToPageClear(
-                      path: NavigationConstants.homeView,
-                      data: []); //still be fixed other routes
+                  print(setSavedSubjects);
+                  print(_subjectSavedList[i]);
+                  if (setSavedSubjects.length == _subjectSavedList.length) {
+                    print(_subjectSavedList);
+                    print(_subjectSavedList[i]);
+                    DenemeModel denemeModel = DenemeModel(
+                        denemeId: _denemeIdClicked,
+                        subjectId: (_lastSubjectId ?? 0) + k,
+                        falseCount: _falseCountsIntegers[i],
+                        denemeDate: _date,
+                        subjectName: _subjectSavedList[i]);
+                    DenemeViewModel().saveDeneme(denemeModel, _initTable!);
+                    _navigation.navigateToPageClear(
+                        path: NavigationConstants.homeView,
+                        data: []); //still be fixed other routes
 
-                  k++;
+                    k++;
+                  } else {
+                    print("Aynı konu ekleme");
+                  }
                 }
               }
             },

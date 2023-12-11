@@ -38,12 +38,10 @@ class _DenemeViewState extends State<DenemeView> {
     return await DenemeDbProvider.db.getDeneme(tableName);
   }
 
+  String denemeDate = "";
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    String formattedDate =
-        DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(now).toString();
-    print(formattedDate);
+    //DenemeDbProvider.db.clearDatabase();
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _listDeneme,
       builder: (BuildContext context,
@@ -56,26 +54,29 @@ class _DenemeViewState extends State<DenemeView> {
           return const Center(child: Text('Gösterilecek veri yok'));
         } else {
           List<Map<String, dynamic>> data = snapshot.data!;
+          Map<String, Map<String, int>> totalFalseCountMap = {};
 
-          // Verileri konulara göre gruplayalım
-          Map<String, List<Map<String, dynamic>>> groupedData = {};
           for (var item in data) {
             String subjectName = item['subjectName'];
-            if (!groupedData.containsKey(subjectName)) {
-              groupedData[subjectName] = [];
+            int denemeId = item['denemeId'];
+            int falseCount = item['falseCount'];
+            denemeDate = item['denemeDate'];
+            int groupIndex = ((denemeId - 1) ~/ 5) + 1;
+            String key =
+                '$subjectName ${groupIndex * 5 - 4}-${groupIndex * 5} Deneme';
+            if (!totalFalseCountMap.containsKey(key)) {
+              totalFalseCountMap[key] = {};
             }
-            groupedData[subjectName]!.add(item);
+
+            totalFalseCountMap[key]![subjectName] =
+                (totalFalseCountMap[key]![subjectName] ?? 0) + falseCount;
           }
 
-          return ListView.builder(
-            itemCount: groupedData.length,
-            itemBuilder: (BuildContext context, int index) {
-              String subjectName = groupedData.keys.elementAt(index);
-              List<Map<String, dynamic>> subjectData =
-                  groupedData[subjectName]!;
+          List<Widget> cards = [];
 
-              // Her bir konu için bir kart oluşturuyoruz
-              return Card(
+          totalFalseCountMap.forEach((key, value) {
+            cards.add(
+              Card(
                 elevation: 4.0,
                 margin: const EdgeInsets.all(8.0),
                 child: Padding(
@@ -84,36 +85,34 @@ class _DenemeViewState extends State<DenemeView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'Konu: $subjectName',
+                        '$key ',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8.0),
-                      // Her bir konunun altındaki verileri listeliyoruz
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: subjectData.map((item) {
+                        children: value.entries.map((entry) {
                           return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Row(
-                                children: [
-                                  Text('${item['denemeId']}.Deneme'),
-                                  const SizedBox(width: 20.0),
-                                  Text('Yanlış Sayısı: ${item['falseCount']}'),
-                                ],
+                              Text(
+                                'Toplam Yanlış: ${entry.value}',
                               ),
-                              const SizedBox(height: 8.0),
-                              Text('Tarih: ${item['denemeDate']}'),
-                              const SizedBox(height: 16.0),
+                              Text("$denemeDate")
                             ],
                           );
                         }).toList(),
                       ),
+                      const SizedBox(height: 16.0),
                     ],
                   ),
                 ),
-              );
-            },
+              ),
+            );
+          });
+
+          return ListView(
+            children: cards,
           );
         }
       },
