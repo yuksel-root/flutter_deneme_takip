@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_route.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/provider_list.dart';
@@ -40,6 +41,7 @@ class MainApp extends StatelessWidget {
       onGenerateRoute: NavigationRoute.instance.generateRoute,
       navigatorKey: NavigationService.instance.navigatorKey,
       home: const BottomTabbarView(),
+      initialRoute: NavigationConstants.homeView,
     );
   }
 }
