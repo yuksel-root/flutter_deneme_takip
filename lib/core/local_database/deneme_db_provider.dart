@@ -24,10 +24,13 @@ class DenemeDbProvider {
         onCreate: (db, version) async {
           await DenemeTables.tarihCreateTable(db);
           await DenemeTables.mathCreateTable(db);
+          await DenemeTables.cografyaCreateTable(db);
+          await DenemeTables.vatandasCreateTable(db);
+          await DenemeTables.turkceCreateTable(db);
         },
         version: 1,
         onOpen: (Database db) async {
-          await DenemeTables.reCreateTable(db);
+          // await DenemeTables.reCreateTable(db);
         });
     return db;
   }
@@ -39,25 +42,47 @@ class DenemeDbProvider {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<List<Map<String, dynamic>>> getDeneme() async {
+  Future<List<Map<String, dynamic>>> getDenemelerByDenemeId(
+      String lessonTable, int denemeId) async {
     final db = await database;
-    var res = await db.query(DenemeTables.tarihTableName);
+    final res = await db
+        .rawQuery('SELECT * FROM $lessonTable WHERE denemeId = ?', [denemeId]);
     if (res.isEmpty) {
       return []; // Boş bir liste döndürülebilir
     } else {
       var denemeMap = res.toList();
 
-      print("get");
-      print(denemeMap);
-      print("------------------------------\n");
-
-      print("get");
       return denemeMap.isNotEmpty ? denemeMap : [];
     }
+  }
+
+  Future<List<Map<String, dynamic>>> getDeneme(String tableName) async {
+    final db = await database;
+    var res = await db.query(tableName);
+    if (res.isEmpty) {
+      return []; // Boş bir liste döndürülebilir
+    } else {
+      var denemeMap = res.toList();
+
+      return denemeMap.isNotEmpty ? denemeMap : [];
+    }
+  }
+
+  Future<int?> getFindLastId(String tableName, String idName) async {
+    final db = await database;
+    final result =
+        await db.rawQuery('SELECT MAX($idName) as last_id FROM $tableName');
+    int? lastId = result.first['last_id'] as int?;
+
+    return lastId;
   }
 
   Future<void> clearDatabase() async {
     final db = await database;
     await db.rawQuery("DELETE FROM ${DenemeTables.tarihTableName}");
+    await db.rawQuery("DELETE FROM ${DenemeTables.mathTableName}");
+    await db.rawQuery("DELETE FROM ${DenemeTables.cografyaTableName}");
+    await db.rawQuery("DELETE FROM ${DenemeTables.vatandasTableName}");
+    await db.rawQuery("DELETE FROM ${DenemeTables.turkceTableName}");
   }
 }
