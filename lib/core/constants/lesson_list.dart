@@ -2,7 +2,6 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 
 class LessonList {
   static const List<String> turkceSubject = <String>[
-    "Konu Seçiniz",
     "Sözcükte Anlam",
     "Cümlenin Anlam",
     "Sözcük Türleri",
@@ -17,7 +16,6 @@ class LessonList {
   ];
 
   static const List<String> historySubjects = <String>[
-    "Konu Seçiniz",
     "İslamiyet’ten Önceki Türk Devletleri",
     "İlk Müslüman Türk Devletleri",
     "Osmanlı Devleti Siyasi",
@@ -31,7 +29,6 @@ class LessonList {
   ];
 
   static const List<String> mathSubject = <String>[
-    "Konu Seçiniz.",
     "Temel Kavramlar",
     "Rasyonel Sayılar",
     "Ondalık Sayılar",
@@ -52,7 +49,6 @@ class LessonList {
   ];
 
   static const List<String> cografySubject = <String>[
-    "Konu Seçiniz",
     "Türkiye Coğrafi Konumu",
     "Türkiye’nin Yer şekilleri Su Örtüsü",
     "Türkiye’nin İklimi Ve Bitki Örtüsü",
@@ -66,7 +62,6 @@ class LessonList {
   ];
 
   static const List<String> vatandasSubject = <String>[
-    "Konu Seçiniz",
     "Hukukun Temel Kavramları",
     "Devlet Biçimleri Demokrasi Ve Kuvvetler Ayrılığı",
     "Anayasa Hukukuna Giriş Temel Kavramlar Ve Türk Anayasa Tarihi",

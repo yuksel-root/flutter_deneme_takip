@@ -12,7 +12,6 @@ class DenemeDbProvider {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    // if _database is null we instantiate it
     _database = await openDb();
     return _database!;
   }
@@ -54,6 +53,13 @@ class DenemeDbProvider {
 
       return denemeMap.isNotEmpty ? denemeMap : [];
     }
+  }
+
+  Future<int> deleteTableItem(String lessonTable, int id, String idName) async {
+    final db = await database;
+    int delete =
+        await db.rawDelete('DELETE FROM $lessonTable WHERE $idName = ?', [id]);
+    return delete;
   }
 
   Future<List<Map<String, dynamic>>> getDeneme(String tableName) async {

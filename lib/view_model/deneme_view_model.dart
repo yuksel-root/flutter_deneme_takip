@@ -36,11 +36,29 @@ class DenemeViewModel extends ChangeNotifier {
       print(e);
       print("Save deneme Error");
     }
+    notifyListeners();
+  }
+
+  void deleteDeneme(String lessonTable, int id, String idName) {
+    try {
+      DenemeDbProvider.db.deleteTableItem(lessonTable, id, idName);
+    } catch (e) {
+      print("Delete deneme error");
+      print(e);
+      print("Delete deneme error");
+    }
+    notifyListeners();
   }
 
   Future<void> getAllData(String dataTable) async {
     print("-------------$dataTable------------\n");
     print(await DenemeDbProvider.db.getDeneme(dataTable));
     print("-------------$dataTable------------\n");
+  }
+
+  void printFunct(String label, Object? data) {
+    print("----------- $label --------------");
+    print(data);
+    print("----------- $label --------------");
   }
 }
