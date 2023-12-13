@@ -37,14 +37,14 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
     final provider = Provider.of<BottomNavigationProvider>(context);
     final tabbarProvider = Provider.of<TabbarNavigationProvider>(context);
     return Scaffold(
-      body: currentScreen[provider.currentIndex],
+      body: currentScreen[provider.getCurrentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xff1c0f45),
         unselectedItemColor: Colors.white,
         selectedItemColor: Colors.greenAccent,
-        currentIndex: provider.currentIndex,
+        currentIndex: provider.getCurrentIndex,
         onTap: (index) {
-          provider.currentIndex = index;
+          provider.setCurrentIndex(index);
           if (index == 0) {
             tabbarProvider.setLessonCurrentIndex = 0;
             _navigateHome(context);

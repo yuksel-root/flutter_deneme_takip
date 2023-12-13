@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
+import 'package:flutter_deneme_takip/view/old_insert_deneme_view.dart';
 import 'package:flutter_deneme_takip/view/insert_deneme_view.dart';
 import 'package:provider/provider.dart';
 
@@ -52,7 +53,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
           appBar: AppBar(
             title: const Center(
                 child:
-                    Text(style: TextStyle(color: Colors.white), 'Deneme App')),
+                    Text(style: TextStyle(color: Colors.white), 'Deneme AppE')),
             backgroundColor: const Color(0xff1c0f45),
             bottom: const TabBar(
                 indicatorColor: Colors.greenAccent,
@@ -68,21 +69,21 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
           ),
           body: const TabBarView(
             children: [
-              EditDeneme(
+              InsertDeneme(
                   lessonName: "Tarih", subjectList: LessonList.historySubjects),
-              EditDeneme(
+              InsertDeneme(
                 lessonName: "Matematik",
                 subjectList: LessonList.mathSubject,
               ),
-              EditDeneme(
+              InsertDeneme(
                 lessonName: "Coğrafya",
                 subjectList: LessonList.cografySubject,
               ),
-              EditDeneme(
+              InsertDeneme(
                 lessonName: "Vatandaşlık",
                 subjectList: LessonList.vatandasSubject,
               ),
-              EditDeneme(
+              InsertDeneme(
                 lessonName: "Türkçe",
                 subjectList: LessonList.turkceSubject,
               ),
