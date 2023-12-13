@@ -41,7 +41,6 @@ class MainApp extends StatelessWidget {
       onGenerateRoute: NavigationRoute.instance.generateRoute,
       navigatorKey: NavigationService.instance.navigatorKey,
       home: const BottomTabbarView(),
-      initialRoute: NavigationConstants.homeView,
     );
   }
 }

@@ -14,10 +14,6 @@ class NavigationRoute {
     switch (settings?.name) {
       case NavigationConstants.homeView:
         return pageNavigate(const BottomTabbarView(), settings!);
-      case NavigationConstants.lessonView:
-        return pageNavigate(const LessonView(), settings!);
-      case NavigationConstants.denemeView:
-        return pageNavigate(const DenemeView(), settings!);
       default:
         return MaterialPageRoute(
           builder: (context) => Scaffold(
