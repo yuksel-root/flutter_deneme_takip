@@ -37,113 +37,87 @@ class _LessonViewState extends State<LessonView> {
   @override
   Widget build(BuildContext context) {
     final denemeProv = Provider.of<DenemeViewModel>(context);
-    return Container(
-      child: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _listDeneme,
-        builder: (BuildContext context,
-            AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('Veri getirilirken hata oluştu'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Gösterilecek veri yok'));
-          } else {
-            List<Map<String, dynamic>> data = snapshot.data!;
-            Map<String, List<Map<String, dynamic>>> groupedData = {};
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _listDeneme,
+      builder: (BuildContext context,
+          AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text('Veri getirilirken hata oluştu'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('Gösterilecek veri yok'));
+        } else {
+          List<Map<String, dynamic>> data = snapshot.data!;
+          Map<String, List<Map<String, dynamic>>> groupedData = {};
 
-            for (var item in data) {
-              String subjectName = item['subjectName'];
-              if (!groupedData.containsKey(subjectName)) {
-                groupedData[subjectName] = [];
-              }
-              groupedData[subjectName]!.add(item);
+          for (var item in data) {
+            String subjectName = item['subjectName'];
+            if (!groupedData.containsKey(subjectName)) {
+              groupedData[subjectName] = [];
             }
-
-            return ListView.builder(
-              shrinkWrap: true,
-              itemCount: groupedData.length,
-              itemBuilder: (BuildContext context, int index) {
-                String subjectName = groupedData.keys.elementAt(index);
-                List<Map<String, dynamic>> group = groupedData[subjectName]!;
-
-                return Card(
-                  elevation: 4.0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: group.map((item) {
-                      int denemeId = item['denemeId'];
-
-                      return Column(
-                        children:
-                            groupedListWidget(group, subjectName, denemeProv),
-                      );
-                    }).toList(),
-                  ),
-                );
-              },
-            );
+            groupedData[subjectName]!.add(item);
           }
-        },
-      ),
-    );
-  }
 
-  List<Widget> groupedListWidget(List<Map<String, dynamic>> group,
-      String subjectName, DenemeViewModel denemeProv) {
-    return group.map((item) {
-      // item içindeki değerleri kullanarak Widget'ları oluşturun
-      return FittedBox(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Wrap(
-                    children: [
-                      Text(
-                        'Konu: $subjectName',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+          return ListView.builder(
+            itemCount: groupedData.length,
+            itemBuilder: (BuildContext context, int index) {
+              String subjectName = groupedData.keys.elementAt(index);
+              List<Map<String, dynamic>> group = groupedData[subjectName]!;
+
+              return Card(
+                elevation: 4.0,
+                margin: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Wrap(
+                      children: [
+                        Text(
+                          'Konu: $subjectName',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8.0),
+                    for (var item in group)
+                      ListTile(
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete,
+                              color: Color(0xFFF31101)),
+                          onPressed: () {
+                            setState(() {
+                              denemeProv.deleteDeneme(_lessonTableName,
+                                  item['denemeId'], 'denemeId');
+                              _listDeneme = initTable();
+                            });
+                          },
+                          style: IconButton.styleFrom(),
+                        ),
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                Text('${item['denemeId']}.Deneme'),
+                                const SizedBox(width: 8.0),
+                                Text('Yanlış Sayısı: ${item['falseCount']}'),
+                              ],
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text('Tarih: ${item['denemeDate']}'),
+                            const SizedBox(height: 16.0),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Color(0xFFF31101)),
-                    onPressed: () {
-                      setState(() {
-                        denemeProv.deleteDeneme(
-                            _lessonTableName, item['subjectId'], 'subjectId');
-                        _listDeneme = initTable();
-                      });
-                    },
-                    style: IconButton.styleFrom(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8.0),
-                  Row(
-                    children: [
-                      Text('${item['denemeId']}.Deneme'),
-                      const SizedBox(width: 8.0),
-                      Text('Yanlış Sayısı: ${item['falseCount']}'),
-                    ],
-                  ),
-                  const SizedBox(height: 8.0),
-                  Text('Tarih: ${item['denemeDate']}'),
-                  const SizedBox(height: 16.0),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
-    }).toList();
+                  ],
+                ),
+              );
+            },
+          );
+        }
+      },
+    );
   }
 }

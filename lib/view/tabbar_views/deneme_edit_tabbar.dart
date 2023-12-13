@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
-import 'package:flutter_deneme_takip/view/old_insert_deneme_view.dart';
+import 'package:flutter_deneme_takip/core/local_storage/old_insert_deneme_view.dart';
 import 'package:flutter_deneme_takip/view/insert_deneme_view.dart';
 import 'package:provider/provider.dart';
 

@@ -162,8 +162,9 @@ class _EditDenemeState extends State<InsertDeneme> {
     // DenemeViewModel().printFunct("f", f);
     return TextFormField(
       controller: controller,
+      autofocus: false,
       keyboardType: TextInputType.number,
-      autofocus: true,
+      textInputAction: TextInputAction.next,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Lütfen boş bırakmayın';
@@ -238,7 +239,9 @@ class _EditDenemeState extends State<InsertDeneme> {
                       subjectName: _subjectSavedList[i]);
 
                   denemeProv.saveDeneme(denemeModel, _initTable!);
-                  bottomProv.setCurrentIndex(0);
+                  _navigation.navigateToPageClear(
+                      path: NavigationConstants.homeView, data: []);
+
                   print(bottomProv.getCurrentIndex);
                   k++;
                 }
