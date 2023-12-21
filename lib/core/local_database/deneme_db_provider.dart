@@ -29,7 +29,7 @@ class DenemeDbProvider {
         },
         version: 1,
         onOpen: (Database db) async {
-          // await DenemeTables.reCreateTable(db);
+          //await DenemeTables.reCreateTable(db);
         });
     return db;
   }

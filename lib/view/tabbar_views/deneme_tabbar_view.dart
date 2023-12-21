@@ -46,7 +46,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
             appBar: AppBar(
               title: const Center(
                   child: Text(
-                      style: TextStyle(color: Colors.white), 'Deneme AppV')),
+                      style: TextStyle(color: Colors.white), 'Deneme App')),
               backgroundColor: const Color(0xff1c0f45),
               bottom: TabBar(
                   indicatorColor: Colors.greenAccent,

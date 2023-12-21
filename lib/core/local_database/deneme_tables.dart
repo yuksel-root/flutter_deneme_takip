@@ -38,7 +38,8 @@ class DenemeTables {
   static Future<void> tarihCreateTable(Database db) async {
     await db.execute('''
       CREATE TABLE $tarihTableName (
-        subjectId INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        subjectId INTEGER,
         falseCount INTEGER,
         subjectName TEXT,
         denemeId INTEGER,
@@ -50,7 +51,8 @@ class DenemeTables {
   static Future<void> mathCreateTable(Database db) async {
     await db.execute('''
       CREATE TABLE $mathTableName (
-        subjectId INTEGER PRIMARY KEY AUTOINCREMENT,
+       id INTEGER PRIMARY KEY AUTOINCREMENT,
+        subjectId INTEGER,
         falseCount INTEGER,
         subjectName TEXT,
         denemeId INTEGER,
@@ -62,7 +64,8 @@ class DenemeTables {
   static Future<void> vatandasCreateTable(Database db) async {
     await db.execute('''
       CREATE TABLE $vatandasTableName (
-         subjectId INTEGER PRIMARY KEY AUTOINCREMENT,
+       id INTEGER PRIMARY KEY AUTOINCREMENT,
+        subjectId INTEGER,
         falseCount INTEGER,
         subjectName TEXT,
         denemeId INTEGER,
@@ -74,7 +77,8 @@ class DenemeTables {
   static Future<void> cografyaCreateTable(Database db) async {
     await db.execute('''
       CREATE TABLE $cografyaTableName (
-        subjectId INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        subjectId INTEGER,
         falseCount INTEGER,
         subjectName TEXT,
         denemeId INTEGER,
@@ -86,7 +90,8 @@ class DenemeTables {
   static Future<void> turkceCreateTable(Database db) async {
     await db.execute('''
       CREATE TABLE $turkceTableName (
-        subjectId INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        subjectId INTEGER,
         falseCount INTEGER,
         subjectName TEXT,
         denemeId INTEGER,
