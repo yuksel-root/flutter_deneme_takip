@@ -46,7 +46,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             appBar: AppBar(
                 title: const Center(
                     child: Text(
-                        style: TextStyle(color: Colors.white), 'Deneme AppL')),
+                        style: TextStyle(color: Colors.white), 'Deneme App')),
                 backgroundColor: const Color(0xff1c0f45),
                 bottom: TabBar(
                   labelColor: Colors.green,

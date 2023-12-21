@@ -221,10 +221,12 @@ class _EditDenemeState extends State<InsertDeneme> {
                   .getFindLastId(_initTable!, "subjectId");
               _lastDenemeId = await DenemeDbProvider.db
                   .getFindLastId(_initTable!, "denemeId");
+
               final int? _denemeIdClicked = (_lastDenemeId ?? 0) + 1;
               int k = 1;
               denemeProv.printFunct("subjectList", _subjectSavedList);
               denemeProv.printFunct("falseCounters", _falseCountsIntegers);
+
               for (int i = 0; i < _falseCountsIntegers.length; i++) {
                 if (_subjectSavedList[i] != null) {
                   print("İF");
@@ -243,9 +245,11 @@ class _EditDenemeState extends State<InsertDeneme> {
                       path: NavigationConstants.homeView, data: []);
 
                   print(bottomProv.getCurrentIndex);
+
                   k++;
                 }
               }
+              print(await DenemeDbProvider.db.getDeneme(initTable()));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,

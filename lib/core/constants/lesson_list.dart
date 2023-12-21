@@ -76,10 +76,10 @@ class LessonList {
 
   static const List<String> lessonNameList = <String>[
     "Tarih",
-    "Matematik",
-    "Türkçe",
     "Coğrafya",
     "Vatandaşlık",
+    "Matematik",
+    "Türkçe",
   ];
 
   static const Map<String, String> tableNames = {
@@ -88,6 +88,14 @@ class LessonList {
     "Vatandaşlık": DenemeTables.vatandasTableName,
     "Coğrafya": DenemeTables.cografyaTableName,
     "Türkçe": DenemeTables.turkceTableName,
+  };
+
+  static const Map<String, List<String>> lessonListMap = {
+    "Tarih": historySubjects,
+    "Matematik": mathSubject,
+    "Coğrafya": cografySubject,
+    "Vatandaşlık": vatandasSubject,
+    "Türkçe": turkceSubject,
   };
 
   static const List<dynamic> denemeTarih = <dynamic>[

@@ -26,6 +26,13 @@ class _LessonViewState extends State<LessonView> {
     _listDeneme = initTable();
     _lessonTableName =
         LessonList.tableNames[_lessonName] ?? DenemeTables.tarihTableName;
+    _listDeneme.then((List<Map<String, dynamic>> data) {
+      // Listeyi döngü ile dönüştürme
+      List<Map<String, dynamic>> dataList = data;
+      dataList.forEach((Map<String, dynamic> item) {
+        print(item);
+      });
+    });
   }
 
   Future<List<Map<String, dynamic>>> initTable() async {
@@ -37,6 +44,7 @@ class _LessonViewState extends State<LessonView> {
   @override
   Widget build(BuildContext context) {
     final denemeProv = Provider.of<DenemeViewModel>(context);
+
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _listDeneme,
       builder: (BuildContext context,
@@ -67,7 +75,7 @@ class _LessonViewState extends State<LessonView> {
 
               return Card(
                 elevation: 4.0,
-                margin: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.all(10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -79,37 +87,36 @@ class _LessonViewState extends State<LessonView> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8.0),
                     for (var item in group)
-                      ListTile(
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete,
-                              color: Color(0xFFF31101)),
-                          onPressed: () {
-                            setState(() {
-                              denemeProv.deleteDeneme(_lessonTableName,
-                                  item['denemeId'], 'denemeId');
-                              _listDeneme = initTable();
-                            });
-                          },
-                          style: IconButton.styleFrom(),
-                        ),
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 8.0),
-                            Row(
-                              children: [
-                                Text('${item['denemeId']}.Deneme'),
-                                const SizedBox(width: 8.0),
-                                Text('Yanlış Sayısı: ${item['falseCount']}'),
-                              ],
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text('Tarih: ${item['denemeDate']}'),
-                            const SizedBox(height: 16.0),
-                          ],
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text('${item['denemeId']}.Deneme'),
+                              const SizedBox(width: 8.0),
+                              Text('Yanlış Sayısı: ${item['falseCount']}'),
+                              IconButton(
+                                icon: const Icon(Icons.delete,
+                                    size: 25, color: Color(0xFFF31101)),
+                                onPressed: () {
+                                  setState(() {
+                                    print("id");
+                                    print(item['id']);
+                                    print("id");
+                                    denemeProv.deleteDeneme(
+                                        _lessonTableName, item['id'], 'id');
+                                    _listDeneme = initTable();
+                                  });
+                                },
+                                style: IconButton.styleFrom(),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text('Tarih: ${item['denemeDate']}'),
+                          const SizedBox(height: 16.0),
+                        ],
                       ),
                   ],
                 ),
