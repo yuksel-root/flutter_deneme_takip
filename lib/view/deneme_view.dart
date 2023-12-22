@@ -22,22 +22,23 @@ class _DenemeViewState extends State<DenemeView> {
   late List<dynamic> columnData;
   Map<int, List<Map<String, dynamic>>> idToRowMap = {};
   List<Map<String, dynamic>> modifiedData = [];
-
+  late int k;
   @override
   void initState() {
+    print('init');
     super.initState();
+
     _lessonName = widget.lessonName!;
 
     columnData = List.of(findList(_lessonName));
     rowData = List.generate(columnData.length,
         (index) => {'row': List.filled(columnData.length, 0)});
+    k = -1;
   }
 
   void processData(List<Map<String, dynamic>> data) {
-    modifiedData.clear();
-
-    Map<int, List<Map<String, dynamic>>> groupedData = {};
-
+/*     Map<int, List<Map<String, dynamic>>> groupedData = {};
+    print(data);
     for (var item in data) {
       final denemeId = item['denemeId'] as int;
       if (!groupedData.containsKey(denemeId)) {
@@ -45,11 +46,10 @@ class _DenemeViewState extends State<DenemeView> {
       }
       groupedData[denemeId]!.add(item);
     }
-    print('groupedData');
-    print(groupedData);
-    print('groupedData');
+
     int denemeId = groupedData.keys.elementAt(1);
-    List<Map<String, dynamic>> group = groupedData[denemeId]!; //still progress
+    List<Map<String, dynamic>> group = groupedData[denemeId]!; //still progress */
+
     for (var item in data) {
       int id = item['id'];
       if (idToRowMap[id] == null) {
@@ -62,14 +62,18 @@ class _DenemeViewState extends State<DenemeView> {
       Map<String, dynamic> rowItem = {"row": entry.value};
       modifiedData.add(rowItem);
     }
+    print('modifiedData');
+    print(modifiedData);
+    print('modifiedData');
   }
 
-  initRowData(List<Map<String, dynamic>> modifiedData,
-      List<Map<String, dynamic>> data) {
+  initRowData(List<Map<String, dynamic>> modifiedData) {
     print("rowDataModifyx");
-    int i = 0;
+
+    int i = 1;
     print(modifiedData.length);
-    final arr = List.generate(columnData.length, (index) => 0);
+    List<dynamic> arr = List.generate(columnData.length, (index) => 0);
+
     modifiedData.expand((item) {
       return item["row"];
     }).map((item) {
@@ -107,24 +111,21 @@ class _DenemeViewState extends State<DenemeView> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: initData(), // Verilerinizi getiren asenkron işlem
+      future: initData(),
       builder: (BuildContext context,
           AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
-            // Veriler yüklenirken gösterilecek widget
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
           return Center(
-            // Hata durumunda gösterilecek widget
             child: Text('Error: ${snapshot.error}'),
           );
         } else {
-          processData(snapshot.data!); // Veriler geldiğinde işleyin
-          initRowData(modifiedData, snapshot.data!); // Satır verilerini işleyin
+          processData(snapshot.data!);
+          initRowData(modifiedData);
 
-          // DataTable'ı oluşturun
           return Scaffold(
             body: Container(
               height: MediaQuery.of(context).size.height,
@@ -132,7 +133,8 @@ class _DenemeViewState extends State<DenemeView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  FittedBox(
+                  Expanded(
+                    flex: 20,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: SingleChildScrollView(
@@ -154,9 +156,8 @@ class _DenemeViewState extends State<DenemeView> {
     return Center(
         child: Column(children: <Widget>[
       Container(
-        margin: EdgeInsets.all(5),
         child: Table(
-          defaultColumnWidth: FixedColumnWidth(35.0),
+          defaultColumnWidth: FixedColumnWidth(55.0),
           border: TableBorder.all(
               color: Colors.black, style: BorderStyle.solid, width: 1),
           children: [getColumns(), ...getRows()],
@@ -184,36 +185,26 @@ class _DenemeViewState extends State<DenemeView> {
 
   TableRow getColumns() {
     return TableRow(
-      decoration: BoxDecoration(
-        border:
-            Border.all(color: Colors.black, style: BorderStyle.solid, width: 1),
-      ),
+      decoration: BoxDecoration(),
       children: Utils.modelBuilder(
         columnData,
         (i, column) {
-          return InkWell(
-              customBorder: Border.all(
-                  color: Colors.black, style: BorderStyle.solid, width: 0.5),
-              highlightColor: Colors.pinkAccent,
-              hoverColor: Colors.purpleAccent,
-              child: Ink(
-                color: Color(0xff00b2ee),
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        truncateString(column.toString()),
-                        style: TextStyle(
-                            fontSize: 15,
-                            overflow: TextOverflow.clip,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              onTap: () {});
+          return Padding(
+            padding: const EdgeInsets.all(0.4),
+            child: Column(
+              children: [
+                Container(
+                    height: 100,
+                    width: 200,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      image: AssetImage('assets/img/table_columns/hs/$i.png'),
+                      fit: BoxFit.fill,
+                      repeat: ImageRepeat.noRepeat,
+                    ))),
+              ],
+            ),
+          );
         },
       ),
     );
@@ -225,10 +216,35 @@ class _DenemeViewState extends State<DenemeView> {
             border: Border.all(
                 color: Colors.black, style: BorderStyle.solid, width: 0.5),
           ),
-          children: Utils.modelBuilder(row['row'], (index, cell) {
-            return Column(children: [
-              Text(cell.toString()),
-            ]);
+          children: Utils.modelBuilder(row['row'], (i, cell) {
+            k >= 99 ? k = -1 : k;
+            k++;
+            return Center(
+              child: Column(children: [
+                i == 0
+                    ? Center(
+                        child: Container(
+                          color: Color(0xff060644),
+                          child: Text(
+                            k == 0
+                                ? 'Deneme 1-5'
+                                : 'Deneme ${((k + 5) + 1) - 10}-${(((k + 5) + 1) + 5) - 10}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                backgroundColor: Color(0xff060644)),
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          cell.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+              ]),
+            );
           }),
         );
       }).toList();

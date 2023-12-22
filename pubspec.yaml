@@ -1,5 +1,5 @@
 name: flutter_deneme_takip
-description: "A new Flutter project."
+description: "For kpss exam falseCount tracker"
 
 linter:
   rules:
@@ -23,8 +23,11 @@ dependencies:
   fluttericon: ^2.0.0
 
   flutter_secure_storage: ^9.0.0
+
   font_awesome_flutter: ^10.6.0
+
   intl: ^0.18.1
+
   sqflite_common_ffi_web: ^0.4.2+2
 
 dev_dependencies:
@@ -39,6 +42,13 @@ flutter:
   assets:
     - assets/bg/
     - assets/img/
+    - assets/img/icon/
+    - assets/img/table_columns/
+    - assets/img/table_columns/hs/
+    - assets/img/table_columns/vt/
+    - assets/img/table_columns/cg/
+    - assets/img/table_columns/tr/
+    - assets/img/table_columns/mt/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -70,7 +70,7 @@ class LessonList {
     "Yürütme",
     "Yargı",
     "Temel Hak Ve Hürriyetler",
-    "İdare Hukuku Ve",
+    "İdare Hukuku",
     "Uluslararası Kuruluşlar Ve Güncel Olaylar",
   ];
 
