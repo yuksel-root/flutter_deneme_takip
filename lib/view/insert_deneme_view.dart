@@ -6,7 +6,6 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
-import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:intl/intl.dart';
@@ -29,7 +28,6 @@ class _EditDenemeState extends State<InsertDeneme> {
   final NavigationService _navigation = NavigationService.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  late String _selectedSubject;
   late String _date;
   final DateTime _now = DateTime.now();
   late String? _lessonName;
@@ -57,7 +55,6 @@ class _EditDenemeState extends State<InsertDeneme> {
 
     _subjectList = widget.subjectList;
 
-    _selectedSubject = widget.subjectList![0];
     _lessonName = widget.lessonName;
     _falseInputCount = _subjectList!.length;
     _date =
@@ -66,13 +63,17 @@ class _EditDenemeState extends State<InsertDeneme> {
     _initTable = initTable();
     _lastSubjectId = 0;
     _lastDenemeId = 0;
-    inputOlustur();
+    createInput();
   }
 
   String initTable() {
     String tableName =
-        LessonList.tableNames[_lessonName] ?? DenemeTables.tarihTableName;
+        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
     return tableName;
+  }
+
+  List<String> findList(String lessonName) {
+    return LessonList.lessonListMap[lessonName] ?? [];
   }
 
   @override
@@ -83,13 +84,13 @@ class _EditDenemeState extends State<InsertDeneme> {
 
   Map<int, TextEditingController> falseCountControllers = {};
 
-  void inputOlustur() {
-    print("InputCount");
+  void createInput() {
+    /*  print("InputCount");
     print(_falseInputCount);
-    print("InputCount");
+    print("InputCount"); */
 
-    _falseCountsIntegers = List.generate(_falseInputCount!, (index) => null);
-    _subjectSavedList = List.generate(_falseInputCount!, (index) => null);
+    _falseCountsIntegers = List.generate(_falseInputCount!, (index) => 0);
+    _subjectSavedList = List.of(findList(_lessonName!));
   }
 
   @override
@@ -111,7 +112,7 @@ class _EditDenemeState extends State<InsertDeneme> {
                     children: [
                   Text(
                     '${widget.lessonName} Dersi Girişi',
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                   ),
                   elevatedButtons(context, denemeProv, bottomTabProv),
                 ]))),
@@ -128,7 +129,7 @@ class _EditDenemeState extends State<InsertDeneme> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        for (int i = 0; i < _falseCountsIntegers.length; i++)
+                        for (int i = 1; i < _falseCountsIntegers.length; i++)
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
@@ -170,12 +171,12 @@ class _EditDenemeState extends State<InsertDeneme> {
           return 'Lütfen boş bırakmayın';
         }
 
-        return null;
+        return 0 as String;
       },
       onChanged: (value) {
         try {
           _falseCountsIntegers[index] = (int.parse(value));
-          _subjectSavedList[index] = (_subjectList![index]);
+          //  _subjectSavedList[index] = (_subjectList![index]);
         } catch (e) {
           DenemeViewModel().printFunct("onChanged catch", e);
         }
@@ -184,7 +185,7 @@ class _EditDenemeState extends State<InsertDeneme> {
         hintText: "Konu Yanlış Sayısı",
         label: Text(
           _subjectList![index],
-          style: TextStyle(fontSize: 14),
+          style: const TextStyle(fontSize: 14),
         ),
         icon: buildContaierIconField(
             context, Icons.assignment_rounded, Colors.purple),
@@ -222,34 +223,28 @@ class _EditDenemeState extends State<InsertDeneme> {
               _lastDenemeId = await DenemeDbProvider.db
                   .getFindLastId(_initTable!, "denemeId");
 
-              final int? _denemeIdClicked = (_lastDenemeId ?? 0) + 1;
+              final int denemeIdClicked = (_lastDenemeId ?? 0) + 1;
               int k = 1;
-              denemeProv.printFunct("subjectList", _subjectSavedList);
-              denemeProv.printFunct("falseCounters", _falseCountsIntegers);
+              /*  denemeProv.printFunct("subjectList", _subjectSavedList);
+              denemeProv.printFunct("falseCounters", _falseCountsIntegers); */
 
               for (int i = 0; i < _falseCountsIntegers.length; i++) {
-                if (_subjectSavedList[i] != null) {
-                  print("İF");
-                  print(_subjectSavedList[i]);
-                  print(_falseCountsIntegers[i]); //BUNLARA GİRMİYOR
+                DenemeModel denemeModel = DenemeModel(
+                    denemeId: denemeIdClicked,
+                    subjectId: (_lastSubjectId ?? 0) + k,
+                    falseCount: _falseCountsIntegers[i],
+                    denemeDate: _date,
+                    subjectName: _subjectSavedList[i]);
 
-                  DenemeModel denemeModel = DenemeModel(
-                      denemeId: _denemeIdClicked,
-                      subjectId: (_lastSubjectId ?? 0) + k,
-                      falseCount: _falseCountsIntegers[i],
-                      denemeDate: _date,
-                      subjectName: _subjectSavedList[i]);
+                denemeProv.saveDeneme(denemeModel, _initTable!);
+                _navigation.navigateToPageClear(
+                    path: NavigationConstants.homeView, data: []);
 
-                  denemeProv.saveDeneme(denemeModel, _initTable!);
-                  _navigation.navigateToPageClear(
-                      path: NavigationConstants.homeView, data: []);
+                //print(bottomProv.getCurrentIndex);
 
-                  print(bottomProv.getCurrentIndex);
-
-                  k++;
-                }
+                k++;
               }
-              print(await DenemeDbProvider.db.getDeneme(initTable()));
+              //    print(await DenemeDbProvider.db.getDeneme(initTable()));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
@@ -258,7 +253,7 @@ class _EditDenemeState extends State<InsertDeneme> {
             )));
   }
 
-  _showDialog(BuildContext context, String title, String content) {
+  _showDialog(BuildContext context, String title, String content) async {
     AlertView alert = AlertView(
       title: title,
       content: content,
@@ -267,13 +262,16 @@ class _EditDenemeState extends State<InsertDeneme> {
       },
     );
 
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
+    if (_isAlertOpen == false) {
+      _isAlertOpen = true;
+      await showDialog(
+          barrierDismissible: false,
+          barrierColor: const Color(0x66000000),
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          }).then((value) => _isAlertOpen = false);
+    }
   }
 
   Container buildContaierIconField(
