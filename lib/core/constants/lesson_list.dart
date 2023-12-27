@@ -2,6 +2,7 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 
 class LessonList {
   static const List<String> turkceSubject = <String>[
+    "",
     "Sözcükte Anlam",
     "Cümlenin Anlam",
     "Sözcük Türleri",
@@ -16,6 +17,7 @@ class LessonList {
   ];
 
   static const List<String> historySubjects = <String>[
+    "",
     "İslamiyet’ten Önceki Türk Devletleri",
     "İlk Müslüman Türk Devletleri",
     "Osmanlı Devleti Siyasi",
@@ -29,6 +31,7 @@ class LessonList {
   ];
 
   static const List<String> mathSubject = <String>[
+    "",
     "Temel Kavramlar",
     "Rasyonel Sayılar",
     "Ondalık Sayılar",
@@ -49,6 +52,7 @@ class LessonList {
   ];
 
   static const List<String> cografySubject = <String>[
+    "",
     "Türkiye Coğrafi Konumu",
     "Türkiye’nin Yer şekilleri Su Örtüsü",
     "Türkiye’nin İklimi Ve Bitki Örtüsü",
@@ -62,6 +66,7 @@ class LessonList {
   ];
 
   static const List<String> vatandasSubject = <String>[
+    "",
     "Hukukun Temel Kavramları",
     "Devlet Biçimleri Demokrasi Ve Kuvvetler Ayrılığı",
     "Anayasa Hukukuna Giriş Temel Kavramlar Ve Türk Anayasa Tarihi",
@@ -83,22 +88,22 @@ class LessonList {
   ];
 
   static const Map<String, String> tableNames = {
-    "Tarih": DenemeTables.tarihTableName,
-    "Matematik": DenemeTables.mathTableName,
+    "Tarih": DenemeTables.historyTableName,
     "Vatandaşlık": DenemeTables.vatandasTableName,
     "Coğrafya": DenemeTables.cografyaTableName,
+    "Matematik": DenemeTables.mathTableName,
     "Türkçe": DenemeTables.turkceTableName,
   };
 
   static const Map<String, List<String>> lessonListMap = {
     "Tarih": historySubjects,
-    "Matematik": mathSubject,
     "Coğrafya": cografySubject,
     "Vatandaşlık": vatandasSubject,
+    "Matematik": mathSubject,
     "Türkçe": turkceSubject,
   };
 
-  static const List<dynamic> denemeTarih = <dynamic>[
+  static const List<dynamic> denemeHistory = <dynamic>[
     {
       "denemeId": [1, 2, 3, 4, 5],
       "subjects": [
