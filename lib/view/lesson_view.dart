@@ -43,7 +43,7 @@ class _LessonViewState extends State<LessonView> {
   @override
   Widget build(BuildContext context) {
     final denemeProv = Provider.of<DenemeViewModel>(context);
-    // DenemeDbProvider.db.clearDatabase();
+
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _listDeneme,
       builder: (BuildContext context,
@@ -76,52 +76,58 @@ class _LessonViewState extends State<LessonView> {
                 return Card(
                   elevation: 4.0,
                   margin: const EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Wrap(
-                        children: [
-                          Text(
-                            'Konu: $subjectName',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      for (var item in group)
-                        if (item['falseCount'] != 0)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text('${item['denemeId']}.Deneme'),
-                                  const SizedBox(width: 8.0),
-                                  Text('Yanlış Sayısı: ${item['falseCount']}'),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        size: 25, color: Color(0xFFF31101)),
-                                    onPressed: () {
-                                      setState(() {
-                                        print("id");
-                                        print(item['id']);
-                                        print("id");
-                                        denemeProv.deleteItemById(
-                                            _lessonTableName,
-                                            item['denemeId'],
-                                            'denemeId');
-                                        _listDeneme = initTable();
-                                      });
-                                    },
-                                    style: IconButton.styleFrom(),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text('Tarih: ${item['denemeDate']}'),
-                              const SizedBox(height: 16.0),
-                            ],
-                          ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Wrap(
+                          children: [
+                            Text(
+                              'Konu: $subjectName',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        for (var item in group)
+                          if (item['falseCount'] != 0)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text('${item['denemeId']}.Deneme'),
+                                    const SizedBox(width: 8.0),
+                                    Text(
+                                        'Yanlış Sayısı: ${item['falseCount']}'),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete,
+                                          size: 25, color: Color(0xFFF31101)),
+                                      onPressed: () {
+                                        setState(() {
+                                          print("id");
+                                          print(item['id']);
+                                          print("id");
+                                          denemeProv.deleteItemById(
+                                              _lessonTableName,
+                                              item['denemeId'],
+                                              'denemeId');
+                                          _listDeneme = initTable();
+                                        });
+                                      },
+                                      style: IconButton.styleFrom(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text('Tarih: ${item['denemeDate']}'),
+                                const SizedBox(height: 16.0),
+                              ],
+                            ),
+                      ],
+                    ),
                   ),
                 );
               } else {

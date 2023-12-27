@@ -37,6 +37,7 @@ class _EditDenemeState extends State<InsertDeneme> {
   late int? _lastDenemeId;
 
   bool _isAlertOpen = false;
+  bool _isDiffZero = false;
 
   List<String?> _subjectSavedList = [];
   Set<String>? setSavedSubjects = {};
@@ -125,6 +126,7 @@ class _EditDenemeState extends State<InsertDeneme> {
                 flex: 50,
                 child: Form(
                   key: _formKey,
+                  autovalidateMode: AutovalidateMode.disabled,
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,19 +165,33 @@ class _EditDenemeState extends State<InsertDeneme> {
     // DenemeViewModel().printFunct("f", f);
     return TextFormField(
       controller: controller,
+      autovalidateMode: AutovalidateMode.disabled,
       autofocus: false,
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
+      onTap: () {},
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Lütfen boş bırakmayın';
         }
+        final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
+        if (!isNumeric) {
+          _formKey.currentState!.reset();
+          return 'hata';
+        }
 
-        return 0 as String;
+        return null;
       },
       onChanged: (value) {
+        if (int.parse(value) != 0) {
+          _isDiffZero = true;
+        } else {
+          _isDiffZero = false;
+        }
+
         try {
           _falseCountsIntegers[index] = (int.parse(value));
+
           //  _subjectSavedList[index] = (_subjectList![index]);
         } catch (e) {
           DenemeViewModel().printFunct("onChanged catch", e);
@@ -211,46 +227,58 @@ class _EditDenemeState extends State<InsertDeneme> {
                     fontSize:
                         context.dynamicH(0.00571) * context.dynamicW(0.01))),
             onPressed: () async {
-              DateTime now = DateTime.now();
-
-              _date = DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR')
-                  .format(now)
-                  .toString();
-
-              _lessonName = widget.lessonName;
-              _lastSubjectId = await DenemeDbProvider.db
-                  .getFindLastId(_initTable!, "subjectId");
-              _lastDenemeId = await DenemeDbProvider.db
-                  .getFindLastId(_initTable!, "denemeId");
-
-              final int denemeIdClicked = (_lastDenemeId ?? 0) + 1;
-              int k = 1;
-              /*  denemeProv.printFunct("subjectList", _subjectSavedList);
-              denemeProv.printFunct("falseCounters", _falseCountsIntegers); */
-
-              for (int i = 0; i < _falseCountsIntegers.length; i++) {
-                DenemeModel denemeModel = DenemeModel(
-                    denemeId: denemeIdClicked,
-                    subjectId: (_lastSubjectId ?? 0) + k,
-                    falseCount: _falseCountsIntegers[i],
-                    denemeDate: _date,
-                    subjectName: _subjectSavedList[i]);
-
-                denemeProv.saveDeneme(denemeModel, _initTable!);
-                _navigation.navigateToPageClear(
-                    path: NavigationConstants.homeView, data: []);
-
-                //print(bottomProv.getCurrentIndex);
-
-                k++;
+              if (_formKey.currentState!.validate() && _isDiffZero == true) {
+                await saveButton(denemeProv);
+              } else if (_isDiffZero == false) {
+                _showDialog(context, 'HATA', 'En az 1 değer gir!');
+                print("-a");
+                _formKey.currentState!.reset();
+              } else {
+                _showDialog(context, 'HATA', 'Tam sayı giriniz!');
+                _formKey.currentState!.reset();
               }
-              //    print(await DenemeDbProvider.db.getDeneme(initTable()));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
               shape: const StadiumBorder(),
               foregroundColor: Colors.black,
             )));
+  }
+
+  Future<void> saveButton(denemeProv) async {
+    DateTime now = DateTime.now();
+
+    _date =
+        DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(now).toString();
+
+    _lessonName = widget.lessonName;
+    _lastSubjectId =
+        await DenemeDbProvider.db.getFindLastId(_initTable!, "subjectId");
+    _lastDenemeId =
+        await DenemeDbProvider.db.getFindLastId(_initTable!, "denemeId");
+
+    final int denemeIdClicked = (_lastDenemeId ?? 0) + 1;
+    int k = 1;
+    /*  denemeProv.printFunct("subjectList", _subjectSavedList);
+              denemeProv.printFunct("falseCounters", _falseCountsIntegers); */
+
+    for (int i = 0; i < _falseCountsIntegers.length; i++) {
+      DenemeModel denemeModel = DenemeModel(
+          denemeId: denemeIdClicked,
+          subjectId: (_lastSubjectId ?? 0) + k,
+          falseCount: _falseCountsIntegers[i],
+          denemeDate: _date,
+          subjectName: _subjectSavedList[i]);
+
+      denemeProv.saveDeneme(denemeModel, _initTable!);
+      _navigation
+          .navigateToPageClear(path: NavigationConstants.homeView, data: []);
+
+      //print(bottomProv.getCurrentIndex);
+
+      k++;
+    }
+    //    print(await DenemeDbProvider.db.getDeneme(initTable()));
   }
 
   _showDialog(BuildContext context, String title, String content) async {
