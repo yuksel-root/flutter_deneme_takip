@@ -25,26 +25,25 @@ class _LessonViewState extends State<LessonView> {
     _lessonName = widget.lessonName ?? "Tarih";
     _listDeneme = initTable();
     _lessonTableName =
-        LessonList.tableNames[_lessonName] ?? DenemeTables.tarihTableName;
+        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
     _listDeneme.then((List<Map<String, dynamic>> data) {
-      // Listeyi döngü ile dönüştürme
       List<Map<String, dynamic>> dataList = data;
-      dataList.forEach((Map<String, dynamic> item) {
+      for (var item in dataList) {
         print(item);
-      });
+      }
     });
   }
 
   Future<List<Map<String, dynamic>>> initTable() async {
     _lessonTableName =
-        LessonList.tableNames[_lessonName] ?? DenemeTables.tarihTableName;
-    return DenemeDbProvider.db.getDeneme(_lessonTableName);
+        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
+    return DenemeDbProvider.db.getLessonDeneme(_lessonTableName);
   }
 
   @override
   Widget build(BuildContext context) {
     final denemeProv = Provider.of<DenemeViewModel>(context);
-
+    // DenemeDbProvider.db.clearDatabase();
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _listDeneme,
       builder: (BuildContext context,
@@ -73,54 +72,61 @@ class _LessonViewState extends State<LessonView> {
               String subjectName = groupedData.keys.elementAt(index);
               List<Map<String, dynamic>> group = groupedData[subjectName]!;
 
-              return Card(
-                elevation: 4.0,
-                margin: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Wrap(
-                      children: [
-                        Text(
-                          'Konu: $subjectName',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    for (var item in group)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              if (group.any((item) => item['falseCount'] != 0)) {
+                return Card(
+                  elevation: 4.0,
+                  margin: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Wrap(
                         children: [
-                          Row(
-                            children: [
-                              Text('${item['denemeId']}.Deneme'),
-                              const SizedBox(width: 8.0),
-                              Text('Yanlış Sayısı: ${item['falseCount']}'),
-                              IconButton(
-                                icon: const Icon(Icons.delete,
-                                    size: 25, color: Color(0xFFF31101)),
-                                onPressed: () {
-                                  setState(() {
-                                    print("id");
-                                    print(item['id']);
-                                    print("id");
-                                    denemeProv.deleteDeneme(
-                                        _lessonTableName, item['id'], 'id');
-                                    _listDeneme = initTable();
-                                  });
-                                },
-                                style: IconButton.styleFrom(),
-                              ),
-                            ],
+                          Text(
+                            'Konu: $subjectName',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          const SizedBox(height: 8.0),
-                          Text('Tarih: ${item['denemeDate']}'),
-                          const SizedBox(height: 16.0),
                         ],
                       ),
-                  ],
-                ),
-              );
+                      for (var item in group)
+                        if (item['falseCount'] != 0)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text('${item['denemeId']}.Deneme'),
+                                  const SizedBox(width: 8.0),
+                                  Text('Yanlış Sayısı: ${item['falseCount']}'),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        size: 25, color: Color(0xFFF31101)),
+                                    onPressed: () {
+                                      setState(() {
+                                        print("id");
+                                        print(item['id']);
+                                        print("id");
+                                        denemeProv.deleteItemById(
+                                            _lessonTableName,
+                                            item['denemeId'],
+                                            'denemeId');
+                                        _listDeneme = initTable();
+                                      });
+                                    },
+                                    style: IconButton.styleFrom(),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8.0),
+                              Text('Tarih: ${item['denemeDate']}'),
+                              const SizedBox(height: 16.0),
+                            ],
+                          ),
+                    ],
+                  ),
+                );
+              } else {
+                return const SizedBox(); // 'falseCount' değeri 0 olan kartları gösterme
+              }
             },
           );
         }

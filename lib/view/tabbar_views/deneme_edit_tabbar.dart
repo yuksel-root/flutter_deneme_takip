@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
-import 'package:flutter_deneme_takip/core/local_storage/old_insert_deneme_view.dart';
 import 'package:flutter_deneme_takip/view/insert_deneme_view.dart';
 import 'package:provider/provider.dart';
 
@@ -61,9 +60,9 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                 tabAlignment: TabAlignment.start,
                 tabs: [
                   Tab(text: "Tarih"),
-                  Tab(text: "Matematik"),
                   Tab(text: "Coğrafya"),
                   Tab(text: "Vatandaşlık"),
+                  Tab(text: "Matematik"),
                   Tab(text: "Türkçe"),
                 ]),
           ),
@@ -72,16 +71,16 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
               InsertDeneme(
                   lessonName: "Tarih", subjectList: LessonList.historySubjects),
               InsertDeneme(
-                lessonName: "Matematik",
-                subjectList: LessonList.mathSubject,
-              ),
-              InsertDeneme(
                 lessonName: "Coğrafya",
                 subjectList: LessonList.cografySubject,
               ),
               InsertDeneme(
                 lessonName: "Vatandaşlık",
                 subjectList: LessonList.vatandasSubject,
+              ),
+              InsertDeneme(
+                lessonName: "Matematik",
+                subjectList: LessonList.mathSubject,
               ),
               InsertDeneme(
                 lessonName: "Türkçe",

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
@@ -26,33 +28,26 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   void saveDeneme(DenemeModel deneme, String lessonTable) {
-    print("Save");
-    print(deneme);
-    print("Save");
     try {
-      DenemeDbProvider.db.addNewDeneme(deneme, lessonTable);
+      DenemeDbProvider.db.insertDeneme(deneme, lessonTable);
     } catch (e) {
-      print("Save deneme Error");
-      print(e);
-      print("Save deneme Error");
+      printFunct("saveDeneme error", e);
     }
     notifyListeners();
   }
 
-  void deleteDeneme(String lessonTable, int id, String idName) {
+  void deleteItemById(String lessonTable, int id, String idName) {
     try {
-      DenemeDbProvider.db.deleteTableItem(lessonTable, id, idName);
+      DenemeDbProvider.db.removeTableItem(lessonTable, id, idName);
     } catch (e) {
-      print("Delete deneme error");
-      print(e);
-      print("Delete deneme error");
+      printFunct("deleteDeneme error", e);
     }
     notifyListeners();
   }
 
   Future<void> getAllData(String dataTable) async {
     print("-------------$dataTable------------\n");
-    print(await DenemeDbProvider.db.getDeneme(dataTable));
+    print(await DenemeDbProvider.db.getLessonDeneme(dataTable));
     print("-------------$dataTable------------\n");
   }
 

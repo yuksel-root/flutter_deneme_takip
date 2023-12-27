@@ -11,7 +11,7 @@ enum LessonState {
 
 class LessonViewModel extends ChangeNotifier {
   late NavigationService _navigation;
-  List<dynamic> tarihDeneme = LessonList.denemeTarih;
+  List<dynamic> tarihDeneme = LessonList.denemeHistory;
 
   LessonViewModel() {
     _navigation = NavigationService.instance;
