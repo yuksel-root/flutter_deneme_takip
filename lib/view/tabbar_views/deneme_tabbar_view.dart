@@ -55,6 +55,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
                   tabs: tab),
             ),
             body: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
               children: List.generate(
                 LessonList.lessonNameList.length,
                 (index) =>

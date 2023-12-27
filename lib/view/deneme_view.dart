@@ -17,23 +17,24 @@ class DenemeView extends StatefulWidget {
 
 class _DenemeViewState extends State<DenemeView> {
   late String _lessonName;
+  late int k;
 
   late List<dynamic> rowData;
   late List<dynamic> columnData;
-
-  List<Map<String, dynamic>> denemelerData = [];
-  late int k;
+  late List<Map<String, dynamic>> denemelerData;
 
   @override
   void initState() {
     print('init');
     super.initState();
-
     _lessonName = widget.lessonName!;
 
     columnData = List.of(findList(_lessonName));
-    rowData = List.generate(columnData.length,
-        (index) => {'row': List.filled(columnData.length, 0), 'isRow': true});
+    rowData = [];
+    denemelerData = [];
+
+    // rowData = List.generate(columnData.length,
+    //   (index) => {'row': List.filled(columnData.length, 0), 'isRow': true});
     k = -1;
   }
 
@@ -82,9 +83,10 @@ class _DenemeViewState extends State<DenemeView> {
       Map<String, dynamic> rowItem = {"row": entry.value};
       denemelerData.add(rowItem);
     }
-    print('denemelerData');
+
+    /*  print('denemelerData');
     print(denemelerData);
-    print('denemelerData');
+    print('denemelerData'); */
   }
 
   Map<int, List<int>> falseCountsByDenemeId(
@@ -108,32 +110,34 @@ class _DenemeViewState extends State<DenemeView> {
   }
 
   void insertRowData(List<Map<String, dynamic>> denemelerData) {
+    rowData.clear();
     int i = 0;
+
     falseCountsByDenemeId(denemelerData).forEach((denemeId, falseCounts) {
       List<dynamic> arr = List.generate(columnData.length, (index) => 0);
-      print('denemeId: $denemeId, falseCounts: $falseCounts');
+      /* print('denemeId: $denemeId, falseCounts: $falseCounts');
       print('falseCounts[$i] $falseCounts');
       print("col length ${columnData.length}");
-      print("row length ${rowData.length}");
-      print("falseCounts length ${falseCounts.length}");
-      print("arr length ${arr.length}");
+      print("row length ${rowData.length}"); */
 
       for (int j = 0; j < (falseCounts.length); j++) {
         arr[0] = "Deneme${i + 1}";
         arr[j] = falseCounts[j];
-        print('arrx[$j] = ${falseCounts[j]}');
+        //  print('arrx[$j] = ${falseCounts[j]}');
       }
 
-      rowData[i] = {'row': List.from(arr), 'isRow': k != 0};
-      print('rowData[$i] = ${rowData[i]}');
-      print('arr[$i] = ${arr[i]}');
+      rowData.add({'row': List.from(arr)});
+
+      //  print('rowData[$i] = ${rowData[i]}');
+      // print('arr[$i] = ${arr[i]}');
 
       i++;
       arr.clear();
     });
-    print("rowx");
+
+    print("rowData");
     print(rowData);
-    print("rowx");
+    print("rowData");
   }
 
   List<String> findList(String lessonName) {
@@ -167,8 +171,11 @@ class _DenemeViewState extends State<DenemeView> {
           convertToRow(snapshot.data!);
           insertRowData(denemelerData);
 
+          /*     print("coldata len  ${columnData.length}");
+          print("rowdata  len  ${rowData.length}"); */
+
           return Scaffold(
-            body: Container(
+            body: SizedBox(
               height: MediaQuery.of(context).size.height,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,118 +205,120 @@ class _DenemeViewState extends State<DenemeView> {
         child: Column(children: <Widget>[
       SizedBox(
         child: Table(
-          defaultColumnWidth: const FixedColumnWidth(61.0),
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+          defaultColumnWidth: const FixedColumnWidth(62.0),
           border: TableBorder.all(
               color: Colors.black, style: BorderStyle.solid, width: 1),
-          children: [getColumns(), ...getRows()],
+          children: [
+            getColumns(),
+            ...getRows(),
+          ],
         ),
       ),
     ]));
   }
 
   TableRow getColumns() {
-    List<Map<String, dynamic>> columnXdata = List.from(rowData);
-
     return TableRow(
-      children: Utils.modelBuilder(
-        columnXdata,
-        (i, column) {
-          return Padding(
-            padding: const EdgeInsets.all(0.4),
+      children: List.generate(
+        columnData.length,
+        (index) => getColumnCell(index),
+      ),
+    );
+  }
+
+  TableCell getColumnCell(int index) {
+    return TableCell(
+      child: Padding(
+        padding: const EdgeInsets.all(0.4),
+        child: Column(
+          children: [
+            index == 0
+                ? Container(
+                    height: 100,
+                    width: 200,
+                    decoration: const BoxDecoration(
+                      color: Color(0xff1c0f45),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Deneme Sıra No",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  )
+                : Container(
+                    height: 100,
+                    width: 200,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                            'assets/img/table_columns/hs/$index.png'),
+                        fit: BoxFit.fill,
+                        repeat: ImageRepeat.noRepeat,
+                      ),
+                    ),
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getRowCell(int i, int k, dynamic cell) {
+    return TableCell(
+      child: Ink(
+        color: i != 0 ? Colors.white : const Color(0xff060644),
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: context.dynamicH(0.00714)),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                i == 0
-                    ? Container(
-                        height: 100,
-                        width: 200,
-                        decoration: const BoxDecoration(
-                          color: Color(0xff1c0f45),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Deneme Sıra No",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(
-                        height: 100,
-                        width: 200,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          image:
-                              AssetImage('assets/img/table_columns/hs/$i.png'),
-                          fit: BoxFit.fill,
-                          repeat: ImageRepeat.noRepeat,
-                        ))),
+                Center(
+                  child: Center(
+                    child: Text(
+                      cell.toString(),
+                      textAlign: TextAlign.center,
+                      style: i != 0
+                          ? const TextStyle(color: Colors.black)
+                          : const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
               ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
   List<TableRow> getRows() {
-    k = -1;
+    //  int k = -1;
+    // double denemeNum = 1;
     List<Map<String, dynamic>> rowXdata = List.from(rowData);
-    double denemeNum = 1;
+
     return rowXdata.map((row) {
+      //   k = -1;
       return TableRow(
         decoration: BoxDecoration(
           border: Border.all(
-              color: Colors.black, style: BorderStyle.solid, width: 0.5),
+            color: Colors.black,
+            style: BorderStyle.solid,
+            width: 0.5,
+          ),
         ),
         children: Utils.modelBuilder(row['row'], (i, cell) {
-          k >= 99 ? k = -1 : k;
-          k++;
-          denemeNum = (((k - 11) ~/ 11) + 2);
-
-          i == 0 ? print("k $k :  ${denemeNum.toStringAsFixed(0)}") : "";
-          return Ink(
-            color:
-                row['isRow'] && i != 0 ? Colors.white : const Color(0xff060644),
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.only(bottom: context.dynamicH(0.00714)),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      i == 0
-                          ? Center(
-                              child: Container(
-                                color: const Color(0xff060644),
-                                child: Text(
-                                  denemeNum < 11 && k != 10
-                                      ? 'Deneme ${denemeNum.toStringAsFixed(0)}'
-                                      : k == 10
-                                          ? 'Deneme 11'
-                                          : "",
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    backgroundColor: Color(0xff060644),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Center(
-                              child: Text(cell.toString(),
-                                  textAlign: TextAlign.center,
-                                  style: row['isRow'] && i != 0
-                                      ? const TextStyle(color: Colors.black)
-                                      : const TextStyle(color: Colors.white)),
-                            ),
-                    ]),
-              ),
-            ),
-          );
+          //  k >= 99 ? k = -1 : k++;
+          //denemeNum = (((k - 11) ~/ 11) + 2);
+          //print("k $k  deneme $denemeNum");
+          return getRowCell(i, k, cell);
         }),
       );
     }).toList();
