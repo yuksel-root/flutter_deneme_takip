@@ -176,8 +176,10 @@ class _EditDenemeState extends State<InsertDeneme> {
         }
         final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
         if (!isNumeric) {
-          _formKey.currentState!.reset();
-          return 'hata';
+          Future.delayed(const Duration(seconds: 2), () {
+            _formKey.currentState!.reset();
+          });
+          return 'Sadece Sayı giriniz!';
         }
 
         return null;
@@ -230,13 +232,23 @@ class _EditDenemeState extends State<InsertDeneme> {
               if (_formKey.currentState!.validate() && _isDiffZero == true) {
                 await saveButton(denemeProv);
               } else if (_isDiffZero == false) {
-                _showDialog(context, 'HATA', 'En az 1 değer gir!');
-                print("-a");
-                _formKey.currentState!.reset();
+                await Future.delayed(const Duration(milliseconds: 1000), () {
+                  _showDialog(context, 'HATA', 'En az 1 değer gir!');
+                });
               } else {
-                _showDialog(context, 'HATA', 'Tam sayı giriniz!');
-                _formKey.currentState!.reset();
+                await Future.delayed(
+                  const Duration(seconds: 2),
+                  () {
+                    _showDialog(context, 'HATA', 'Sadece Tam sayı giriniz!');
+                  },
+                );
               }
+              await Future.delayed(
+                const Duration(seconds: 2),
+                () {
+                  _formKey.currentState!.reset();
+                },
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
@@ -285,7 +297,13 @@ class _EditDenemeState extends State<InsertDeneme> {
     AlertView alert = AlertView(
       title: title,
       content: content,
-      continueFunction: () => {
+      isAlert: true,
+      noFunction: () => {
+        _isAlertOpen = false,
+        Navigator.of(context).pop(),
+      },
+      yesFunction: () => {
+        _isAlertOpen = false,
         Navigator.of(context).pop(),
       },
     );
