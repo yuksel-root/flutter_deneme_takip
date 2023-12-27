@@ -70,7 +70,7 @@ class _EditDenemeState extends State<EditDeneme> {
 
   String initTable() {
     String tableName =
-        LessonList.tableNames[_lessonName] ?? DenemeTables.tarihTableName;
+        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
     return tableName;
   }
 

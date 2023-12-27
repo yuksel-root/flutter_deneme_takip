@@ -34,7 +34,7 @@ class DenemeDbProvider {
     return db;
   }
 
-  Future<void> addNewDeneme(DenemeModel deneme, String lessonTable) async {
+  Future<void> insertDeneme(DenemeModel deneme, String lessonTable) async {
     final db = await database;
 
     db.insert(lessonTable, deneme.toMap(),
@@ -47,7 +47,7 @@ class DenemeDbProvider {
     final res = await db
         .rawQuery('SELECT * FROM $lessonTable WHERE denemeId = ?', [denemeId]);
     if (res.isEmpty) {
-      return []; // Boş bir liste döndürülebilir
+      return [];
     } else {
       var denemeMap = res.toList();
 
@@ -55,18 +55,18 @@ class DenemeDbProvider {
     }
   }
 
-  Future<int> deleteTableItem(String lessonTable, int id, String idName) async {
+  Future<int> removeTableItem(String lessonTable, int id, String idName) async {
     final db = await database;
     int delete =
         await db.rawDelete('DELETE FROM $lessonTable WHERE $idName = ?', [id]);
     return delete;
   }
 
-  Future<List<Map<String, dynamic>>> getDeneme(String tableName) async {
+  Future<List<Map<String, dynamic>>> getLessonDeneme(String tableName) async {
     final db = await database;
     var res = await db.query(tableName);
     if (res.isEmpty) {
-      return []; // Boş bir liste döndürülebilir
+      return [];
     } else {
       var denemeMap = res.toList();
 
@@ -85,7 +85,7 @@ class DenemeDbProvider {
 
   Future<void> clearDatabase() async {
     final db = await database;
-    await db.rawQuery("DELETE FROM ${DenemeTables.tarihTableName}");
+    await db.rawQuery("DELETE FROM ${DenemeTables.historyTableName}");
     await db.rawQuery("DELETE FROM ${DenemeTables.mathTableName}");
     await db.rawQuery("DELETE FROM ${DenemeTables.cografyaTableName}");
     await db.rawQuery("DELETE FROM ${DenemeTables.vatandasTableName}");

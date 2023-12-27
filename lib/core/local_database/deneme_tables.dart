@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
 class DenemeTables {
-  static const String tarihTableName = 'tarihTable';
+  static const String historyTableName = 'tarihTable';
   static const String mathTableName = 'mathTable';
   static const String vatandasTableName = 'vatandasTable';
   static const String cografyaTableName = 'cografyaTable';
@@ -9,7 +9,7 @@ class DenemeTables {
 
   static Future<void> reCreateTable(Database db) async {
     await db.execute(''' 
-      DROP TABLE IF EXISTS $tarihTableName
+      DROP TABLE IF EXISTS $historyTableName
     ''');
 
     await db.execute(''' 
@@ -37,7 +37,7 @@ class DenemeTables {
 
   static Future<void> tarihCreateTable(Database db) async {
     await db.execute('''
-      CREATE TABLE $tarihTableName (
+      CREATE TABLE $historyTableName (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         subjectId INTEGER,
         falseCount INTEGER,
