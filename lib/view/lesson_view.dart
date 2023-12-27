@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
@@ -18,7 +19,7 @@ class _LessonViewState extends State<LessonView> {
   late String _lessonName;
   late Future<List<Map<String, dynamic>>> _listDeneme;
   late String _lessonTableName;
-
+  bool _isAlertOpen = false;
   @override
   void initState() {
     super.initState();
@@ -27,10 +28,10 @@ class _LessonViewState extends State<LessonView> {
     _lessonTableName =
         LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
     _listDeneme.then((List<Map<String, dynamic>> data) {
-      List<Map<String, dynamic>> dataList = data;
-      for (var item in dataList) {
+      //  List<Map<String, dynamic>> dataList = data;
+      /*  for (var item in dataList) {
         print(item);
-      }
+      } */
     });
   }
 
@@ -51,9 +52,15 @@ class _LessonViewState extends State<LessonView> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Veri getirilirken hata oluştu'));
+          return const Center(
+              child: Text(
+                  style: TextStyle(color: Color(0xff1c0f45), fontSize: 15),
+                  'Veri getirilirken hata oluştu'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('Gösterilecek veri yok'));
+          return const Center(
+              child: Text(
+                  style: TextStyle(color: Color(0xff1c0f45), fontSize: 15),
+                  'Gösterilecek veri yok'));
         } else {
           List<Map<String, dynamic>> data = snapshot.data!;
           Map<String, List<Map<String, dynamic>>> groupedData = {};
@@ -102,22 +109,36 @@ class _LessonViewState extends State<LessonView> {
                                     const SizedBox(width: 8.0),
                                     Text(
                                         'Yanlış Sayısı: ${item['falseCount']}'),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete,
-                                          size: 25, color: Color(0xFFF31101)),
-                                      onPressed: () {
-                                        setState(() {
-                                          print("id");
-                                          print(item['id']);
-                                          print("id");
-                                          denemeProv.deleteItemById(
-                                              _lessonTableName,
-                                              item['denemeId'],
-                                              'denemeId');
-                                          _listDeneme = initTable();
-                                        });
-                                      },
-                                      style: IconButton.styleFrom(),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 66.0),
+                                      child: IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          size: 25,
+                                          color:
+                                              Color.fromARGB(255, 54, 31, 129),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            /*    print("id");
+                                            print(item['id']);
+                                            print("id"); */
+                                            Future.delayed(
+                                                const Duration(
+                                                    milliseconds: 1000), () {
+                                              _showDialog(
+                                                context,
+                                                'UYARI',
+                                                '${item['denemeId']}. Denemeyi silmek istediğinize emin misiniz?',
+                                                denemeProv,
+                                                item['denemeId'],
+                                              );
+                                            });
+                                          });
+                                        },
+                                        style: IconButton.styleFrom(),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -138,5 +159,40 @@ class _LessonViewState extends State<LessonView> {
         }
       },
     );
+  }
+
+  _showDialog(
+    BuildContext context,
+    String title,
+    String content,
+    DenemeViewModel denemeProv,
+    dynamic itemDeneme,
+  ) async {
+    AlertView alert = AlertView(
+      title: title,
+      content: content,
+      isAlert: false,
+      noFunction: () => {
+        _isAlertOpen = false,
+        Navigator.of(context).pop(),
+      },
+      yesFunction: () => {
+        denemeProv.deleteItemById(_lessonTableName, itemDeneme, 'denemeId'),
+        _listDeneme = initTable(),
+        _isAlertOpen = false,
+        Navigator.of(context).pop(),
+      },
+    );
+
+    if (_isAlertOpen == false) {
+      _isAlertOpen = true;
+      await showDialog(
+          barrierDismissible: false,
+          barrierColor: const Color(0x66000000),
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          }).then((value) => _isAlertOpen = false);
+    }
   }
 }
