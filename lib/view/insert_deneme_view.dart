@@ -175,7 +175,7 @@ class _EditDenemeState extends State<InsertDeneme> {
         final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
         if (!isNumeric) {
           Future.delayed(
-            const Duration(milliseconds: 1000),
+            const Duration(milliseconds: 300),
             () {
               _formKey.currentState!.reset();
             },
@@ -290,24 +290,24 @@ class _EditDenemeState extends State<InsertDeneme> {
                         })
                     : const SizedBox();
 
-                await Future.delayed(const Duration(milliseconds: 1000), () {
+                Future.delayed(const Duration(milliseconds: 800), () {
                   _isLoading = false;
                 });
                 saveButton(denemeProv);
               } else if (_isDiffZero == false) {
-                await Future.delayed(const Duration(milliseconds: 1000), () {
+                Future.delayed(const Duration(milliseconds: 300), () {
                   _showDialog(context, 'HATA', 'En az 1 değer gir!');
                 });
               } else {
-                await Future.delayed(
-                  const Duration(milliseconds: 1000),
+                Future.delayed(
+                  const Duration(milliseconds: 300),
                   () {
                     _showDialog(context, 'HATA', 'Sadece Tam sayı giriniz!');
                   },
                 );
               }
-              await Future.delayed(
-                const Duration(milliseconds: 1000),
+              Future.delayed(
+                const Duration(milliseconds: 300),
                 () {
                   _formKey.currentState!.reset();
                 },
@@ -346,7 +346,7 @@ class _EditDenemeState extends State<InsertDeneme> {
           subjectName: _subjectSavedList[i]);
 
       denemeProv.saveDeneme(denemeModel, _initTable!);
-      Future.delayed(const Duration(milliseconds: 1000), () async {
+      Future.delayed(const Duration(milliseconds: 800), () async {
         _isLoading = false;
         _navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []);

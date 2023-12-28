@@ -71,9 +71,9 @@ class LessonList {
     "Devlet Biçimleri Demokrasi Ve Kuvvetler Ayrılığı",
     "Anayasa Hukukuna Giriş Temel Kavramlar Ve Türk Anayasa Tarihi",
     "1982 Anayasasının Temel İlkeleri",
-    "Yasama",
-    "Yürütme",
-    "Yargı",
+    "Yasama Hukuku",
+    "Yürütme Hukuku",
+    "Yargı Hukuku",
     "Temel Hak Ve Hürriyetler",
     "İdare Hukuku",
     "Uluslararası Kuruluşlar Ve Güncel Olaylar",
@@ -83,24 +83,24 @@ class LessonList {
     "Tarih",
     "Coğrafya",
     "Vatandaşlık",
-    "Matematik",
-    "Türkçe",
   ];
+
+  static const Map<String, String> lessonPngList = {
+    "Tarih": "hs",
+    "Coğrafya": "cg",
+    "Vatandaşlık": "vt",
+  };
 
   static const Map<String, String> tableNames = {
     "Tarih": DenemeTables.historyTableName,
     "Vatandaşlık": DenemeTables.vatandasTableName,
     "Coğrafya": DenemeTables.cografyaTableName,
-    "Matematik": DenemeTables.mathTableName,
-    "Türkçe": DenemeTables.turkceTableName,
   };
 
   static const Map<String, List<String>> lessonListMap = {
     "Tarih": historySubjects,
     "Coğrafya": cografySubject,
     "Vatandaşlık": vatandasSubject,
-    "Matematik": mathSubject,
-    "Türkçe": turkceSubject,
   };
 
   static const List<dynamic> denemeHistory = <dynamic>[

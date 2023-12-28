@@ -62,8 +62,6 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                   Tab(text: "Tarih"),
                   Tab(text: "Coğrafya"),
                   Tab(text: "Vatandaşlık"),
-                  Tab(text: "Matematik"),
-                  Tab(text: "Türkçe"),
                 ]),
           ),
           body: const TabBarView(
@@ -77,14 +75,6 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
               InsertDeneme(
                 lessonName: "Vatandaşlık",
                 subjectList: LessonList.vatandasSubject,
-              ),
-              InsertDeneme(
-                lessonName: "Matematik",
-                subjectList: LessonList.mathSubject,
-              ),
-              InsertDeneme(
-                lessonName: "Türkçe",
-                subjectList: LessonList.turkceSubject,
               ),
             ],
           ),

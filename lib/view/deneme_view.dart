@@ -44,6 +44,12 @@ class _DenemeViewState extends State<DenemeView> {
     return tableName;
   }
 
+  String initPng() {
+    String? png =
+        LessonList.lessonPngList[_lessonName] ?? LessonList.lessonPngList[0];
+    return png!;
+  }
+
   List<Map<String, dynamic>> filterByDenemeId(List<Map<String, dynamic>> data) {
     Map<int, List<Map<String, dynamic>>> groupedData = {};
     List<Map<String, dynamic>> group = [];
@@ -257,8 +263,9 @@ class _DenemeViewState extends State<DenemeView> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(
-                            'assets/img/table_columns/hs/$index.png'),
+                            'assets/img/table_columns/${initPng()}/$index.png'),
                         fit: BoxFit.fill,
+                        alignment: Alignment.center,
                         repeat: ImageRepeat.noRepeat,
                       ),
                     ),
