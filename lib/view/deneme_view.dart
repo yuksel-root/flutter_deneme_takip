@@ -44,9 +44,9 @@ class _DenemeViewState extends State<DenemeView> {
     return tableName;
   }
 
-  String initPng() {
+  String initPng(String lessonName) {
     String? png =
-        LessonList.lessonPngList[_lessonName] ?? LessonList.lessonPngList[0];
+        LessonList.lessonPngList[lessonName] ?? LessonList.lessonPngList[0];
     return png!;
   }
 
@@ -234,6 +234,7 @@ class _DenemeViewState extends State<DenemeView> {
   }
 
   TableCell getColumnCell(int index) {
+    String pngx = initPng(_lessonName);
     return TableCell(
       child: Padding(
         padding: const EdgeInsets.all(0.4),
@@ -263,7 +264,7 @@ class _DenemeViewState extends State<DenemeView> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(
-                            'assets/img/table_columns/${initPng()}/$index.png'),
+                            'assets/img/table_columns/$pngx/$index.png'),
                         fit: BoxFit.fill,
                         alignment: Alignment.center,
                         repeat: ImageRepeat.noRepeat,
