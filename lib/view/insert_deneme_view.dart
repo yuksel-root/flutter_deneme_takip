@@ -38,6 +38,7 @@ class _EditDenemeState extends State<InsertDeneme> {
 
   bool _isAlertOpen = false;
   bool _isDiffZero = false;
+  bool _isLoading = true;
 
   List<String?> _subjectSavedList = [];
   Set<String>? setSavedSubjects = {};
@@ -165,20 +166,21 @@ class _EditDenemeState extends State<InsertDeneme> {
     // DenemeViewModel().printFunct("f", f);
     return TextFormField(
       controller: controller,
-      autovalidateMode: AutovalidateMode.disabled,
-      autofocus: false,
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
-      onTap: () {},
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Lütfen boş bırakmayın';
         }
         final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
         if (!isNumeric) {
-          Future.delayed(const Duration(seconds: 2), () {
-            _formKey.currentState!.reset();
-          });
+          Future.delayed(
+            const Duration(milliseconds: 1000),
+            () {
+              _formKey.currentState!.reset();
+            },
+          );
+
           return 'Sadece Sayı giriniz!';
         }
 
@@ -230,21 +232,82 @@ class _EditDenemeState extends State<InsertDeneme> {
                         context.dynamicH(0.00571) * context.dynamicW(0.01))),
             onPressed: () async {
               if (_formKey.currentState!.validate() && _isDiffZero == true) {
-                await saveButton(denemeProv);
+                _isLoading
+                    ? showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: AlertDialog(
+                                backgroundColor: Colors.white,
+                                alignment: Alignment.center,
+                                actions: [
+                                  Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.all(
+                                              context.dynamicH(0.0714)),
+                                          child: Transform.scale(
+                                            scale: 2,
+                                            child: const Center(
+                                              child: CircularProgressIndicator(
+                                                strokeAlign: BorderSide
+                                                    .strokeAlignCenter,
+                                                strokeWidth: 5,
+                                                strokeCap: StrokeCap.round,
+                                                value: null,
+                                                backgroundColor:
+                                                    Colors.blueGrey,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                        Color>(Colors.green),
+                                                color: Colors.green,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                            height:
+                                                context.mediaQuery.size.height /
+                                                    100),
+                                        const Center(
+                                            child: Text(
+                                                style: TextStyle(
+                                                    color: Color(0xff1c0f45),
+                                                    fontSize: 20),
+                                                textAlign: TextAlign.center,
+                                                ' Kaydediliyor...')),
+                                      ],
+                                    ),
+                                  ),
+                                ]),
+                          );
+                        })
+                    : const SizedBox();
+
+                await Future.delayed(const Duration(milliseconds: 1000), () {
+                  _isLoading = false;
+                });
+                saveButton(denemeProv);
               } else if (_isDiffZero == false) {
                 await Future.delayed(const Duration(milliseconds: 1000), () {
                   _showDialog(context, 'HATA', 'En az 1 değer gir!');
                 });
               } else {
                 await Future.delayed(
-                  const Duration(seconds: 2),
+                  const Duration(milliseconds: 1000),
                   () {
                     _showDialog(context, 'HATA', 'Sadece Tam sayı giriniz!');
                   },
                 );
               }
               await Future.delayed(
-                const Duration(seconds: 2),
+                const Duration(milliseconds: 1000),
                 () {
                   _formKey.currentState!.reset();
                 },
@@ -257,7 +320,7 @@ class _EditDenemeState extends State<InsertDeneme> {
             )));
   }
 
-  Future<void> saveButton(denemeProv) async {
+  Future<void> saveButton(DenemeViewModel denemeProv) async {
     DateTime now = DateTime.now();
 
     _date =
@@ -271,8 +334,8 @@ class _EditDenemeState extends State<InsertDeneme> {
 
     final int denemeIdClicked = (_lastDenemeId ?? 0) + 1;
     int k = 1;
-    /*  denemeProv.printFunct("subjectList", _subjectSavedList);
-              denemeProv.printFunct("falseCounters", _falseCountsIntegers); */
+    denemeProv.printFunct("subjectList", _subjectSavedList);
+    denemeProv.printFunct("falseCounters", _falseCountsIntegers);
 
     for (int i = 0; i < _falseCountsIntegers.length; i++) {
       DenemeModel denemeModel = DenemeModel(
@@ -283,8 +346,11 @@ class _EditDenemeState extends State<InsertDeneme> {
           subjectName: _subjectSavedList[i]);
 
       denemeProv.saveDeneme(denemeModel, _initTable!);
-      _navigation
-          .navigateToPageClear(path: NavigationConstants.homeView, data: []);
+      Future.delayed(const Duration(milliseconds: 1000), () async {
+        _isLoading = false;
+        _navigation
+            .navigateToPageClear(path: NavigationConstants.homeView, data: []);
+      });
 
       //print(bottomProv.getCurrentIndex);
 

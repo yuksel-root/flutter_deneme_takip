@@ -126,7 +126,7 @@ class _LessonViewState extends State<LessonView> {
                                             print("id"); */
                                             Future.delayed(
                                                 const Duration(
-                                                    milliseconds: 1000), () {
+                                                    milliseconds: 200), () {
                                               _showDialog(
                                                 context,
                                                 'UYARI',
