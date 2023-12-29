@@ -78,79 +78,118 @@ class _LessonViewState extends State<LessonView> {
             itemBuilder: (BuildContext context, int index) {
               String subjectName = groupedData.keys.elementAt(index);
               List<Map<String, dynamic>> group = groupedData[subjectName]!;
+              //  print(group);
+
+              Map<String, int> totalFalseM = {};
+
+              for (var data in group) {
+                String subName = data['subjectName'];
+                int falseCount = data['falseCount'];
+
+                if (!totalFalseM.containsKey(subName)) {
+                  totalFalseM[subName] = 0;
+                }
+                totalFalseM[subName] = totalFalseM[subName]! + falseCount;
+              }
 
               if (group.any((item) => item['falseCount'] != 0)) {
                 group.sort((a, b) => a["denemeId"].compareTo(b["denemeId"]));
-                return Card(
-                  elevation: 4.0,
-                  margin: const EdgeInsets.all(10.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Wrap(
-                          children: [
-                            Text(
-                              'Konu: $subjectName',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                List<int> totalFalseCounts = [];
+                int totalFalse = 0;
+                print(group);
+                for (var i = 0; i < group.length; i++) {
+                  totalFalse += group[i]['falseCount'] as int;
+                  if ((i + 1) % 5 == 0 || i == group.length - 1) {
+                    totalFalseCounts.add(totalFalse);
+                    totalFalse = 0;
+                  }
+                }
+
+                return ExpansionTile(
+                  title: Text(
+                    'Konu: $subjectName  Toplam Yanlış = ${totalFalseM[subjectName]}',
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.bold),
+                    maxLines: 2,
+                  ),
+                  children: [
+                    for (var i = 0; i < totalFalseCounts.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 3, horizontal: 3),
+                        child: Text(
+                          i == 0
+                              ? ('Deneme 1-5  Toplam yanlış: ${totalFalseCounts[i]}')
+                              : 'Deneme ${((i * 5) + 1)}- ${((i * 5)) + 5}  Toplam Yanlış: ${totalFalseCounts[i]}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff1c0f45),
+                          ),
                         ),
-                        for (var item in group)
-                          if (item['falseCount'] != 0)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                      ),
+                    ExpansionTile(
+                      title: const Text(
+                        "Denemeler",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: group.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            var item = group[index];
+                            if (item['falseCount'] != 0) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 1, horizontal: 12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('${item['denemeId']}.Deneme'),
-                                    const SizedBox(width: 8.0),
-                                    Text(
-                                        'Yanlış Sayısı: ${item['falseCount']}'),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 66.0),
-                                      child: IconButton(
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          size: 25,
-                                          color:
-                                              Color.fromARGB(255, 54, 31, 129),
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            /*    print("id");
-                                            print(item['id']);
-                                            print("id"); */
-                                            Future.delayed(
-                                                const Duration(
-                                                    milliseconds: 200), () {
-                                              _showDialog(
-                                                context,
-                                                'UYARI',
-                                                '${item['denemeId']}. Denemeyi silmek istediğinize emin misiniz?',
-                                                denemeProv,
-                                                item['denemeId'],
-                                              );
+                                    Row(
+                                      children: [
+                                        Text(
+                                            'Deneme${item['denemeId']} :  Yanlış Sayısı: ${item['falseCount']}'),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            size: 25,
+                                            color: Color.fromARGB(
+                                                255, 54, 31, 129),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              Future.delayed(
+                                                  const Duration(
+                                                      milliseconds: 200), () {
+                                                _showDialog(
+                                                  context,
+                                                  'UYARI',
+                                                  '${item['denemeId']}. Denemeyi silmek istediğinize emin misiniz?',
+                                                  denemeProv,
+                                                  item['denemeId'],
+                                                );
+                                              });
                                             });
-                                          });
-                                        },
-                                        style: IconButton.styleFrom(),
-                                      ),
+                                          },
+                                          style: IconButton.styleFrom(),
+                                        ),
+                                      ],
                                     ),
+                                    const SizedBox(height: 8.0),
+                                    Text('Tarih: ${item['denemeDate']}'),
+                                    const SizedBox(height: 8.0),
                                   ],
                                 ),
-                                const SizedBox(height: 8.0),
-                                Text('Tarih: ${item['denemeDate']}'),
-                                const SizedBox(height: 16.0),
-                              ],
-                            ),
+                              );
+                            } else {
+                              return const SizedBox(); // 'falseCount' değeri 0 olan kartları gösterme
+                            }
+                          },
+                        ),
                       ],
                     ),
-                  ),
+                  ],
                 );
               } else {
                 return const SizedBox(); // 'falseCount' değeri 0 olan kartları gösterme

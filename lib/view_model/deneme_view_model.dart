@@ -56,4 +56,8 @@ class DenemeViewModel extends ChangeNotifier {
     print(data);
     print("----------- $label --------------");
   }
+
+  Future<int?> getLastId(String table, String id) async {
+    return await DenemeDbProvider.db.getFindLastId(table, id);
+  }
 }
