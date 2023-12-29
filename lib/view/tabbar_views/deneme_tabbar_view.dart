@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
+import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
+import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:provider/provider.dart';
 
 class DenemeTabbarView extends StatefulWidget {
@@ -44,9 +47,32 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
         });
         return Scaffold(
             appBar: AppBar(
+              actions: <Widget>[
+                PopupMenuButton(
+                  itemBuilder: (BuildContext context) {
+                    return <PopupMenuEntry>[
+                      PopupMenuItem(
+                        child: Text('Temizle'),
+                        value: 'option1',
+                      ),
+
+                      // Diğer seçenekler
+                    ];
+                  },
+                  onSelected: (value) {
+                    if (value == 'option1') {
+                      DenemeDbProvider.db.clearDatabase();
+                      navigation.navigateToPageClear(
+                          path: NavigationConstants.homeView, data: []);
+                    }
+                  },
+                ),
+              ],
               title: const Center(
                   child: Text(
-                      style: TextStyle(color: Colors.white), 'Deneme App')),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
+                      '      Deneme App')),
               backgroundColor: const Color(0xff1c0f45),
               bottom: TabBar(
                   indicatorColor: Colors.greenAccent,

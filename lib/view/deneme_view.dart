@@ -71,6 +71,7 @@ class _DenemeViewState extends State<DenemeView> {
     // group = groupedData[1]!;
 
     group.addAll(groupedData.values.expand((items) => items));
+
     return group;
   }
 
@@ -116,8 +117,8 @@ class _DenemeViewState extends State<DenemeView> {
   }
 
   void insertRowData(List<Map<String, dynamic>> denemelerData) {
-    rowData.clear();
     int i = 0;
+    rowData.clear();
 
     falseCountsByDenemeId(denemelerData).forEach((denemeId, falseCounts) {
       List<dynamic> arr = List.generate(columnData.length, (index) => 0);
@@ -127,7 +128,7 @@ class _DenemeViewState extends State<DenemeView> {
       print("row length ${rowData.length}"); */
 
       for (int j = 0; j < (falseCounts.length); j++) {
-        arr[0] = "Deneme${i + 1}";
+        arr[0] = "Deneme$denemeId";
         arr[j] = falseCounts[j];
         //  print('arrx[$j] = ${falseCounts[j]}');
       }
@@ -140,7 +141,7 @@ class _DenemeViewState extends State<DenemeView> {
       i++;
       arr.clear();
     });
-
+    rowData.sort((a, b) => a["row"][0].compareTo(b["row"][0]));
     print("rowData");
     print(rowData);
     print("rowData");
@@ -310,6 +311,7 @@ class _DenemeViewState extends State<DenemeView> {
   List<TableRow> getRows() {
     //  int k = -1;
     // double denemeNum = 1;
+
     List<Map<String, dynamic>> rowXdata = List.from(rowData);
 
     return rowXdata.map((row) {

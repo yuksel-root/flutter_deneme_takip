@@ -232,63 +232,7 @@ class _EditDenemeState extends State<InsertDeneme> {
                         context.dynamicH(0.00571) * context.dynamicW(0.01))),
             onPressed: () async {
               if (_formKey.currentState!.validate() && _isDiffZero == true) {
-                _isLoading
-                    ? showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: AlertDialog(
-                                backgroundColor: Colors.white,
-                                alignment: Alignment.center,
-                                actions: [
-                                  Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.all(
-                                              context.dynamicH(0.0714)),
-                                          child: Transform.scale(
-                                            scale: 2,
-                                            child: const Center(
-                                              child: CircularProgressIndicator(
-                                                strokeAlign: BorderSide
-                                                    .strokeAlignCenter,
-                                                strokeWidth: 5,
-                                                strokeCap: StrokeCap.round,
-                                                value: null,
-                                                backgroundColor:
-                                                    Colors.blueGrey,
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                        Color>(Colors.green),
-                                                color: Colors.green,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                            height:
-                                                context.mediaQuery.size.height /
-                                                    100),
-                                        const Center(
-                                            child: Text(
-                                                style: TextStyle(
-                                                    color: Color(0xff1c0f45),
-                                                    fontSize: 20),
-                                                textAlign: TextAlign.center,
-                                                ' Kaydediliyor...')),
-                                      ],
-                                    ),
-                                  ),
-                                ]),
-                          );
-                        })
-                    : const SizedBox();
+                _isLoading ? buildLoadingDialog(context) : const SizedBox();
 
                 Future.delayed(const Duration(milliseconds: 800), () {
                   _isLoading = false;
@@ -320,6 +264,74 @@ class _EditDenemeState extends State<InsertDeneme> {
             )));
   }
 
+  Future<dynamic> buildLoadingDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.all(10),
+            child: AlertDialog(
+                backgroundColor: Colors.white,
+                alignment: Alignment.center,
+                actions: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(context.dynamicH(0.0714)),
+                          child: Transform.scale(
+                            scale: 2,
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                strokeAlign: BorderSide.strokeAlignCenter,
+                                strokeWidth: 5,
+                                strokeCap: StrokeCap.round,
+                                value: null,
+                                backgroundColor: Colors.blueGrey,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.green),
+                                color: Colors.green,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: context.mediaQuery.size.height / 100),
+                        const Center(
+                            child: Text(
+                                style: TextStyle(
+                                    color: Color(0xff1c0f45), fontSize: 20),
+                                textAlign: TextAlign.center,
+                                ' Kaydediliyor...')),
+                      ],
+                    ),
+                  ),
+                ]),
+          );
+        });
+  }
+
+  int getFindDenemeId(List<int> existingIds, int latestId) {
+    int lastId = 1;
+    final int latest = latestId;
+    List<int> existingId = existingIds;
+    Set<int> existingIdSet = Set.from(existingId);
+
+    for (int i = 1; i <= latest; i++) {
+      if (!existingIdSet.contains(i)) {
+        print("if eksik Id $i");
+        lastId = i;
+        _lastDenemeId = lastId;
+        return lastId;
+      } else {
+        print("else ");
+        lastId = (latest) + 1;
+      }
+    }
+    return lastId;
+  }
+
   Future<void> saveButton(DenemeViewModel denemeProv) async {
     DateTime now = DateTime.now();
 
@@ -329,17 +341,19 @@ class _EditDenemeState extends State<InsertDeneme> {
     _lessonName = widget.lessonName;
     _lastSubjectId =
         await DenemeDbProvider.db.getFindLastId(_initTable!, "subjectId");
-    _lastDenemeId =
-        await DenemeDbProvider.db.getFindLastId(_initTable!, "denemeId");
+    List<int> existingIds =
+        await DenemeDbProvider.db.getAllDenemeIds(_initTable!);
+    int latestId =
+        await DenemeDbProvider.db.getFindLastId(_initTable!, "denemeId") ?? 0;
 
-    final int denemeIdClicked = (_lastDenemeId ?? 0) + 1;
     int k = 1;
     denemeProv.printFunct("subjectList", _subjectSavedList);
     denemeProv.printFunct("falseCounters", _falseCountsIntegers);
-
+    final int lastDenemeId = getFindDenemeId(existingIds, latestId);
+    print("Ld $lastDenemeId");
     for (int i = 0; i < _falseCountsIntegers.length; i++) {
       DenemeModel denemeModel = DenemeModel(
-          denemeId: denemeIdClicked,
+          denemeId: lastDenemeId,
           subjectId: (_lastSubjectId ?? 0) + k,
           falseCount: _falseCountsIntegers[i],
           denemeDate: _date,

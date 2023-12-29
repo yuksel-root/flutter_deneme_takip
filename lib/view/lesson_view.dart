@@ -27,12 +27,12 @@ class _LessonViewState extends State<LessonView> {
     _listDeneme = initTable();
     _lessonTableName =
         LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
-    _listDeneme.then((List<Map<String, dynamic>> data) {
-      //  List<Map<String, dynamic>> dataList = data;
-      /*  for (var item in dataList) {
-        print(item);
+    // _listDeneme.then((List<Map<String, dynamic>> data) {
+    /*    List<Map<String, dynamic>> dataList = data;
+      for (var item in dataList) {
+        print(item.toString());
       } */
-    });
+    // });
   }
 
   Future<List<Map<String, dynamic>>> initTable() async {
@@ -80,6 +80,7 @@ class _LessonViewState extends State<LessonView> {
               List<Map<String, dynamic>> group = groupedData[subjectName]!;
 
               if (group.any((item) => item['falseCount'] != 0)) {
+                group.sort((a, b) => a["denemeId"].compareTo(b["denemeId"]));
                 return Card(
                   elevation: 4.0,
                   margin: const EdgeInsets.all(10.0),

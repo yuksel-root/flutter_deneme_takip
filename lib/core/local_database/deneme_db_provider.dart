@@ -83,6 +83,16 @@ class DenemeDbProvider {
     return lastId;
   }
 
+  Future<List<int>> getAllDenemeIds(String tableName) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps =
+        await db.query(tableName, columns: ['denemeId']);
+
+    return List.generate(maps.length, (index) {
+      return maps[index]['denemeId'] as int;
+    });
+  }
+
   Future<void> clearDatabase() async {
     final db = await database;
     await db.rawQuery("DELETE FROM ${DenemeTables.historyTableName}");
