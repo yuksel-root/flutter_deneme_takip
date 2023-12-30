@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/lesson_view.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
+import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 
@@ -17,7 +19,7 @@ class LessonTabbarView extends StatefulWidget {
 class _LessonTabbarViewState extends State<LessonTabbarView>
     with TickerProviderStateMixin {
   late TabController tabController;
-
+  bool _isAlertOpen = false;
   @override
   void initState() {
     super.initState();
@@ -51,9 +53,9 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                   PopupMenuButton(
                     itemBuilder: (BuildContext context) {
                       return <PopupMenuEntry>[
-                        PopupMenuItem(
-                          child: Text('Temizle'),
+                        const PopupMenuItem(
                           value: 'option1',
+                          child: Text('Veriyi Temizle'),
                         ),
 
                         // Diğer seçenekler
@@ -61,9 +63,8 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                     },
                     onSelected: (value) {
                       if (value == 'option1') {
-                        DenemeDbProvider.db.clearDatabase();
-                        navigation.navigateToPageClear(
-                            path: NavigationConstants.homeView, data: []);
+                        _showDialog(context, "DİKKAT!",
+                            "Tüm verileri silmek istiyor musunuz?");
                       }
                     },
                   ),
@@ -97,4 +98,33 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
       text: tabName,
     );
   }).toList();
+
+  _showDialog(BuildContext context, String title, String content) async {
+    AlertView alert = AlertView(
+      title: title,
+      content: content,
+      isAlert: false,
+      noFunction: () => {
+        _isAlertOpen = false,
+        Navigator.of(context).pop(),
+      },
+      yesFunction: () => {
+        DenemeDbProvider.db.clearDatabase(),
+        navigation
+            .navigateToPageClear(path: NavigationConstants.homeView, data: []),
+        _isAlertOpen = false,
+      },
+    );
+
+    if (_isAlertOpen == false) {
+      _isAlertOpen = true;
+      await showDialog(
+          barrierDismissible: false,
+          barrierColor: const Color(0x66000000),
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          }).then((value) => _isAlertOpen = false);
+    }
+  }
 }

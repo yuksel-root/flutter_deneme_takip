@@ -47,7 +47,7 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
           provider.setCurrentIndex(index);
           if (index == 0) {
             tabbarProvider.setLessonCurrentIndex = 0;
-            _navigateHome(context);
+            // _navigateHome(context);
           } else {}
         },
         items: const [

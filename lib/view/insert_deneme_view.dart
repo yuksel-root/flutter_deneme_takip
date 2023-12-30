@@ -234,7 +234,7 @@ class _EditDenemeState extends State<InsertDeneme> {
               if (_formKey.currentState!.validate() && _isDiffZero == true) {
                 _isLoading ? buildLoadingDialog(context) : const SizedBox();
 
-                Future.delayed(const Duration(milliseconds: 800), () {
+                Future.delayed(const Duration(milliseconds: 700), () {
                   _isLoading = false;
                 });
                 saveButton(denemeProv);
@@ -360,7 +360,7 @@ class _EditDenemeState extends State<InsertDeneme> {
           subjectName: _subjectSavedList[i]);
 
       denemeProv.saveDeneme(denemeModel, _initTable!);
-      Future.delayed(const Duration(milliseconds: 800), () async {
+      Future.delayed(const Duration(milliseconds: 700), () async {
         _isLoading = false;
         _navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []);
