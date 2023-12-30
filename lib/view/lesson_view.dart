@@ -91,21 +91,23 @@ class _LessonViewState extends State<LessonView> {
                 }
                 totalFalseM[subName] = totalFalseM[subName]! + falseCount;
               }
-
+              group.removeWhere((item) => item['falseCount'] == 0);
               if (group.any((item) => item['falseCount'] != 0)) {
                 group.sort((a, b) => a["denemeId"].compareTo(b["denemeId"]));
-                List<int> totalFalseCounts = [];
+                List<int> falseCounts = [];
                 int totalFalse = 0;
-                print(group);
-                for (var i = 0; i < group.length; i++) {
+
+                for (int i = 0; i < group.length; i++) {
                   totalFalse += group[i]['falseCount'] as int;
+
                   if ((i + 1) % 5 == 0 || i == group.length - 1) {
-                    totalFalseCounts.add(totalFalse);
+                    falseCounts.add(totalFalse);
                     totalFalse = 0;
                   }
                 }
 
                 return ExpansionTile(
+                  tilePadding: const EdgeInsets.all(5),
                   title: Text(
                     'Konu: $subjectName  Toplam Yanlış = ${totalFalseM[subjectName]}',
                     style: const TextStyle(
@@ -113,14 +115,14 @@ class _LessonViewState extends State<LessonView> {
                     maxLines: 2,
                   ),
                   children: [
-                    for (var i = 0; i < totalFalseCounts.length; i++)
+                    for (var i = 0; i < falseCounts.length; i++)
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             vertical: 3, horizontal: 3),
                         child: Text(
                           i == 0
-                              ? ('Deneme 1-5  Toplam yanlış: ${totalFalseCounts[i]}')
-                              : 'Deneme ${((i * 5) + 1)}- ${((i * 5)) + 5}  Toplam Yanlış: ${totalFalseCounts[i]}',
+                              ? ('Deneme 1-5  Toplam yanlış: ${falseCounts[i]}')
+                              : 'Deneme ${((i * 5) + 1)}- ${((i * 5)) + 5}  Toplam Yanlış: ${falseCounts[i]}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Color(0xff1c0f45),
@@ -130,7 +132,8 @@ class _LessonViewState extends State<LessonView> {
                     ExpansionTile(
                       title: const Text(
                         "Denemeler",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
                       ),
                       children: [
                         ListView.builder(
@@ -147,9 +150,16 @@ class _LessonViewState extends State<LessonView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
                                         Text(
-                                            'Deneme${item['denemeId']} :  Yanlış Sayısı: ${item['falseCount']}'),
+                                            'Deneme${item['denemeId']} :  Yanlış Sayısı = ${item['falseCount']}'),
+                                        const SizedBox(
+                                          width: 50,
+                                        ),
                                         IconButton(
                                           icon: const Icon(
                                             Icons.delete,
@@ -217,6 +227,7 @@ class _LessonViewState extends State<LessonView> {
         Navigator.of(context).pop(),
       },
       yesFunction: () => {
+        print("item $itemDeneme"),
         denemeProv.deleteItemById(_lessonTableName, itemDeneme, 'denemeId'),
         _listDeneme = initTable(),
         _isAlertOpen = false,
