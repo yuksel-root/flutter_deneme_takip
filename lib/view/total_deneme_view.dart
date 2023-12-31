@@ -5,6 +5,8 @@ import 'package:flutter_deneme_takip/components/utils.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
+import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
+import 'package:provider/provider.dart';
 
 class TotalDenemeView extends StatefulWidget {
   final String? lessonName;
@@ -17,7 +19,7 @@ class TotalDenemeView extends StatefulWidget {
 
 class _DenemeViewState extends State<TotalDenemeView> {
   late String _lessonName;
-  late int k;
+  late int _groupSize;
 
   late List<dynamic> rowData;
   late List<dynamic> columnData;
@@ -28,15 +30,12 @@ class _DenemeViewState extends State<TotalDenemeView> {
   void initState() {
     print('initTotal');
     super.initState();
-    _lessonName = widget.lessonName!;
-
+    _lessonName = widget.lessonName ?? 'Tarih';
+    _groupSize = 0;
+    print("total $_groupSize");
     columnData = List.of(findList(_lessonName));
     rowData = [];
     denemelerData = [];
-
-    // rowData = List.generate(columnData.length,
-    //   (index) => {'row': List.filled(columnData.length, 0), 'isRow': true});
-    k = -1;
   }
 
   String initTable() {
@@ -58,6 +57,7 @@ class _DenemeViewState extends State<TotalDenemeView> {
     group.clear();
     groupedData.clear();
     denemelerData.clear();
+
     for (var item in data) {
       final denemeId = item['denemeId'] as int;
       if (!groupedData.containsKey(denemeId)) {
@@ -91,10 +91,6 @@ class _DenemeViewState extends State<TotalDenemeView> {
       Map<String, dynamic> rowItem = {"row": entry.value};
       denemelerData.add(rowItem);
     }
-
-    //print('denemelerData');
-    //print(denemelerData);
-    // print('denemelerData');
   }
 
   Map<int, List<int>> falseCountsByDenemeId(
@@ -117,7 +113,8 @@ class _DenemeViewState extends State<TotalDenemeView> {
     return falseCountsByDenemeId;
   }
 
-  void insertRowData(List<Map<String, dynamic>> denemelerData) {
+  void insertRowData(
+      List<Map<String, dynamic>> denemelerData, DenemeViewModel denemeProv) {
     rowData.clear();
     _listFalseCounts.clear();
 
@@ -125,47 +122,85 @@ class _DenemeViewState extends State<TotalDenemeView> {
       _listFalseCounts.add(falseCounts);
     });
 
-    List<dynamic> sumList = List.from(sumByFiveGroups(_listFalseCounts));
+    List<dynamic> sumList =
+        List.from(sumByGroups(_listFalseCounts, _groupSize));
     List<dynamic> sumArr = List.generate(columnData.length, (index) => 0);
+    List<dynamic> totalSum = List.of(sumAllLists(_listFalseCounts));
 
     for (int j = 0; j < sumList.length; j++) {
       if (j == 0) {
-        sumArr[0] = "Deneme1-5";
+        sumArr[0] = "Deneme1-$_groupSize";
       } else {
         int a = (j * 5) + 1;
         int b = (j * 5) + 5;
         sumArr[0] = "Deneme$a-$b";
       }
+
       for (int k = 1; k < columnData.length; k++) {
         sumArr[k] = sumList[j][k];
       }
       rowData.add({'row': List.from(sumArr)});
     }
 
-    /*  print("rowData");
-    print(rowData);
-    print("rowData"); */
+    if (compareLists(sumArr, totalSum) == false) {
+      print("sumAr $sumArr totalSum $totalSum");
+      totalSum[0] = "Toplam";
+      rowData.add({'row': List.from(totalSum)});
+    }
+
+    // print("rowData");
+    // print(rowData);
+    // print("rowData");
   }
 
-  List<dynamic> sumByFiveGroups(List<List<int>> inputList) {
+  bool compareLists(List<dynamic> list1, List<dynamic> list2) {
+    if (list1.length != list2.length) {
+      return false;
+    }
+
+    for (int i = 1; i < list1.length; i++) {
+      if (list1[i] != list2[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  List<dynamic> sumByGroups(List<List<int>> inputList, int groupSize) {
     List<List<int>> resultList = [];
 
-    for (int i = 0; i < inputList.length; i += 5) {
+    for (int i = 0; i < inputList.length; i += groupSize) {
       List<int> sumList = List.filled(inputList[i].length, 0);
 
-      for (int j = i; j < i + 5 && j < inputList.length; j++) {
+      for (int j = i; j < i + groupSize && j < inputList.length; j++) {
         for (int k = 0; k < inputList[j].length; k++) {
           sumList[k] += inputList[j][k];
-          //  print("sumL ${sumList[k]} inputL ${inputList[j][k]}");
         }
       }
 
       resultList.add(sumList);
-
-      //  print("toplam = $resultList");
     }
 
     return resultList;
+  }
+
+  List<dynamic> sumAllLists(List<List<int>> inputList) {
+    if (inputList.isEmpty) return [];
+
+    List<dynamic> sumList = List.filled(columnData.length, 0);
+
+    for (int i = 0; i < inputList.length; i++) {
+      for (int j = 0; j < inputList[i].length; j++) {
+        if (j < sumList.length) {
+          sumList[j] += inputList[i][j];
+        } else {
+          sumList.add(inputList[i][j]);
+        }
+      }
+    }
+
+    return sumList;
   }
 
   List<String> findList(String lessonName) {
@@ -176,13 +211,23 @@ class _DenemeViewState extends State<TotalDenemeView> {
     String tableName =
         LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
 
-    //DenemeViewModel().getAllData(tableName);
-
     return await DenemeDbProvider.db.getLessonDeneme(tableName);
   }
 
   @override
   Widget build(BuildContext context) {
+    final denemeProv = Provider.of<DenemeViewModel>(context);
+    _groupSize = denemeProv.getSelectedGroupSize!;
+    return buildFutureView(denemeProv);
+  }
+
+  FutureBuilder<List<Map<String, dynamic>>> buildFutureView(
+      DenemeViewModel denemeProv) {
+    return buildTDenemeFutureView(denemeProv);
+  }
+
+  FutureBuilder<List<Map<String, dynamic>>> buildTDenemeFutureView(
+      DenemeViewModel denemeProv) {
     return FutureBuilder(
       future: initData(),
       builder: (BuildContext context,
@@ -197,10 +242,7 @@ class _DenemeViewState extends State<TotalDenemeView> {
           );
         } else {
           convertToRow(snapshot.data!);
-          insertRowData(denemelerData);
-
-          /*     print("coldata len  ${columnData.length}");
-          print("rowdata  len  ${rowData.length}"); */
+          insertRowData(denemelerData, denemeProv);
 
           return Scaffold(
             body: SizedBox(
@@ -332,7 +374,6 @@ class _DenemeViewState extends State<TotalDenemeView> {
   List<TableRow> getRows() {
     List<Map<String, dynamic>> rowXdata = List.from(rowData);
 
-    // rowXdata.add({'row': sumByFiveGroups(rowData)});
     return rowXdata.map((row) {
       return TableRow(
         decoration: BoxDecoration(

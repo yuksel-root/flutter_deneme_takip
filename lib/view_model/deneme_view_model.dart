@@ -60,4 +60,20 @@ class DenemeViewModel extends ChangeNotifier {
   Future<int?> getLastId(String table, String id) async {
     return await DenemeDbProvider.db.getFindLastId(table, id);
   }
+
+  int? _selectedGroupSize = 5;
+  bool _isTotal = false;
+  bool get getIsTotal => _isTotal;
+
+  set setIsTotal(bool newTotal) {
+    _isTotal = newTotal;
+    notifyListeners();
+  }
+
+  int? get getSelectedGroupSize => _selectedGroupSize;
+
+  set setSelectedGroupSize(int newSize) {
+    _selectedGroupSize = newSize;
+    notifyListeners();
+  }
 }

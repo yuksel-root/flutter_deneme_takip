@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
-import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
-import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view/total_deneme_view.dart';
+import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
 class DenemeTabbarView extends StatefulWidget {
@@ -19,7 +17,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     with TickerProviderStateMixin {
   late TabController tabController;
   bool _isTotal = true;
-
+  int _selectedGroupSize = 5;
   @override
   void initState() {
     super.initState();
@@ -36,7 +34,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
   @override
   Widget build(BuildContext context) {
     final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
-
+    final denemeProv = Provider.of<DenemeViewModel>(context);
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
       initialIndex: tabbarNavProv.getCurrentDenemeIndex,
@@ -48,51 +46,79 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
           }
         });
         return Scaffold(
-            appBar: AppBar(
-              actions: <Widget>[
-                PopupMenuButton(
-                  itemBuilder: (BuildContext context) {
-                    return <PopupMenuEntry>[
-                      const PopupMenuItem(
-                        value: 'option1',
-                        child: Text('Tabloyu Değiştir'),
-                      ),
-
-                      // Diğer seçenekler
-                    ];
-                  },
-                  onSelected: (value) {
-                    setState(() {
-                      if (value == 'option1') {
-                        _isTotal = !_isTotal;
-                      }
-                    });
-                  },
-                ),
-              ],
-              title: const Center(
-                  child: Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
-                      '      Deneme App')),
-              backgroundColor: const Color(0xff1c0f45),
-              bottom: TabBar(
-                  indicatorColor: Colors.greenAccent,
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  tabs: tab),
-            ),
-            body: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: List.generate(
-                LessonList.lessonNameList.length,
-                (index) => _isTotal
+          appBar: buildAppbar(denemeProv),
+          body: TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
+            children: List.generate(
+              LessonList.lessonNameList.length,
+              (index) {
+                return denemeProv.getIsTotal
                     ? TotalDenemeView(
-                        lessonName: LessonList.lessonNameList[index])
-                    : DenemeView(lessonName: LessonList.lessonNameList[index]),
-              ),
-            ));
+                        lessonName: LessonList.lessonNameList[index],
+                      )
+                    : DenemeView(lessonName: LessonList.lessonNameList[index]);
+              },
+            ),
+          ),
+        );
       }),
+    );
+  }
+
+  AppBar buildAppbar(DenemeViewModel denemeProv) {
+    return AppBar(
+      actions: <Widget>[
+        buildPopupMenu(Icons.more_vert_sharp, denemeProv),
+      ],
+      title: const Center(
+          child: Text(
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white),
+              '   Deneme App')),
+      backgroundColor: const Color(0xff1c0f45),
+      bottom: TabBar(
+          indicatorColor: Colors.greenAccent,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          tabs: tab),
+    );
+  }
+
+  PopupMenuButton<dynamic> buildPopupMenu(
+      IconData icon, DenemeViewModel denemeProv) {
+    List<dynamic> groupSizes = [1, 5, 10, 20, 30, 40, 50];
+    List<String> options = [
+      'tekli',
+      '5li',
+      '10lu',
+      '20li',
+      '30lu',
+      '40lı',
+      '50li'
+    ];
+    List<PopupMenuEntry<dynamic>> menuItems = [];
+    for (int i = 0; i < options.length; i++) {
+      menuItems.add(
+        PopupMenuItem(
+          value: i,
+          child: Text('${options[i]} Tabloya Değiştir'),
+        ),
+      );
+    }
+    return PopupMenuButton(
+      iconColor: Colors.white,
+      icon: Icon(icon),
+      itemBuilder: (BuildContext context) {
+        return menuItems;
+      },
+      onSelected: (index) {
+        if (index == 0) {
+          denemeProv.setIsTotal = false;
+        } else {
+          denemeProv.setIsTotal = true;
+          denemeProv.setSelectedGroupSize = groupSizes[index];
+        }
+      },
     );
   }
 
