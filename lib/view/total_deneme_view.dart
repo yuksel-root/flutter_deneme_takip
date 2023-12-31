@@ -129,11 +129,14 @@ class _DenemeViewState extends State<TotalDenemeView> {
 
     for (int j = 0; j < sumList.length; j++) {
       if (j == 0) {
-        sumArr[0] = "Deneme1-$_groupSize";
+        sumArr[0] = "Deneme 1-$_groupSize";
       } else {
-        int a = (j * 5) + 1;
-        int b = (j * 5) + 5;
-        sumArr[0] = "Deneme$a-$b";
+        if (_groupSize == 5) {
+          sumArr[0] = "Deneme ${(j * 5) + 1}-${(j * 5) + 5}";
+        } else {
+          sumArr[0] =
+              "Deneme ${(j * _groupSize)}-${(j * _groupSize) + _groupSize}";
+        }
       }
 
       for (int k = 1; k < columnData.length; k++) {
@@ -276,7 +279,7 @@ class _DenemeViewState extends State<TotalDenemeView> {
       SizedBox(
         child: Table(
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-          defaultColumnWidth: FixedColumnWidth(context.dynamicW(0.16)),
+          defaultColumnWidth: FixedColumnWidth(context.dynamicW(0.20)),
           border: TableBorder.all(
               color: Colors.black, style: BorderStyle.solid, width: 1),
           children: [

@@ -140,7 +140,9 @@ class _EditDenemeState extends State<InsertDeneme> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Expanded(child: inputFalseCount(context, i)),
+                                  Expanded(
+                                      child: inputFalseCount(
+                                          context, i, denemeProv)),
                                 ],
                               ),
                               SizedBox(
@@ -160,12 +162,14 @@ class _EditDenemeState extends State<InsertDeneme> {
     );
   }
 
-  TextFormField inputFalseCount(BuildContext context, int index) {
+  TextFormField inputFalseCount(
+      BuildContext context, int index, DenemeViewModel denemeProv) {
     final f = _falseCountsIntegers[index];
     final controller = TextEditingController(text: f?.toString());
     // DenemeViewModel().printFunct("f", f);
     return TextFormField(
       controller: controller,
+      autofocus: true,
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
       validator: (value) {
@@ -175,7 +179,7 @@ class _EditDenemeState extends State<InsertDeneme> {
         final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
         if (!isNumeric) {
           Future.delayed(
-            const Duration(milliseconds: 300),
+            const Duration(milliseconds: 100),
             () {
               _formKey.currentState!.reset();
             },
@@ -185,6 +189,33 @@ class _EditDenemeState extends State<InsertDeneme> {
         }
 
         return null;
+      },
+      onFieldSubmitted: (value) {
+        if (_formKey.currentState!.validate() && _isDiffZero == true) {
+          _isLoading ? buildLoadingDialog(context) : const SizedBox();
+
+          Future.delayed(const Duration(milliseconds: 100), () {
+            _isLoading = false;
+          });
+          saveButton(denemeProv);
+        } else if (_isDiffZero == false) {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            _showDialog(context, 'HATA', 'En az 1 değer gir!');
+          });
+        } else {
+          Future.delayed(
+            const Duration(milliseconds: 100),
+            () {
+              _showDialog(context, 'HATA', 'Sadece Tam sayı giriniz!');
+            },
+          );
+        }
+        Future.delayed(
+          const Duration(milliseconds: 100),
+          () {
+            _formKey.currentState!.reset();
+          },
+        );
       },
       onChanged: (value) {
         if (int.parse(value) != 0) {
@@ -205,7 +236,8 @@ class _EditDenemeState extends State<InsertDeneme> {
         hintText: "Konu Yanlış Sayısı",
         label: Text(
           _subjectList![index],
-          style: const TextStyle(fontSize: 14),
+          style: TextStyle(
+              fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
         ),
         icon: buildContaierIconField(
             context, Icons.assignment_rounded, Colors.purple),
@@ -234,24 +266,24 @@ class _EditDenemeState extends State<InsertDeneme> {
               if (_formKey.currentState!.validate() && _isDiffZero == true) {
                 _isLoading ? buildLoadingDialog(context) : const SizedBox();
 
-                Future.delayed(const Duration(milliseconds: 700), () {
+                Future.delayed(const Duration(milliseconds: 100), () {
                   _isLoading = false;
                 });
                 saveButton(denemeProv);
               } else if (_isDiffZero == false) {
-                Future.delayed(const Duration(milliseconds: 300), () {
+                Future.delayed(const Duration(milliseconds: 100), () {
                   _showDialog(context, 'HATA', 'En az 1 değer gir!');
                 });
               } else {
                 Future.delayed(
-                  const Duration(milliseconds: 300),
+                  const Duration(milliseconds: 100),
                   () {
                     _showDialog(context, 'HATA', 'Sadece Tam sayı giriniz!');
                   },
                 );
               }
               Future.delayed(
-                const Duration(milliseconds: 300),
+                const Duration(milliseconds: 100),
                 () {
                   _formKey.currentState!.reset();
                 },
@@ -297,11 +329,13 @@ class _EditDenemeState extends State<InsertDeneme> {
                             ),
                           ),
                         ),
-                        SizedBox(height: context.mediaQuery.size.height / 100),
-                        const Center(
+                        SizedBox(height: context.mediaQuery.size.height / 5),
+                        Center(
                             child: Text(
                                 style: TextStyle(
-                                    color: Color(0xff1c0f45), fontSize: 20),
+                                    color: const Color(0xff1c0f45),
+                                    fontSize: context.dynamicW(0.01) *
+                                        context.dynamicH(0.005)),
                                 textAlign: TextAlign.center,
                                 ' Kaydediliyor...')),
                       ],
@@ -360,7 +394,7 @@ class _EditDenemeState extends State<InsertDeneme> {
           subjectName: _subjectSavedList[i]);
 
       denemeProv.saveDeneme(denemeModel, _initTable!);
-      Future.delayed(const Duration(milliseconds: 700), () async {
+      Future.delayed(const Duration(milliseconds: 100), () async {
         _isLoading = false;
         _navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []);
