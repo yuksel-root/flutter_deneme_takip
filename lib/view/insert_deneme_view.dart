@@ -59,6 +59,7 @@ class _EditDenemeState extends State<InsertDeneme> {
 
     _lessonName = widget.lessonName;
     _falseInputCount = _subjectList!.length;
+
     _date =
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(_now).toString();
 
@@ -356,12 +357,10 @@ class _EditDenemeState extends State<InsertDeneme> {
 
     for (int i = 1; i <= latest; i++) {
       if (!existingIdSet.contains(i)) {
-        print("if eksik Id $i");
         lastId = i;
         _lastDenemeId = lastId;
         return lastId;
       } else {
-        print("else ");
         lastId = (latest) + 1;
       }
     }
@@ -383,10 +382,10 @@ class _EditDenemeState extends State<InsertDeneme> {
         await DenemeDbProvider.db.getFindLastId(_initTable!, "denemeId") ?? 0;
 
     int k = 1;
-    denemeProv.printFunct("subjectList", _subjectSavedList);
-    denemeProv.printFunct("falseCounters", _falseCountsIntegers);
+    //   denemeProv.printFunct("subjectList", _subjectSavedList);
+    // denemeProv.printFunct("falseCounters", _falseCountsIntegers);
     final int lastDenemeId = getFindDenemeId(existingIds, latestId);
-    print("Ld $lastDenemeId");
+
     for (int i = 0; i < _falseCountsIntegers.length; i++) {
       DenemeModel denemeModel = DenemeModel(
           denemeId: lastDenemeId,

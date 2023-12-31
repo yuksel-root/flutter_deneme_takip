@@ -336,8 +336,14 @@ class _DenemeViewState extends State<TotalDenemeView> {
                     height: 100,
                     width: 200,
                     decoration: const BoxDecoration(
-                      color: Color(0xff1c0f45),
-                    ),
+                        gradient: LinearGradient(
+                      colors: [
+                        Colors.blue,
+                        Colors.green
+                      ], // İstediğiniz renkler
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )),
                     child: Center(
                       child: Text(
                         "Deneme Sıra No",
@@ -360,6 +366,18 @@ class _DenemeViewState extends State<TotalDenemeView> {
                         fit: BoxFit.fill,
                         alignment: Alignment.center,
                         repeat: ImageRepeat.noRepeat,
+                      ),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue.withOpacity(0.5),
+                            Colors.green.withOpacity(0.5),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                       ),
                     ),
                   ),
