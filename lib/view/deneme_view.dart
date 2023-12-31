@@ -20,7 +20,7 @@ class DenemeView extends StatefulWidget {
 
 class _DenemeViewState extends State<DenemeView> {
   late String _lessonName;
-  late int k;
+
   bool _isAlertOpen = false;
   late String _lessonTableName;
   late List<dynamic> rowData;
@@ -31,17 +31,13 @@ class _DenemeViewState extends State<DenemeView> {
   void initState() {
     print('initDeneme');
     super.initState();
-    _lessonName = widget.lessonName!;
+    _lessonName = widget.lessonName ?? 'Tarih';
     _lessonTableName =
         LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
 
     columnData = List.of(findList(_lessonName));
     rowData = [];
     denemelerData = [];
-
-    // rowData = List.generate(columnData.length,
-    //   (index) => {'row': List.filled(columnData.length, 0), 'isRow': true});
-    k = -1;
   }
 
   String initTable() {
@@ -139,6 +135,7 @@ class _DenemeViewState extends State<DenemeView> {
       i++;
       arr.clear();
     });
+
     rowData.sort((a, b) {
       print("Sorted");
       String aTitle = a['row'][0].toString();
@@ -164,13 +161,10 @@ class _DenemeViewState extends State<DenemeView> {
       for (int j = i; j < i + 5 && j < inputList.length; j++) {
         for (int k = 0; k < inputList[j].length; k++) {
           sumList[k] += inputList[j][k];
-          //  print("sumL ${sumList[k]} inputL ${inputList[j][k]}");
         }
       }
 
       resultList.add(sumList);
-
-      //  print("toplam = $resultList");
     }
 
     return resultList;
@@ -184,14 +178,17 @@ class _DenemeViewState extends State<DenemeView> {
     String tableName =
         LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
 
-    //DenemeViewModel().getAllData(tableName);
-
     return await DenemeDbProvider.db.getLessonDeneme(tableName);
   }
 
   @override
   Widget build(BuildContext context) {
     final denemeProv = Provider.of<DenemeViewModel>(context);
+    return buildFutureView(denemeProv);
+  }
+
+  FutureBuilder<List<Map<String, dynamic>>> buildFutureView(
+      DenemeViewModel denemeProv) {
     return FutureBuilder(
       future: initData(),
       builder: (BuildContext context,
@@ -209,7 +206,7 @@ class _DenemeViewState extends State<DenemeView> {
           insertRowData(denemelerData);
 
           /*     print("coldata len  ${columnData.length}");
-          print("rowdata  len  ${rowData.length}"); */
+        print("rowdata  len  ${rowData.length}"); */
 
           return Scaffold(
             body: SizedBox(
