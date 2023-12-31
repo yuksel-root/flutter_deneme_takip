@@ -114,7 +114,9 @@ class _EditDenemeState extends State<InsertDeneme> {
                     children: [
                   Text(
                     '${widget.lessonName} Dersi Girişi',
-                    style: const TextStyle(fontSize: 20),
+                    style: TextStyle(
+                        fontSize:
+                            context.dynamicW(0.01) * context.dynamicH(0.005)),
                   ),
                   elevatedButtons(context, denemeProv, bottomTabProv),
                 ]))),

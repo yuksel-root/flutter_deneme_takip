@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
+import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 
 class NavigationRoute {
   static final NavigationRoute _instance = NavigationRoute._init();
@@ -16,8 +17,11 @@ class NavigationRoute {
         return MaterialPageRoute(
           builder: (context) => Scaffold(
             appBar: AppBar(),
-            body: const Center(
-              child: Text('Route is  not Found'),
+            body: Center(
+              child: Text('Route is  not Found',
+                  style: TextStyle(
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+                  )),
             ),
           ),
           settings: settings,

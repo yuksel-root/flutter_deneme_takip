@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
@@ -58,14 +59,20 @@ class _LessonViewState extends State<LessonView> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return const Center(
+          return Center(
               child: Text(
-                  style: TextStyle(color: Color(0xff1c0f45), fontSize: 15),
+                  style: TextStyle(
+                      color: const Color(0xff1c0f45),
+                      fontSize:
+                          context.dynamicW(0.01) * context.dynamicH(0.005)),
                   'Veri getirilirken hata oluştu'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(
+          return Center(
               child: Text(
-                  style: TextStyle(color: Color(0xff1c0f45), fontSize: 15),
+                  style: TextStyle(
+                      color: const Color(0xff1c0f45),
+                      fontSize:
+                          context.dynamicW(0.01) * context.dynamicH(0.005)),
                   'Gösterilecek veri yok'));
         } else {
           List<Map<String, dynamic>> data = snapshot.data!;
@@ -139,7 +146,9 @@ class _LessonViewState extends State<LessonView> {
       tilePadding: const EdgeInsets.all(5),
       title: Text(
         'Konu: $subjectName  Toplam Yanlış = ${totalFalseM[subjectName]}',
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        style: TextStyle(
+            fontSize: context.dynamicW(0.01) * context.dynamicH(0.0052),
+            fontWeight: FontWeight.bold),
         maxLines: 2,
       ),
       children: [
@@ -150,16 +159,20 @@ class _LessonViewState extends State<LessonView> {
               i == 0
                   ? ('Deneme 1-5  Toplam yanlış: ${falseCounts[i]}')
                   : 'Deneme ${((i * 5) + 1)}- ${((i * 5)) + 5}  Toplam Yanlış: ${falseCounts[i]}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xff1c0f45),
+                fontSize: context.dynamicW(0.01) * context.dynamicH(0.004),
+                color: const Color(0xff1c0f45),
               ),
             ),
           ),
         ExpansionTile(
-          title: const Text(
+          title: Text(
             "Denemeler",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: context.dynamicW(0.01) * context.dynamicH(0.0052),
+            ),
           ),
           children: [
             listDenemeDetail(group, denemeProv),
@@ -188,7 +201,11 @@ class _LessonViewState extends State<LessonView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                        'Deneme${item['denemeId']} :  Yanlış Sayısı = ${item['falseCount']}'),
+                      'Deneme${item['denemeId']} :  Yanlış Sayısı = ${item['falseCount']}',
+                      style: TextStyle(
+                          fontSize:
+                              context.dynamicW(0.01) * context.dynamicH(0.005)),
+                    ),
                     const SizedBox(
                       width: 50,
                     ),
@@ -211,7 +228,13 @@ class _LessonViewState extends State<LessonView> {
                   ],
                 ),
                 const SizedBox(height: 8.0),
-                Text('Tarih: ${item['denemeDate']}'),
+                Text(
+                  'Tarih: ${item['denemeDate']}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.004),
+                  ),
+                ),
                 const SizedBox(height: 8.0),
               ],
             ),

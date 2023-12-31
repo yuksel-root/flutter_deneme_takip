@@ -27,8 +27,8 @@ class AlertView extends StatelessWidget {
             child: Text(
               title,
               maxLines: 1,
-              style: const TextStyle(
-                  fontSize: 20,
+              style: TextStyle(
+                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
                   fontFamily: "Greycliff CF Bold",
                   color: Colors.white),
             ),
@@ -36,8 +36,8 @@ class AlertView extends StatelessWidget {
           content: Text(
             content,
             maxLines: 3,
-            style: const TextStyle(
-                fontSize: 16,
+            style: TextStyle(
+                fontSize: context.dynamicW(0.01) * context.dynamicH(0.0045),
                 fontFamily: "Greycliff CF Medium",
                 color: Color.fromARGB(255, 0, 255, 8)),
           ),
@@ -53,11 +53,12 @@ class AlertView extends StatelessWidget {
                         animationDuration: const Duration(milliseconds: 200),
                         alignment: Alignment.center,
                       ),
-                      child: const FittedBox(
+                      child: FittedBox(
                         child: Text(
                           "Tamam",
                           style: TextStyle(
-                              fontSize: 14,
+                              fontSize: context.dynamicW(0.01) *
+                                  context.dynamicH(0.004),
                               fontFamily: "Greycliff CF Bold",
                               color: Colors.white),
                         ),
@@ -80,11 +81,12 @@ class AlertView extends StatelessWidget {
                                 const Duration(milliseconds: 200),
                             alignment: Alignment.center,
                           ),
-                          child: const FittedBox(
+                          child: FittedBox(
                             child: Text(
                               "Evet",
                               style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: context.dynamicW(0.01) *
+                                      context.dynamicH(0.004),
                                   fontFamily: "Greycliff CF Bold",
                                   color: Colors.white),
                             ),
@@ -102,11 +104,12 @@ class AlertView extends StatelessWidget {
                                 const Duration(milliseconds: 200),
                             alignment: Alignment.center,
                           ),
-                          child: const FittedBox(
+                          child: FittedBox(
                             child: Text(
                               "Hayır",
                               style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: context.dynamicW(0.01) *
+                                      context.dynamicH(0.004),
                                   fontFamily: "Greycliff CF Bold",
                                   color: Colors.white),
                             ),

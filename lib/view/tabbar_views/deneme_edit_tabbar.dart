@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/insert_deneme_view.dart';
 import 'package:provider/provider.dart';
@@ -50,9 +51,13 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
         });
         return Scaffold(
           appBar: AppBar(
-            title: const Center(
-                child:
-                    Text(style: TextStyle(color: Colors.white), 'Deneme App')),
+            title: Center(
+                child: Text(
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize:
+                            context.dynamicW(0.01) * context.dynamicH(0.005)),
+                    'Deneme App')),
             backgroundColor: const Color(0xff1c0f45),
             bottom: const TabBar(
                 indicatorColor: Colors.greenAccent,

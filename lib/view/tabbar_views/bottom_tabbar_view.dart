@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
+import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
@@ -36,12 +37,15 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
   Widget build(BuildContext context) {
     final provider = Provider.of<BottomNavigationProvider>(context);
     final tabbarProvider = Provider.of<TabbarNavigationProvider>(context);
+
     return Scaffold(
       body: currentScreen[provider.getCurrentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xff1c0f45),
         unselectedItemColor: Colors.white,
         selectedItemColor: Colors.greenAccent,
+        selectedFontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+        unselectedFontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
         currentIndex: provider.getCurrentIndex,
         onTap: (index) {
           provider.setCurrentIndex(index);

@@ -199,7 +199,10 @@ class _DenemeViewState extends State<DenemeView> {
           );
         } else if (snapshot.hasError) {
           return Center(
-            child: Text('Error: ${snapshot.error}'),
+            child: Text('Error: ${snapshot.error}',
+                style: TextStyle(
+                    fontSize:
+                        context.dynamicW(0.01) * context.dynamicH(0.005))),
           );
         } else {
           convertToRow(snapshot.data!);
@@ -275,13 +278,14 @@ class _DenemeViewState extends State<DenemeView> {
                     decoration: const BoxDecoration(
                       color: Color(0xff1c0f45),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         "Deneme Sıra No",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 15,
+                          fontSize:
+                              context.dynamicW(0.01) * context.dynamicH(0.004),
                         ),
                       ),
                     ),
@@ -334,8 +338,14 @@ class _DenemeViewState extends State<DenemeView> {
                         cell.toString(),
                         textAlign: TextAlign.center,
                         style: i != 0
-                            ? const TextStyle(color: Colors.black)
-                            : const TextStyle(color: Colors.white),
+                            ? TextStyle(
+                                color: Colors.black,
+                                fontSize: context.dynamicW(0.01) *
+                                    context.dynamicH(0.005))
+                            : TextStyle(
+                                color: Colors.white,
+                                fontSize: context.dynamicW(0.01) *
+                                    context.dynamicH(0.005)),
                       ),
                     ),
                   ),

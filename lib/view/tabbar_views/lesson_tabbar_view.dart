@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/lesson_view.dart';
@@ -53,9 +54,14 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                   PopupMenuButton(
                     itemBuilder: (BuildContext context) {
                       return <PopupMenuEntry>[
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'option1',
-                          child: Text('Veriyi Temizle'),
+                          child: Text(
+                            'Veriyi Temizle',
+                            style: TextStyle(
+                                fontSize: context.dynamicW(0.01) *
+                                    context.dynamicH(0.004)),
+                          ),
                         ),
 
                         // Diğer seçenekler
@@ -69,17 +75,27 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                     },
                   ),
                 ],
-                title: const Center(
+                title: Center(
                     child: Text(
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white),
-                        '        Deneme App')),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize:
+                          context.dynamicW(0.01) * context.dynamicH(0.005)),
+                  '        Deneme App',
+                )),
                 backgroundColor: const Color(0xff1c0f45),
                 bottom: TabBar(
                   labelColor: Colors.green,
                   indicatorColor: Colors.greenAccent,
                   isScrollable: true,
                   tabAlignment: TabAlignment.start,
+                  labelStyle: TextStyle(
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+                  ),
+                  unselectedLabelStyle: TextStyle(
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+                  ),
                   tabs: tab,
                 )),
             body: TabBarView(

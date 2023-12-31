@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
 import 'package:flutter_deneme_takip/view/total_deneme_view.dart';
@@ -70,15 +71,23 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
       actions: <Widget>[
         buildPopupMenu(Icons.more_vert_sharp, denemeProv),
       ],
-      title: const Center(
+      title: Center(
           child: Text(
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
               '   Deneme App')),
       backgroundColor: const Color(0xff1c0f45),
       bottom: TabBar(
           indicatorColor: Colors.greenAccent,
           isScrollable: true,
+          labelStyle: TextStyle(
+            fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+          ),
           tabAlignment: TabAlignment.start,
           tabs: tab),
     );
@@ -101,7 +110,11 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
       menuItems.add(
         PopupMenuItem(
           value: i,
-          child: Text('${options[i]} Tabloya Değiştir'),
+          child: Text(
+            '${options[i]} Tabloya Değiştir',
+            style: TextStyle(
+                fontSize: context.dynamicW(0.01) * context.dynamicH(0.0045)),
+          ),
         ),
       );
     }
