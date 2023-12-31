@@ -14,27 +14,29 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.2
-
+  #Local Database
   sqflite: ^2.3.0
+  sqflite_common_ffi_web: ^0.4.2+2
 
+  #State Management
   provider: ^6.1.1
 
+  #İcons and Fonts
   fluttericon: ^2.0.0
-
-  flutter_secure_storage: ^9.0.0
-
+  cupertino_icons: ^1.0.2
   font_awesome_flutter: ^10.6.0
 
-  intl: ^0.18.1
+  #Local Storage
+  flutter_secure_storage: ^9.0.0
 
-  sqflite_common_ffi_web: ^0.4.2+2
+  #Date library
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 flutter:
   uses-material-design: true
@@ -50,22 +52,6 @@ flutter:
     - assets/img/table_columns/tr/
     - assets/img/table_columns/mt/
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
-
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/assets-and-images/#from-packages
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
   # fonts:
   #   - family: Schyler
   #     fonts:
@@ -78,5 +64,3 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
