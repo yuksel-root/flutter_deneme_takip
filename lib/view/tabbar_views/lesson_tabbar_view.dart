@@ -21,7 +21,7 @@ class LessonTabbarView extends StatefulWidget {
 class _LessonTabbarViewState extends State<LessonTabbarView>
     with TickerProviderStateMixin {
   late TabController tabController;
-  bool _isAlertOpen = false;
+
   @override
   void initState() {
     super.initState();
@@ -77,7 +77,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                     onSelected: (value) {
                       if (value == 'option1') {
                         _showDialog(context, "DİKKAT!",
-                            "Tüm verileri silmek istiyor musunuz?");
+                            "Tüm verileri silmek istiyor musunuz?", lessonProv);
                       }
                     },
                   ),
@@ -121,32 +121,36 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
     );
   }).toList();
 
-  _showDialog(BuildContext context, String title, String content) async {
+  _showDialog(BuildContext context, String title, String content,
+      LessonViewModel lessonProv) async {
     AlertView alert = AlertView(
       title: title,
       content: content,
       isAlert: false,
       noFunction: () => {
-        _isAlertOpen = false,
+        lessonProv.setAlert = false,
         Navigator.of(context).pop(),
       },
       yesFunction: () => {
         DenemeDbProvider.db.clearDatabase(),
         navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []),
-        _isAlertOpen = false,
+        lessonProv.setAlert = false,
+        lessonProv.initTable(lessonProv.getLessonName),
       },
     );
 
-    if (_isAlertOpen == false) {
-      _isAlertOpen = true;
+    if (lessonProv.getIsAlertOpen == false) {
+      lessonProv.setAlert = true;
       await showDialog(
           barrierDismissible: false,
           barrierColor: const Color(0x66000000),
           context: context,
           builder: (BuildContext context) {
             return alert;
-          }).then((value) => _isAlertOpen = false);
+          }).then(
+        (value) => lessonProv.setAlert = false,
+      );
     }
   }
 }

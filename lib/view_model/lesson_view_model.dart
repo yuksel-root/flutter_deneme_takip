@@ -24,7 +24,7 @@ class LessonViewModel extends ChangeNotifier {
   LessonViewModel() {
     _navigation = NavigationService.instance;
     _isAlertOpen = false;
-    _lessonName = getLessonName;
+    _lessonName = lessonName;
     _state = LessonState.empty;
     listDeneme = [];
     _lessonTableName =
@@ -74,7 +74,7 @@ class LessonViewModel extends ChangeNotifier {
   }
 
   String? get getLessonName {
-    return lessonName ?? 'Tarih';
+    return lessonName ?? 'Tarih'; //null problems
   }
 
   set setLessonName(String? newLesson) {
