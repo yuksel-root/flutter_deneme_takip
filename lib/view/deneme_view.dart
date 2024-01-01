@@ -143,13 +143,13 @@ class DenemeView extends StatelessWidget {
         children: [
           index == 0
               ? Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.blue.withOpacity(0.5),
-                        Colors.green.withOpacity(0.5),
+                        Color(0xff200122),
+                        Color(0xff6f0000),
                       ],
-                      begin: Alignment.topLeft,
+                      begin: Alignment.topCenter,
                       end: Alignment.bottomRight,
                     ),
                   ),
@@ -169,13 +169,13 @@ class DenemeView extends StatelessWidget {
                 )
               : GradientWidget(
                   blendModes: BlendMode.srcOut,
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [
-                      Colors.blue.withOpacity(0.5),
-                      Colors.green.withOpacity(0.5),
+                      Color(0xff1c0f45),
+                      Color(0xff191970),
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                    begin: Alignment.bottomLeft,
+                    end: Alignment.topRight,
                   ),
                   widget: Container(
                     height: 100,
@@ -199,57 +199,243 @@ class DenemeView extends StatelessWidget {
   Widget getRowCell(
       BuildContext context, int i, dynamic cell, DenemeViewModel denemeProv) {
     return TableCell(
-      child: Ink(
-        color: i != 0 ? Colors.white : const Color(0xff060644),
-        child: InkWell(
-          onLongPress: () {
-            Future.delayed(const Duration(milliseconds: 100), () {
-              denemeProv.removeAlert(
-                context,
-                'UYARI',
-                '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                denemeProv,
-                cell,
-              );
-            });
-          },
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.only(bottom: context.dynamicH(0.00714)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Center(
-                      child: Text(
-                        cell.toString(),
-                        textAlign: TextAlign.center,
-                        style: i != 0
-                            ? TextStyle(
-                                color: Colors.black,
-                                fontSize: context.dynamicW(0.01) *
-                                    context.dynamicH(0.005))
-                            : TextStyle(
-                                color: Colors.white,
-                                fontSize: context.dynamicW(0.01) *
-                                    context.dynamicH(0.005)),
+        child: i == 0
+            ? Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xff283048),
+                      Color.fromARGB(255, 0, 187, 255),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: InkWell(
+                  onLongPress: () {
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      denemeProv.removeAlert(
+                        context,
+                        'UYARI',
+                        '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                        denemeProv,
+                        cell,
+                      );
+                    });
+                  },
+                  child: Center(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.only(bottom: context.dynamicH(0.00714)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Center(
+                              child: Text(
+                                cell.toString(),
+                                textAlign: TextAlign.center,
+                                style: i != 0
+                                    ? TextStyle(
+                                        color: Colors.black,
+                                        fontSize: context.dynamicW(0.01) *
+                                            context.dynamicH(0.005))
+                                    : TextStyle(
+                                        color: Colors.white,
+                                        fontSize: context.dynamicW(0.01) *
+                                            context.dynamicH(0.005)),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+                ),
+              )
+            : Container(
+                height: context.dynamicW(0.13),
+                width: context.dynamicW(0.13),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xff283048),
+                      Color.fromARGB(255, 0, 187, 255),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: InkWell(
+                  onLongPress: () {
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      denemeProv.removeAlert(
+                        context,
+                        'UYARI',
+                        '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                        denemeProv,
+                        cell,
+                      );
+                    });
+                  },
+                  child: Center(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.only(bottom: context.dynamicH(0.00714)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Center(
+                              child: Text(
+                                cell.toString(),
+                                textAlign: TextAlign.center,
+                                style: i != 0
+                                    ? TextStyle(
+                                        color: Colors.white,
+                                        fontSize: context.dynamicW(0.01) *
+                                            context.dynamicH(0.005))
+                                    : TextStyle(
+                                        color: Colors.white,
+                                        fontSize: context.dynamicW(0.01) *
+                                            context.dynamicH(0.005)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ));
+  }
+
+  Widget getRowCell2(
+      BuildContext context, int i, dynamic cell, DenemeViewModel denemeProv) {
+    return TableCell(
+        child: i == 0
+            ? Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xff283048),
+                      Color(0xff859398),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: InkWell(
+                  onLongPress: () {
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      denemeProv.removeAlert(
+                        context,
+                        'UYARI',
+                        '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                        denemeProv,
+                        cell,
+                      );
+                    });
+                  },
+                  child: Center(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.only(bottom: context.dynamicH(0.00714)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Center(
+                              child: Text(
+                                cell.toString(),
+                                textAlign: TextAlign.center,
+                                style: i != 0
+                                    ? TextStyle(
+                                        color: Colors.black,
+                                        fontSize: context.dynamicW(0.01) *
+                                            context.dynamicH(0.005))
+                                    : TextStyle(
+                                        color: Colors.white,
+                                        fontSize: context.dynamicW(0.01) *
+                                            context.dynamicH(0.005)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container(
+                height: context.dynamicW(0.13),
+                width: context.dynamicW(0.13),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xff1c0f45),
+                      Color.fromARGB(255, 189, 188, 188),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: InkWell(
+                  onLongPress: () {
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      denemeProv.removeAlert(
+                        context,
+                        'UYARI',
+                        '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                        denemeProv,
+                        cell,
+                      );
+                    });
+                  },
+                  child: Center(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.only(bottom: context.dynamicH(0.00714)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Center(
+                              child: Text(
+                                cell.toString(),
+                                textAlign: TextAlign.center,
+                                style: i != 0
+                                    ? TextStyle(
+                                        color: Colors.white,
+                                        fontSize: context.dynamicW(0.01) *
+                                            context.dynamicH(0.005))
+                                    : TextStyle(
+                                        color: Colors.white,
+                                        fontSize: context.dynamicW(0.01) *
+                                            context.dynamicH(0.005)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ));
   }
 
   List<TableRow> getRows(BuildContext context, DenemeViewModel denemeProv) {
+    int k = -1;
     List<Map<String, dynamic>> rowXdata = List.from(denemeProv.rowData);
 
     return rowXdata.map((row) {
+      k++;
+      print("k $k k % 2 ${k % 2}");
+
       return TableRow(
         decoration: BoxDecoration(
           border: Border.all(
@@ -259,7 +445,9 @@ class DenemeView extends StatelessWidget {
           ),
         ),
         children: Utils.modelBuilder(row['row'], (i, cell) {
-          return getRowCell(context, i, cell, denemeProv);
+          return ((k % 2) == 0)
+              ? getRowCell(context, i, cell, denemeProv)
+              : getRowCell2(context, i, cell, denemeProv);
         }),
       );
     }).toList();

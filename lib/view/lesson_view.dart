@@ -115,55 +115,51 @@ class LessonView extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         var item = group[index];
 
-        if (item['falseCount'] != 0) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Deneme${item['denemeId']} :  Yanlış Sayısı = ${item['falseCount']}',
-                      style: TextStyle(
-                          fontSize:
-                              context.dynamicW(0.01) * context.dynamicH(0.005)),
-                    ),
-                    const SizedBox(
-                      width: 50,
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.delete,
-                        size: 25,
-                        color: Color.fromARGB(255, 54, 31, 129),
-                      ),
-                      onPressed: () {
-                        Future.delayed(const Duration(milliseconds: 200), () {
-                          dialogremoveClickedDeneme(context, item, lessonProv);
-                        });
-                      },
-                      style: IconButton.styleFrom(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  'Tarih: ${item['denemeDate']}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.004),
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Deneme${item['denemeId']} :  Yanlış Sayısı = ${item['falseCount']}',
+                    style: TextStyle(
+                        fontSize:
+                            context.dynamicW(0.01) * context.dynamicH(0.005)),
                   ),
+                  const SizedBox(
+                    width: 50,
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.delete,
+                      size: 25,
+                      color: Color.fromARGB(255, 54, 31, 129),
+                    ),
+                    onPressed: () {
+                      Future.delayed(const Duration(milliseconds: 200), () {
+                        dialogremoveClickedDeneme(context, item, lessonProv);
+                      });
+                    },
+                    style: IconButton.styleFrom(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                'Tarih: ${item['denemeDate']}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.004),
                 ),
-                const SizedBox(height: 8.0),
-              ],
-            ),
-          );
-        } else {
-          return const SizedBox();
-        }
+              ),
+              const SizedBox(height: 8.0),
+            ],
+          ),
+        );
       },
     );
   }

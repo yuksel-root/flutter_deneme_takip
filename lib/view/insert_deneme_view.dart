@@ -56,10 +56,8 @@ class _EditDenemeState extends State<InsertDeneme> {
     _subjectSavedList.clear();
 
     _subjectList = widget.subjectList;
-
     _lessonName = widget.lessonName;
     _falseInputCount = _subjectList!.length;
-
     _date =
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(_now).toString();
 
