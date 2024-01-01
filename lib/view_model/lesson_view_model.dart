@@ -44,11 +44,9 @@ class LessonViewModel extends ChangeNotifier {
         LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
     print("lesson table $_lessonTableName");
 
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      listDeneme = await DenemeDbProvider.db
-          .getLessonDeneme(_lessonTableName ?? DenemeTables.historyTableName);
-      state = LessonState.completed;
-    });
+    listDeneme = await DenemeDbProvider.db
+        .getLessonDeneme(_lessonTableName ?? DenemeTables.historyTableName);
+    state = LessonState.completed;
   }
 
   void deleteItemById(String lessonTable, int id, String idName) {

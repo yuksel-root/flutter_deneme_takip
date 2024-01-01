@@ -34,8 +34,9 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
 
   @override
   Widget build(BuildContext context) {
-    final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
-    final denemeProv = Provider.of<DenemeViewModel>(context);
+    final tabbarNavProv =
+        Provider.of<TabbarNavigationProvider>(context, listen: true);
+    final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
       initialIndex: tabbarNavProv.getCurrentDenemeIndex,
@@ -44,6 +45,13 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
         tabController.addListener(() {
           if (!tabController.indexIsChanging) {
             tabbarNavProv.setCurrentDenemeIndex = tabController.index;
+
+            denemeProv.setLessonName =
+                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
+            print(
+                "less TAB  ${LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]}");
+            denemeProv.initTable(
+                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
           }
         });
         return Scaffold(
@@ -57,7 +65,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
                     ? TotalDenemeView(
                         lessonName: LessonList.lessonNameList[index],
                       )
-                    : DenemeView(lessonName: LessonList.lessonNameList[index]);
+                    : DenemeView();
               },
             ),
           ),
@@ -130,6 +138,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
         } else {
           denemeProv.setIsTotal = true;
           denemeProv.setSelectedGroupSize = groupSizes[index];
+          //denemeProv.initTable(denemeProv.getLessonName); later fix
         }
       },
     );

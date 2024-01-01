@@ -172,7 +172,7 @@ class _EditDenemeState extends State<InsertDeneme> {
     // DenemeViewModel().printFunct("f", f);
     return TextFormField(
       controller: controller,
-      autofocus: true,
+      autofocus: false, //set
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
       validator: (value) {
@@ -182,7 +182,7 @@ class _EditDenemeState extends State<InsertDeneme> {
         final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
         if (!isNumeric) {
           Future.delayed(
-            const Duration(milliseconds: 100),
+            const Duration(milliseconds: 300),
             () {
               _formKey.currentState!.reset();
             },
@@ -194,31 +194,31 @@ class _EditDenemeState extends State<InsertDeneme> {
         return null;
       },
       onFieldSubmitted: (value) {
-        if (_formKey.currentState!.validate() && _isDiffZero == true) {
+        /* if (_formKey.currentState!.validate() && _isDiffZero == true) {
           _isLoading ? buildLoadingDialog(context) : const SizedBox();
 
-          Future.delayed(const Duration(milliseconds: 100), () {
+          Future.delayed(const Duration(milliseconds: 300), () {
             _isLoading = false;
           });
           saveButton(denemeProv);
         } else if (_isDiffZero == false) {
-          Future.delayed(const Duration(milliseconds: 100), () {
+          Future.delayed(const Duration(milliseconds: 300), () {
             _showDialog(context, 'HATA', 'En az 1 değer gir!');
           });
         } else {
           Future.delayed(
-            const Duration(milliseconds: 100),
+            const Duration(milliseconds: 300),
             () {
               _showDialog(context, 'HATA', 'Sadece Tam sayı giriniz!');
             },
           );
         }
         Future.delayed(
-          const Duration(milliseconds: 100),
+          const Duration(milliseconds: 300),
           () {
             _formKey.currentState!.reset();
           },
-        );
+        ); */
       },
       onChanged: (value) {
         if (int.parse(value) != 0) {
@@ -269,24 +269,24 @@ class _EditDenemeState extends State<InsertDeneme> {
               if (_formKey.currentState!.validate() && _isDiffZero == true) {
                 _isLoading ? buildLoadingDialog(context) : const SizedBox();
 
-                Future.delayed(const Duration(milliseconds: 100), () {
+                Future.delayed(const Duration(milliseconds: 300), () {
                   _isLoading = false;
                 });
                 saveButton(denemeProv);
               } else if (_isDiffZero == false) {
-                Future.delayed(const Duration(milliseconds: 100), () {
+                Future.delayed(const Duration(milliseconds: 300), () {
                   _showDialog(context, 'HATA', 'En az 1 değer gir!');
                 });
               } else {
                 Future.delayed(
-                  const Duration(milliseconds: 100),
+                  const Duration(milliseconds: 300),
                   () {
                     _showDialog(context, 'HATA', 'Sadece Tam sayı giriniz!');
                   },
                 );
               }
               Future.delayed(
-                const Duration(milliseconds: 100),
+                const Duration(milliseconds: 300),
                 () {
                   _formKey.currentState!.reset();
                 },
@@ -305,46 +305,49 @@ class _EditDenemeState extends State<InsertDeneme> {
         builder: (context) {
           return Padding(
             padding: const EdgeInsets.all(10),
-            child: AlertDialog(
-                backgroundColor: Colors.white,
-                alignment: Alignment.center,
-                actions: [
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(context.dynamicH(0.0714)),
-                          child: Transform.scale(
-                            scale: 2,
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                strokeAlign: BorderSide.strokeAlignCenter,
-                                strokeWidth: 5,
-                                strokeCap: StrokeCap.round,
-                                value: null,
-                                backgroundColor: Colors.blueGrey,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.green),
-                                color: Colors.green,
+            child: Center(
+              child: AlertDialog(
+                  backgroundColor: Colors.white,
+                  alignment: Alignment.center,
+                  actions: [
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(context.dynamicH(0.0714)),
+                            child: Transform.scale(
+                              scale: 2,
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  strokeAlign: BorderSide.strokeAlignCenter,
+                                  strokeWidth: 5,
+                                  strokeCap: StrokeCap.round,
+                                  value: null,
+                                  backgroundColor: Colors.blueGrey,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.green),
+                                  color: Colors.green,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: context.mediaQuery.size.height / 5),
-                        Center(
-                            child: Text(
-                                style: TextStyle(
-                                    color: const Color(0xff1c0f45),
-                                    fontSize: context.dynamicW(0.01) *
-                                        context.dynamicH(0.005)),
-                                textAlign: TextAlign.center,
-                                ' Kaydediliyor...')),
-                      ],
+                          SizedBox(
+                              height: context.mediaQuery.size.height / 150),
+                          Center(
+                              child: Text(
+                                  style: TextStyle(
+                                      color: const Color(0xff1c0f45),
+                                      fontSize: context.dynamicW(0.01) *
+                                          context.dynamicH(0.005)),
+                                  textAlign: TextAlign.center,
+                                  ' Kaydediliyor...')),
+                        ],
+                      ),
                     ),
-                  ),
-                ]),
+                  ]),
+            ),
           );
         });
   }
@@ -395,7 +398,7 @@ class _EditDenemeState extends State<InsertDeneme> {
           subjectName: _subjectSavedList[i]);
 
       denemeProv.saveDeneme(denemeModel, _initTable!);
-      Future.delayed(const Duration(milliseconds: 100), () async {
+      Future.delayed(const Duration(milliseconds: 300), () async {
         _isLoading = false;
         _navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []);

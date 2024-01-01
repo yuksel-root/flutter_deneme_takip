@@ -41,6 +41,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         Provider.of<TabbarNavigationProvider>(context, listen: true);
     int i = 0;
     final lessonProv = Provider.of<LessonViewModel>(context, listen: false);
+    final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
       initialIndex: tabbarNavProv.getLessonCurrentIndex,
@@ -49,6 +50,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         tabController.addListener(() {
           if (!tabController.indexIsChanging) {
             tabbarNavProv.setLessonCurrentIndex = tabController.index;
+
             lessonProv.setLessonName =
                 LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
             lessonProv.initTable(
@@ -76,8 +78,12 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                     },
                     onSelected: (value) {
                       if (value == 'option1') {
-                        _showDialog(context, "DİKKAT!",
-                            "Tüm verileri silmek istiyor musunuz?", lessonProv);
+                        _showDialog(
+                            context,
+                            "DİKKAT!",
+                            "Tüm verileri silmek istiyor musunuz?",
+                            lessonProv,
+                            denemeProv);
                       }
                     },
                   ),
@@ -122,7 +128,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
   }).toList();
 
   _showDialog(BuildContext context, String title, String content,
-      LessonViewModel lessonProv) async {
+      LessonViewModel lessonProv, DenemeViewModel denemeProv) async {
     AlertView alert = AlertView(
       title: title,
       content: content,
@@ -137,6 +143,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             .navigateToPageClear(path: NavigationConstants.homeView, data: []),
         lessonProv.setAlert = false,
         lessonProv.initTable(lessonProv.getLessonName),
+        denemeProv.initTable(denemeProv.getLessonName),
       },
     );
 
