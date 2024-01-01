@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/components/gradient_widget.dart';
 import 'package:flutter_deneme_takip/components/utils.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
@@ -13,7 +12,7 @@ class DenemeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final denemeProv = Provider.of<DenemeViewModel>(context);
-    final denemeData = context.read<DenemeViewModel>().listDeneme;
+    final denemeData = context.read<DenemeViewModel>().listDeneme ?? [];
     return buildFutureView(denemeProv, denemeData);
   }
 
@@ -21,7 +20,8 @@ class DenemeView extends StatelessWidget {
     return FutureBuilder(
       future: Future.delayed(Duration.zero, () => denemeData),
       builder: (BuildContext context, _) {
-        if (context.watch<DenemeViewModel>().state == DenemeState.loading) {
+        if (context.watch<DenemeViewModel>().getDenemeState ==
+            DenemeState.loading) {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -40,9 +40,6 @@ class DenemeView extends StatelessWidget {
           } else {
             denemeProv.totalInsertRowData(denemeProv.denemelerData);
           }
-
-          /*     print("coldata len  ${columnData.length}");
-        print("rowdata  len  ${rowData.length}"); */
 
           return Scaffold(
             body: SizedBox(
@@ -104,7 +101,7 @@ class DenemeView extends StatelessWidget {
               ],
             ),
           ),
-          Container(
+          SizedBox(
             height: 800,
             width: 660,
             child: Text(
@@ -207,10 +204,10 @@ class DenemeView extends StatelessWidget {
         child: InkWell(
           onLongPress: () {
             Future.delayed(const Duration(milliseconds: 100), () {
-              _showDialog(
+              denemeProv.removeAlert(
                 context,
                 'UYARI',
-                '${extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
                 denemeProv,
                 cell,
               );
@@ -266,55 +263,5 @@ class DenemeView extends StatelessWidget {
         }),
       );
     }).toList();
-  }
-
-  int? extractNumber(String text) {
-    String aStr = text.replaceAll(RegExp(r'[^0-9]'), '');
-    int? result = 1;
-    if (aStr.isNotEmpty) {
-      result = int.parse(aStr);
-    }
-
-    return result;
-  }
-
-  _showDialog(
-    BuildContext context,
-    String title,
-    String content,
-    DenemeViewModel denemeProv,
-    dynamic itemDeneme,
-  ) async {
-    AlertView alert = AlertView(
-      title: title,
-      content: content,
-      isAlert: false,
-      noFunction: () => {
-        denemeProv.setAlert = false,
-        Navigator.of(context).pop(),
-      },
-      yesFunction: () async => {
-        print("cell ${extractNumber(itemDeneme)}"),
-        itemDeneme = extractNumber(itemDeneme),
-        denemeProv.deleteItemById(
-            denemeProv.getLessonTableName!, itemDeneme, 'denemeId'),
-        denemeProv.initTable(denemeProv.getLessonName!),
-        denemeProv.setAlert = false,
-        Navigator.of(context).pop(),
-      },
-    );
-
-    if (denemeProv.getIsAlertOpen == false) {
-      denemeProv.setAlert = true;
-      await showDialog(
-          barrierDismissible: false,
-          barrierColor: const Color(0x66000000),
-          context: context,
-          builder: (BuildContext context) {
-            return alert;
-          }).then(
-        (value) => denemeProv.setAlert = false,
-      );
-    }
   }
 }

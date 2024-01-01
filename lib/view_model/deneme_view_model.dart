@@ -1,11 +1,10 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
-
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
-
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
 
@@ -30,7 +29,7 @@ class DenemeViewModel extends ChangeNotifier {
   late List<dynamic> columnData;
   late List<Map<String, dynamic>> denemelerData;
   late List<List<int>> _listFalseCounts;
-  int? _groupSize;
+
   DenemeViewModel() {
     _navigation = NavigationService.instance;
     _isAlertOpen = false;
@@ -46,8 +45,8 @@ class DenemeViewModel extends ChangeNotifier {
     _listFalseCounts = [];
   }
 
-  DenemeState get state => _state!;
-  set state(DenemeState state) {
+  DenemeState get getDenemeState => _state!;
+  set setDenemestate(DenemeState state) {
     _state = state;
     notifyListeners();
   }
@@ -159,13 +158,13 @@ class DenemeViewModel extends ChangeNotifier {
     rowData.clear();
     _listFalseCounts.clear();
 
-    print("denemeData $denemeData");
+    // print("denemeData $denemeData");
 
     falseCountsByDenemeId(denemeData).forEach((denemeId, falseCounts) {
       _listFalseCounts.add(falseCounts);
     });
 
-    print("get groupSize $getSelectedGroupSize");
+    // print("get groupSize $getSelectedGroupSize");
     List<dynamic> sumList =
         List.from(sumByGroups(_listFalseCounts, getSelectedGroupSize));
     List<dynamic> sumArr = List.generate(columnData.length, (index) => 0);
@@ -190,7 +189,7 @@ class DenemeViewModel extends ChangeNotifier {
     }
 
     if (compareLists(sumArr, totalSum) == false) {
-      print("sumAr $sumArr totalSum $totalSum");
+      // print("sumAr $sumArr totalSum $totalSum");
       totalSum[0] = "Toplam";
       rowData.add({'row': List.from(totalSum)});
     }
@@ -241,14 +240,14 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   void initTable(String? lessonName) async {
-    state = DenemeState.loading;
+    setDenemestate = DenemeState.loading;
     _lessonTableName =
         LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
-    print("deneme less init table $_lessonTableName");
+    //print("deneme less init table $_lessonTableName");
 
     listDeneme = await DenemeDbProvider.db
         .getLessonDeneme(_lessonTableName ?? DenemeTables.historyTableName);
-    state = DenemeState.completed;
+    setDenemestate = DenemeState.completed;
   }
 
   bool compareLists(List<dynamic> list1, List<dynamic> list2) {
@@ -306,6 +305,16 @@ class DenemeViewModel extends ChangeNotifier {
     return await DenemeDbProvider.db.getFindLastId(table, id);
   }
 
+  int? extractNumber(String text) {
+    String aStr = text.replaceAll(RegExp(r'[^0-9]'), '');
+    int? result = 1;
+    if (aStr.isNotEmpty) {
+      result = int.parse(aStr);
+    }
+
+    return result;
+  }
+
   int? _selectedGroupSize = 5;
   bool _isTotal = false;
   bool get getIsTotal => _isTotal;
@@ -344,5 +353,42 @@ class DenemeViewModel extends ChangeNotifier {
     _lessonName = _lessonTableName =
         LessonList.tableNames[newTable] ?? DenemeTables.historyTableName;
     notifyListeners();
+  }
+
+  Future<void> removeAlert(BuildContext context, String title, String content,
+      DenemeViewModel denemeProv, itemDeneme) async {
+    AlertView alert = AlertView(
+      title: title,
+      content: content,
+      isAlert: false,
+      noFunction: () => {
+        denemeProv.setAlert = false,
+        Navigator.of(context).pop(),
+      },
+      yesFunction: () async => {
+        print("cell ${denemeProv.extractNumber(itemDeneme)}"),
+        itemDeneme = denemeProv.extractNumber(itemDeneme),
+        denemeProv.deleteItemById(
+            denemeProv.getLessonTableName!, itemDeneme, 'denemeId'),
+        denemeProv.setAlert = false,
+        Navigator.of(context).pop(),
+        Future.delayed(const Duration(milliseconds: 200), () {
+          denemeProv.initTable(denemeProv.getLessonName!);
+        }),
+      },
+    );
+
+    if (denemeProv.getIsAlertOpen == false) {
+      denemeProv.setAlert = true;
+      await showDialog(
+          barrierDismissible: false,
+          barrierColor: const Color(0x66000000),
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          }).then(
+        (value) => denemeProv.setAlert = false,
+      );
+    }
   }
 }

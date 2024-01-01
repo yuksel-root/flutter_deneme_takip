@@ -57,7 +57,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
             children: List.generate(
               LessonList.lessonNameList.length,
               (index) {
-                return DenemeView();
+                return const DenemeView();
               },
             ),
           ),

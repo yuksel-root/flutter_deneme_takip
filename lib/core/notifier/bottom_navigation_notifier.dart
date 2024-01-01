@@ -5,7 +5,7 @@ class BottomNavigationProvider with ChangeNotifier {
 
   int get getCurrentIndex => _currentIndex;
 
-  void setCurrentIndex(int index) {
+  set setCurrentIndex(int index) {
     _currentIndex = index;
     notifyListeners();
   }

@@ -182,7 +182,7 @@ class _EditDenemeState extends State<InsertDeneme> {
         final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
         if (!isNumeric) {
           Future.delayed(
-            const Duration(milliseconds: 300),
+            const Duration(milliseconds: 180),
             () {
               _formKey.currentState!.reset();
             },
@@ -197,24 +197,24 @@ class _EditDenemeState extends State<InsertDeneme> {
         if (_formKey.currentState!.validate() && _isDiffZero == true) {
           _isLoading ? buildLoadingDialog(context) : const SizedBox();
 
-          Future.delayed(const Duration(milliseconds: 300), () {
+          Future.delayed(const Duration(milliseconds: 180), () {
             _isLoading = false;
           });
           saveButton(denemeProv);
         } else if (_isDiffZero == false) {
-          Future.delayed(const Duration(milliseconds: 300), () {
+          Future.delayed(const Duration(milliseconds: 180), () {
             _showDialog(context, 'HATA', 'En az 1 değer gir!');
           });
         } else {
           Future.delayed(
-            const Duration(milliseconds: 300),
+            const Duration(milliseconds: 180),
             () {
               _showDialog(context, 'HATA', 'Sadece Tam sayı giriniz!');
             },
           );
         }
         Future.delayed(
-          const Duration(milliseconds: 300),
+          const Duration(milliseconds: 180),
           () {
             _formKey.currentState!.reset();
           },
@@ -269,24 +269,24 @@ class _EditDenemeState extends State<InsertDeneme> {
               if (_formKey.currentState!.validate() && _isDiffZero == true) {
                 _isLoading ? buildLoadingDialog(context) : const SizedBox();
 
-                Future.delayed(const Duration(milliseconds: 300), () {
+                Future.delayed(const Duration(milliseconds: 180), () {
                   _isLoading = false;
                 });
                 saveButton(denemeProv);
               } else if (_isDiffZero == false) {
-                Future.delayed(const Duration(milliseconds: 300), () {
+                Future.delayed(const Duration(milliseconds: 180), () {
                   _showDialog(context, 'HATA', 'En az 1 değer gir!');
                 });
               } else {
                 Future.delayed(
-                  const Duration(milliseconds: 300),
+                  const Duration(milliseconds: 180),
                   () {
                     _showDialog(context, 'HATA', 'Sadece Tam sayı giriniz!');
                   },
                 );
               }
               Future.delayed(
-                const Duration(milliseconds: 300),
+                const Duration(milliseconds: 180),
                 () {
                   _formKey.currentState!.reset();
                 },
@@ -334,7 +334,7 @@ class _EditDenemeState extends State<InsertDeneme> {
                             ),
                           ),
                           SizedBox(
-                              height: context.mediaQuery.size.height / 150),
+                              height: context.mediaQuery.size.height / 180),
                           Center(
                               child: Text(
                                   style: TextStyle(
@@ -398,7 +398,7 @@ class _EditDenemeState extends State<InsertDeneme> {
           subjectName: _subjectSavedList[i]);
 
       denemeProv.saveDeneme(denemeModel, _initTable!);
-      Future.delayed(const Duration(milliseconds: 300), () async {
+      Future.delayed(const Duration(milliseconds: 180), () async {
         _isLoading = false;
         _navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []);

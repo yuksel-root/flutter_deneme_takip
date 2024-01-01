@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
@@ -42,7 +45,7 @@ class LessonViewModel extends ChangeNotifier {
     state = LessonState.loading;
     _lessonTableName =
         LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
-    print("lesson table $_lessonTableName");
+    // print("lesson table $_lessonTableName");
 
     listDeneme = await DenemeDbProvider.db
         .getLessonDeneme(_lessonTableName ?? DenemeTables.historyTableName);
@@ -93,5 +96,40 @@ class LessonViewModel extends ChangeNotifier {
 
   set setAlert(bool newBool) {
     _isAlertOpen = newBool;
+  }
+
+  Future<void> removeAlert(BuildContext context, String title, String content,
+      LessonViewModel lessonProv, itemDeneme) async {
+    AlertView alert = AlertView(
+      title: title,
+      content: content,
+      isAlert: false,
+      noFunction: () => {
+        lessonProv.setAlert = false,
+        Navigator.of(context).pop(),
+      },
+      yesFunction: () async => {
+        lessonProv.deleteItemById(
+            lessonProv.getLessonTableName!, itemDeneme, 'denemeId'),
+        lessonProv.setAlert = false,
+        Navigator.of(context).pop(),
+        Future.delayed(const Duration(milliseconds: 200), () {
+          lessonProv.initTable(lessonProv.getLessonName!);
+        }),
+      },
+    );
+
+    if (lessonProv.getIsAlertOpen == false) {
+      lessonProv.setAlert = true;
+      await showDialog(
+          barrierDismissible: false,
+          barrierColor: const Color(0x66000000),
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          }).then(
+        (value) => lessonProv.setAlert = false,
+      );
+    }
   }
 }

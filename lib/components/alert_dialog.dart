@@ -39,7 +39,7 @@ class AlertView extends StatelessWidget {
             style: TextStyle(
                 fontSize: context.dynamicW(0.01) * context.dynamicH(0.0045),
                 fontFamily: "Greycliff CF Medium",
-                color: Color.fromARGB(255, 0, 255, 8)),
+                color: const Color.fromARGB(255, 0, 255, 8)),
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
           actions: <Widget>[

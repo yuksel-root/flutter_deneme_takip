@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/alert_dialog.dart';
-
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -59,7 +56,6 @@ class LessonView extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         String subjectName = groupedData.keys.elementAt(index);
         List<Map<String, dynamic>> group = groupedData[subjectName]!;
-        //  print(group);
 
         Map<String, int> totalFalseM = {};
 
@@ -206,50 +202,12 @@ class LessonView extends StatelessWidget {
 
   dialogremoveClickedDeneme(BuildContext context, Map<String, dynamic> item,
       LessonViewModel lessonProv) {
-    _showDialog(
+    lessonProv.removeAlert(
       context,
       'UYARI',
       '${item['denemeId']}. Denemeyi silmek istediğinize emin misiniz?',
       lessonProv,
       item['denemeId'],
     );
-  }
-
-  _showDialog(
-    BuildContext context,
-    String title,
-    String content,
-    LessonViewModel lessonProv,
-    dynamic itemDeneme,
-  ) async {
-    AlertView alert = AlertView(
-      title: title,
-      content: content,
-      isAlert: false,
-      noFunction: () => {
-        lessonProv.setAlert = false,
-        Navigator.of(context).pop(),
-      },
-      yesFunction: () => {
-        lessonProv.deleteItemById(
-            lessonProv.getLessonTableName!, itemDeneme, 'denemeId'),
-        lessonProv.setAlert = false,
-        Navigator.of(context).pop(),
-        lessonProv.initTable(lessonProv.getLessonName)
-      },
-    );
-
-    if (lessonProv.getIsAlertOpen == false) {
-      lessonProv.setAlert = true;
-      await showDialog(
-          barrierDismissible: false,
-          barrierColor: const Color(0x66000000),
-          context: context,
-          builder: (BuildContext context) {
-            return alert;
-          }).then(
-        (value) => lessonProv.setAlert = false,
-      );
-    }
   }
 }

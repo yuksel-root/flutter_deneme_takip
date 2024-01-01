@@ -39,9 +39,9 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
   Widget build(BuildContext context) {
     final tabbarNavProv =
         Provider.of<TabbarNavigationProvider>(context, listen: true);
-    int i = 0;
     final lessonProv = Provider.of<LessonViewModel>(context, listen: false);
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
+
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
       initialIndex: tabbarNavProv.getLessonCurrentIndex,
@@ -114,7 +114,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             body: TabBarView(
               children:
                   List.generate(LessonList.lessonNameList.length, (index) {
-                return LessonView();
+                return const LessonView();
               }),
             ));
       }),
