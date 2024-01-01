@@ -1,72 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
-import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
+
+import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:provider/provider.dart';
 
-class LessonView extends StatefulWidget {
-  final String? lessonName;
-  const LessonView({Key? key, this.lessonName}) : super(key: key);
-
-  @override
-  State<LessonView> createState() => _LessonViewState();
-}
-
-class _LessonViewState extends State<LessonView> {
-  late String _lessonName;
-  late Future<List<Map<String, dynamic>>> _listDeneme;
-  late String _lessonTableName;
-  bool _isAlertOpen = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _lessonName = widget.lessonName ?? "Tarih";
-    _listDeneme = initTable();
-    _lessonTableName =
-        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
-
-    // _listDeneme.then((List<Map<String, dynamic>> data) {
-    /*    List<Map<String, dynamic>> dataList = data;
-      for (var item in dataList) {
-        print(item.toString());
-      } */
-    // });
-  }
-
-  Future<List<Map<String, dynamic>>> initTable() async {
-    _lessonTableName =
-        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
-    return DenemeDbProvider.db.getLessonDeneme(_lessonTableName);
-  }
+class LessonView extends StatelessWidget {
+  const LessonView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final denemeProv = Provider.of<DenemeViewModel>(context);
+    final lessonProv = Provider.of<LessonViewModel>(context);
+    final lessonData = context.read<LessonViewModel>().listDeneme;
 
-    return futureListSubjectName(denemeProv);
+    return futureListSubjectName(context, lessonProv, lessonData);
   }
 
-  FutureBuilder<List<Map<String, dynamic>>> futureListSubjectName(
-      DenemeViewModel denemeProv) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: _listDeneme,
-      builder: (BuildContext context,
-          AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+  FutureBuilder futureListSubjectName(
+      BuildContext context, LessonViewModel lessonProv, lessonData) {
+    return FutureBuilder(
+      future: Future.delayed(Duration.zero, () => lessonData),
+      builder: (context, _) {
+        if (context.watch<LessonViewModel>().state == LessonState.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(
-              child: Text(
-                  style: TextStyle(
-                      color: const Color(0xff1c0f45),
-                      fontSize:
-                          context.dynamicW(0.01) * context.dynamicH(0.005)),
-                  'Veri getirilirken hata oluştu'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        } else if (context.watch<LessonViewModel>().listDeneme!.isEmpty) {
           return Center(
               child: Text(
                   style: TextStyle(
@@ -75,7 +33,7 @@ class _LessonViewState extends State<LessonView> {
                           context.dynamicW(0.01) * context.dynamicH(0.005)),
                   'Gösterilecek veri yok'));
         } else {
-          List<Map<String, dynamic>> data = snapshot.data!;
+          List<Map<String, dynamic>> data = lessonData;
           Map<String, List<Map<String, dynamic>>> groupedData = {};
 
           for (var item in data) {
@@ -86,14 +44,16 @@ class _LessonViewState extends State<LessonView> {
             groupedData[subjectName]!.add(item);
           }
 
-          return listSubjects(groupedData, denemeProv);
+          return listSubjects(context, groupedData, lessonProv);
         }
       },
     );
   }
 
-  ListView listSubjects(Map<String, List<Map<String, dynamic>>> groupedData,
-      DenemeViewModel denemeProv) {
+  ListView listSubjects(
+      BuildContext context,
+      Map<String, List<Map<String, dynamic>>> groupedData,
+      LessonViewModel lessonProv) {
     return ListView.builder(
       itemCount: groupedData.length,
       itemBuilder: (BuildContext context, int index) {
@@ -127,8 +87,8 @@ class _LessonViewState extends State<LessonView> {
             }
           }
 
-          return expansionTileSubjectDetail(
-              subjectName, totalFalseM, falseCounts, group, denemeProv);
+          return expansionTileSubjectDetail(context, subjectName, totalFalseM,
+              falseCounts, group, lessonProv);
         } else {
           return const SizedBox();
         }
@@ -137,11 +97,12 @@ class _LessonViewState extends State<LessonView> {
   }
 
   ExpansionTile expansionTileSubjectDetail(
+      BuildContext context,
       String subjectName,
       Map<String, int> totalFalseM,
       List<int> falseCounts,
       List<Map<String, dynamic>> group,
-      DenemeViewModel denemeProv) {
+      LessonViewModel lessonProv) {
     return ExpansionTile(
       tilePadding: const EdgeInsets.all(5),
       title: Text(
@@ -175,7 +136,7 @@ class _LessonViewState extends State<LessonView> {
             ),
           ),
           children: [
-            listDenemeDetail(group, denemeProv),
+            listDenemeDetail(group, lessonProv),
           ],
         ),
       ],
@@ -183,7 +144,7 @@ class _LessonViewState extends State<LessonView> {
   }
 
   ListView listDenemeDetail(
-      List<Map<String, dynamic>> group, DenemeViewModel denemeProv) {
+      List<Map<String, dynamic>> group, LessonViewModel lessonProv) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -216,11 +177,8 @@ class _LessonViewState extends State<LessonView> {
                         color: Color.fromARGB(255, 54, 31, 129),
                       ),
                       onPressed: () {
-                        setState(() {
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            dialogremoveClickedDeneme(
-                                context, item, denemeProv);
-                          });
+                        Future.delayed(const Duration(milliseconds: 200), () {
+                          dialogremoveClickedDeneme(context, item, lessonProv);
                         });
                       },
                       style: IconButton.styleFrom(),
@@ -247,12 +205,12 @@ class _LessonViewState extends State<LessonView> {
   }
 
   dialogremoveClickedDeneme(BuildContext context, Map<String, dynamic> item,
-      DenemeViewModel denemeProv) {
+      LessonViewModel lessonProv) {
     _showDialog(
       context,
       'UYARI',
       '${item['denemeId']}. Denemeyi silmek istediğinize emin misiniz?',
-      denemeProv,
+      lessonProv,
       item['denemeId'],
     );
   }
@@ -261,7 +219,7 @@ class _LessonViewState extends State<LessonView> {
     BuildContext context,
     String title,
     String content,
-    DenemeViewModel denemeProv,
+    LessonViewModel lessonProv,
     dynamic itemDeneme,
   ) async {
     AlertView alert = AlertView(
@@ -269,26 +227,29 @@ class _LessonViewState extends State<LessonView> {
       content: content,
       isAlert: false,
       noFunction: () => {
-        _isAlertOpen = false,
+        lessonProv.setAlert = false,
         Navigator.of(context).pop(),
       },
       yesFunction: () => {
-        denemeProv.deleteItemById(_lessonTableName, itemDeneme, 'denemeId'),
-        _listDeneme = initTable(),
-        _isAlertOpen = false,
+        lessonProv.deleteItemById(
+            lessonProv.getLessonTableName!, itemDeneme, 'denemeId'),
+        lessonProv.setAlert = false,
         Navigator.of(context).pop(),
+        lessonProv.initTable(lessonProv.getLessonName)
       },
     );
 
-    if (_isAlertOpen == false) {
-      _isAlertOpen = true;
+    if (lessonProv.getIsAlertOpen == false) {
+      lessonProv.setAlert = true;
       await showDialog(
           barrierDismissible: false,
           barrierColor: const Color(0x66000000),
           context: context,
           builder: (BuildContext context) {
             return alert;
-          }).then((value) => _isAlertOpen = false);
+          }).then(
+        (value) => lessonProv.setAlert = false,
+      );
     }
   }
 }

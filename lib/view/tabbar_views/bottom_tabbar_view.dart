@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.da
 import 'package:flutter_deneme_takip/view/tabbar_views/deneme_edit_tabbar.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/deneme_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/lesson_tabbar_view.dart';
+import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -38,6 +40,8 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
     final provider = Provider.of<BottomNavigationProvider>(context);
     final tabbarProvider = Provider.of<TabbarNavigationProvider>(context);
 
+    final lessonProv = Provider.of<LessonViewModel>(context);
+
     return Scaffold(
       body: currentScreen[provider.getCurrentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -51,7 +55,7 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
           provider.setCurrentIndex(index);
           if (index == 0) {
             tabbarProvider.setLessonCurrentIndex = 0;
-            // _navigateHome(context);
+            lessonProv.initTable(LessonList.lessonNameList[0]);
           } else {}
         },
         items: const [

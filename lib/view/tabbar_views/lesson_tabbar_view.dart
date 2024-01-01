@@ -7,6 +7,7 @@ import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.da
 import 'package:flutter_deneme_takip/view/lesson_view.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 
@@ -36,8 +37,10 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
 
   @override
   Widget build(BuildContext context) {
-    final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
-
+    final tabbarNavProv =
+        Provider.of<TabbarNavigationProvider>(context, listen: true);
+    int i = 0;
+    final lessonProv = Provider.of<LessonViewModel>(context, listen: false);
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
       initialIndex: tabbarNavProv.getLessonCurrentIndex,
@@ -46,6 +49,10 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         tabController.addListener(() {
           if (!tabController.indexIsChanging) {
             tabbarNavProv.setLessonCurrentIndex = tabController.index;
+            lessonProv.setLessonName =
+                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
+            lessonProv.initTable(
+                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
           }
         });
         return Scaffold(
@@ -99,11 +106,10 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                   tabs: tab,
                 )),
             body: TabBarView(
-              children: List.generate(
-                LessonList.lessonNameList.length,
-                (index) =>
-                    LessonView(lessonName: LessonList.lessonNameList[index]),
-              ),
+              children:
+                  List.generate(LessonList.lessonNameList.length, (index) {
+                return LessonView();
+              }),
             ));
       }),
     );
