@@ -52,6 +52,60 @@ class LessonViewModel extends ChangeNotifier {
     state = LessonState.completed;
   }
 
+  Map<String, List<Map<String, dynamic>>> groupBySubjects(
+      List<Map<String, dynamic>> data) {
+    Map<String, List<Map<String, dynamic>>> groupedData = {};
+
+    List<Map<String, dynamic>> filteredData =
+        data.where((item) => item['falseCount'] != 0).toList();
+
+    for (var item in filteredData) {
+      String subjectName = item['subjectName'];
+      if (!groupedData.containsKey(subjectName)) {
+        groupedData[subjectName] = [];
+      }
+      groupedData[subjectName]!.add(item);
+    }
+
+    return groupedData;
+  }
+
+  Map<String, int> sumSubjectFalseCount(List<Map<String, dynamic>> group) {
+    Map<String, int> totalFalseM = {};
+
+    for (var data in group) {
+      String subName = data['subjectName'];
+      int falseCount = data['falseCount'];
+
+      if (!totalFalseM.containsKey(subName)) {
+        totalFalseM[subName] = 0;
+      }
+      totalFalseM[subName] = totalFalseM[subName]! + falseCount;
+    }
+
+    return totalFalseM;
+  }
+
+  List<int> groupBySumFalseCounts(List<Map<String, dynamic>> group) {
+    List<int> falseCounts = [];
+
+    if (group.any((item) => item['falseCount'] != 0)) {
+      group.sort((a, b) => a["denemeId"].compareTo(b["denemeId"]));
+
+      int totalFalse = 0;
+
+      for (int i = 0; i < group.length; i++) {
+        totalFalse += group[i]['falseCount'] as int;
+
+        if ((i + 1) % 5 == 0 || i == group.length - 1) {
+          falseCounts.add(totalFalse);
+          totalFalse = 0;
+        }
+      }
+    } else {}
+    return falseCounts;
+  }
+
   void deleteItemById(String lessonTable, int id, String idName) {
     try {
       DenemeDbProvider.db.removeTableItem(lessonTable, id, idName);

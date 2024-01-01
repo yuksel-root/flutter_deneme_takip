@@ -31,15 +31,9 @@ class LessonView extends StatelessWidget {
                   'Gösterilecek veri yok'));
         } else {
           List<Map<String, dynamic>> data = lessonData;
-          Map<String, List<Map<String, dynamic>>> groupedData = {};
 
-          for (var item in data) {
-            String subjectName = item['subjectName'];
-            if (!groupedData.containsKey(subjectName)) {
-              groupedData[subjectName] = [];
-            }
-            groupedData[subjectName]!.add(item);
-          }
+          Map<String, List<Map<String, dynamic>>> groupedData =
+              lessonProv.groupBySubjects(data);
 
           return listSubjects(context, groupedData, lessonProv);
         }
@@ -52,70 +46,43 @@ class LessonView extends StatelessWidget {
       Map<String, List<Map<String, dynamic>>> groupedData,
       LessonViewModel lessonProv) {
     return ListView.builder(
-      itemCount: groupedData.length,
-      itemBuilder: (BuildContext context, int index) {
-        String subjectName = groupedData.keys.elementAt(index);
-        List<Map<String, dynamic>> group = groupedData[subjectName]!;
+        itemCount: groupedData.length,
+        itemBuilder: (BuildContext context, int index) {
+          String subjectName = groupedData.keys.elementAt(index);
+          List<Map<String, dynamic>> group = groupedData[subjectName]!;
 
-        Map<String, int> totalFalseM = {};
-
-        for (var data in group) {
-          String subName = data['subjectName'];
-          int falseCount = data['falseCount'];
-
-          if (!totalFalseM.containsKey(subName)) {
-            totalFalseM[subName] = 0;
-          }
-          totalFalseM[subName] = totalFalseM[subName]! + falseCount;
-        }
-        group.removeWhere((item) => item['falseCount'] == 0);
-        if (group.any((item) => item['falseCount'] != 0)) {
-          group.sort((a, b) => a["denemeId"].compareTo(b["denemeId"]));
-          List<int> falseCounts = [];
-          int totalFalse = 0;
-
-          for (int i = 0; i < group.length; i++) {
-            totalFalse += group[i]['falseCount'] as int;
-
-            if ((i + 1) % 5 == 0 || i == group.length - 1) {
-              falseCounts.add(totalFalse);
-              totalFalse = 0;
-            }
-          }
+          List<int> falseCounts = lessonProv.groupBySumFalseCounts(group);
+          Map<String, int> totalFalseM = lessonProv.sumSubjectFalseCount(group);
 
           return expansionTileSubjectDetail(context, subjectName, totalFalseM,
               falseCounts, group, lessonProv);
-        } else {
-          return const SizedBox();
-        }
-      },
-    );
+        });
   }
 
   ExpansionTile expansionTileSubjectDetail(
       BuildContext context,
       String subjectName,
-      Map<String, int> totalFalseM,
-      List<int> falseCounts,
+      Map<String, int> totalSubjectFalse,
+      List<int> denemeFalseCounts,
       List<Map<String, dynamic>> group,
       LessonViewModel lessonProv) {
     return ExpansionTile(
       tilePadding: const EdgeInsets.all(5),
       title: Text(
-        'Konu: $subjectName  Toplam Yanlış = ${totalFalseM[subjectName]}',
+        'Konu: $subjectName  Toplam Yanlış = ${totalSubjectFalse[subjectName]}',
         style: TextStyle(
             fontSize: context.dynamicW(0.01) * context.dynamicH(0.0052),
             fontWeight: FontWeight.bold),
         maxLines: 2,
       ),
       children: [
-        for (var i = 0; i < falseCounts.length; i++)
+        for (var i = 0; i < denemeFalseCounts.length; i++)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
             child: Text(
               i == 0
-                  ? ('Deneme 1-5  Toplam yanlış: ${falseCounts[i]}')
-                  : 'Deneme ${((i * 5) + 1)}- ${((i * 5)) + 5}  Toplam Yanlış: ${falseCounts[i]}',
+                  ? ('Deneme 1-5  Toplam yanlış: ${denemeFalseCounts[i]}')
+                  : 'Deneme ${((i * 5) + 1)}- ${((i * 5)) + 5}  Toplam Yanlış: ${denemeFalseCounts[i]}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: context.dynamicW(0.01) * context.dynamicH(0.004),
@@ -147,6 +114,7 @@ class LessonView extends StatelessWidget {
       itemCount: group.length,
       itemBuilder: (BuildContext context, int index) {
         var item = group[index];
+
         if (item['falseCount'] != 0) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 12),
