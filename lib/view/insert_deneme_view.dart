@@ -172,7 +172,7 @@ class _EditDenemeState extends State<InsertDeneme> {
     // DenemeViewModel().printFunct("f", f);
     return TextFormField(
       controller: controller,
-      autofocus: false, //set
+      autofocus: true, //set
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
       validator: (value) {
@@ -194,7 +194,7 @@ class _EditDenemeState extends State<InsertDeneme> {
         return null;
       },
       onFieldSubmitted: (value) {
-        /* if (_formKey.currentState!.validate() && _isDiffZero == true) {
+        if (_formKey.currentState!.validate() && _isDiffZero == true) {
           _isLoading ? buildLoadingDialog(context) : const SizedBox();
 
           Future.delayed(const Duration(milliseconds: 300), () {
@@ -218,7 +218,7 @@ class _EditDenemeState extends State<InsertDeneme> {
           () {
             _formKey.currentState!.reset();
           },
-        ); */
+        );
       },
       onChanged: (value) {
         if (int.parse(value) != 0) {

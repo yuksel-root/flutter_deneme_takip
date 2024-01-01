@@ -3,7 +3,6 @@ import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
-import 'package:flutter_deneme_takip/view/total_deneme_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -17,8 +16,6 @@ class DenemeTabbarView extends StatefulWidget {
 class _DenemeTabbarViewState extends State<DenemeTabbarView>
     with TickerProviderStateMixin {
   late TabController tabController;
-  bool _isTotal = true;
-  int _selectedGroupSize = 5;
   @override
   void initState() {
     super.initState();
@@ -48,8 +45,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
 
             denemeProv.setLessonName =
                 LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
-            print(
-                "less TAB  ${LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]}");
+
             denemeProv.initTable(
                 LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
           }
@@ -61,11 +57,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
             children: List.generate(
               LessonList.lessonNameList.length,
               (index) {
-                return denemeProv.getIsTotal
-                    ? TotalDenemeView(
-                        lessonName: LessonList.lessonNameList[index],
-                      )
-                    : DenemeView();
+                return DenemeView();
               },
             ),
           ),

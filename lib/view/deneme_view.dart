@@ -2,11 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/components/gradient_widget.dart';
-import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/components/utils.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -38,7 +35,11 @@ class DenemeView extends StatelessWidget {
                   'Gösterilecek veri yok'));
         } else {
           denemeProv.convertToRow(denemeData);
-          denemeProv.insertRowData(denemeProv.denemelerData);
+          if (denemeProv.getIsTotal == false) {
+            denemeProv.insertRowData(denemeProv.denemelerData);
+          } else {
+            denemeProv.totalInsertRowData(denemeProv.denemelerData);
+          }
 
           /*     print("coldata len  ${columnData.length}");
         print("rowdata  len  ${rowData.length}"); */

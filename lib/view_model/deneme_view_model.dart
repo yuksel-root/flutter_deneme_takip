@@ -29,7 +29,8 @@ class DenemeViewModel extends ChangeNotifier {
   late List<dynamic> rowData;
   late List<dynamic> columnData;
   late List<Map<String, dynamic>> denemelerData;
-
+  late List<List<int>> _listFalseCounts;
+  int? _groupSize;
   DenemeViewModel() {
     _navigation = NavigationService.instance;
     _isAlertOpen = false;
@@ -42,6 +43,7 @@ class DenemeViewModel extends ChangeNotifier {
     columnData = List.of(findList(lessonName ?? 'Tarih'));
     rowData = [];
     denemelerData = [];
+    _listFalseCounts = [];
   }
 
   DenemeState get state => _state!;
@@ -151,18 +153,78 @@ class DenemeViewModel extends ChangeNotifier {
 
       return aNumber.compareTo(bNumber);
     });
+  }
+
+  void totalInsertRowData(List<Map<String, dynamic>> denemeData) {
+    rowData.clear();
+    _listFalseCounts.clear();
+
+    print("denemeData $denemeData");
+
+    falseCountsByDenemeId(denemeData).forEach((denemeId, falseCounts) {
+      _listFalseCounts.add(falseCounts);
+    });
+
+    print("get groupSize $getSelectedGroupSize");
+    List<dynamic> sumList =
+        List.from(sumByGroups(_listFalseCounts, getSelectedGroupSize));
+    List<dynamic> sumArr = List.generate(columnData.length, (index) => 0);
+    List<dynamic> totalSum = List.of(sumAllLists(_listFalseCounts));
+
+    for (int j = 0; j < sumList.length; j++) {
+      if (j == 0) {
+        sumArr[0] = "Deneme 1-$getSelectedGroupSize";
+      } else {
+        if (getSelectedGroupSize == 5) {
+          sumArr[0] = "Deneme ${(j * 5) + 1}-${(j * 5) + 5}";
+        } else {
+          sumArr[0] =
+              "Deneme ${(j * getSelectedGroupSize)}-${(j * getSelectedGroupSize) + getSelectedGroupSize}";
+        }
+      }
+
+      for (int k = 1; k < columnData.length; k++) {
+        sumArr[k] = sumList[j][k];
+      }
+      rowData.add({'row': List.from(sumArr)});
+    }
+
+    if (compareLists(sumArr, totalSum) == false) {
+      print("sumAr $sumArr totalSum $totalSum");
+      totalSum[0] = "Toplam";
+      rowData.add({'row': List.from(totalSum)});
+    }
+
     // print("rowData");
     // print(rowData);
     // print("rowData");
   }
 
-  List<dynamic> sumByFiveGroups(List<List<int>> inputList) {
+  List<dynamic> sumAllLists(List<List<int>> inputList) {
+    if (inputList.isEmpty) return [];
+
+    List<dynamic> sumList = List.filled(columnData.length, 0);
+
+    for (int i = 0; i < inputList.length; i++) {
+      for (int j = 0; j < inputList[i].length; j++) {
+        if (j < sumList.length) {
+          sumList[j] += inputList[i][j];
+        } else {
+          sumList.add(inputList[i][j]);
+        }
+      }
+    }
+
+    return sumList;
+  }
+
+  List<dynamic> sumByGroups(List<List<int>> inputList, int groupSize) {
     List<List<int>> resultList = [];
 
-    for (int i = 0; i < inputList.length; i += 5) {
+    for (int i = 0; i < inputList.length; i += groupSize) {
       List<int> sumList = List.filled(inputList[i].length, 0);
 
-      for (int j = i; j < i + 5 && j < inputList.length; j++) {
+      for (int j = i; j < i + groupSize && j < inputList.length; j++) {
         for (int k = 0; k < inputList[j].length; k++) {
           sumList[k] += inputList[j][k];
         }
@@ -187,6 +249,20 @@ class DenemeViewModel extends ChangeNotifier {
     listDeneme = await DenemeDbProvider.db
         .getLessonDeneme(_lessonTableName ?? DenemeTables.historyTableName);
     state = DenemeState.completed;
+  }
+
+  bool compareLists(List<dynamic> list1, List<dynamic> list2) {
+    if (list1.length != list2.length) {
+      return false;
+    }
+
+    for (int i = 1; i < list1.length; i++) {
+      if (list1[i] != list2[i]) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   void navigateToPageClear(
@@ -239,7 +315,7 @@ class DenemeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  int? get getSelectedGroupSize => _selectedGroupSize;
+  int get getSelectedGroupSize => _selectedGroupSize ?? 5;
 
   set setSelectedGroupSize(int newSize) {
     _selectedGroupSize = newSize;

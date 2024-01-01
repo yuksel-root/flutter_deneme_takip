@@ -59,6 +59,11 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
             tabbarProvider.setLessonCurrentIndex = 0;
             lessonProv.initTable(LessonList.lessonNameList[0]);
             denemeProv.initTable(LessonList.lessonNameList[0]);
+          } else if (index == 1) {
+            tabbarProvider.setLessonCurrentIndex = 0;
+            lessonProv.initTable(LessonList.lessonNameList[0]);
+            denemeProv.initTable(LessonList.lessonNameList[0]);
+            //  denemeProv.setIsTotal = false;
           } else {}
         },
         items: const [
