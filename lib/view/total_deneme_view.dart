@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/gradient_widget.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/components/utils.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
@@ -253,7 +254,11 @@ class _DenemeViewState extends State<TotalDenemeView> {
           if (denemelerData.isNotEmpty) {
             insertRowData(denemelerData, denemeProv);
           } else {
-            return buildEmptyTable();
+            return SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: buildEmptyTable()));
           }
 
           return Scaffold(
@@ -303,16 +308,40 @@ class _DenemeViewState extends State<TotalDenemeView> {
   Widget buildEmptyTable() {
     return Center(
         child: Column(children: <Widget>[
-      SizedBox(
-        child: Table(
-          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-          defaultColumnWidth: FixedColumnWidth(context.dynamicW(0.20)),
-          border: TableBorder.all(
-              color: Colors.black, style: BorderStyle.solid, width: 1),
-          children: [getColumns()],
-        ),
+      Column(
+        children: [
+          SizedBox(
+            child: Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              defaultColumnWidth: FixedColumnWidth(context.dynamicW(0.20)),
+              border: TableBorder.all(
+                  color: Colors.black, style: BorderStyle.solid, width: 1),
+              children: [
+                getColumns(),
+              ],
+            ),
+          ),
+          Container(
+            height: 800,
+            width: 660,
+            child: Text(
+              "${xd()} Veri yok xd",
+              style: TextStyle(
+                fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+              ),
+            ),
+          )
+        ],
       ),
     ]));
+  }
+
+  String xd() {
+    List<String> a = [];
+    for (int i = 0; i < 8; i++) {
+      a.add("\n");
+    }
+    return a.join();
   }
 
   TableRow getColumns() {
@@ -333,17 +362,18 @@ class _DenemeViewState extends State<TotalDenemeView> {
           children: [
             index == 0
                 ? Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.blue.withOpacity(0.5),
+                          Colors.green.withOpacity(0.5),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
                     height: 100,
                     width: 200,
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                      colors: [
-                        Colors.blue,
-                        Colors.green
-                      ], // İstediğiniz renkler
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )),
                     child: Center(
                       child: Text(
                         "Deneme Sıra No",
@@ -356,27 +386,27 @@ class _DenemeViewState extends State<TotalDenemeView> {
                       ),
                     ),
                   )
-                : Container(
-                    height: 100,
-                    width: 200,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                            'assets/img/table_columns/$pngx/$index.png'),
-                        fit: BoxFit.fill,
-                        alignment: Alignment.center,
-                        repeat: ImageRepeat.noRepeat,
-                      ),
+                : GradientWidget(
+                    blendModes: BlendMode.srcOut,
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.blue.withOpacity(0.5),
+                        Colors.green.withOpacity(0.5),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    child: Container(
+                    widget: Container(
+                      height: 100,
+                      width: 200,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.blue.withOpacity(0.5),
-                            Colors.green.withOpacity(0.5),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                        color: Colors.transparent,
+                        image: DecorationImage(
+                          image: AssetImage(
+                              'assets/img/table_columns/$pngx/$index.png'),
+                          fit: BoxFit.fill,
+                          alignment: Alignment.center,
+                          repeat: ImageRepeat.noRepeat,
                         ),
                       ),
                     ),

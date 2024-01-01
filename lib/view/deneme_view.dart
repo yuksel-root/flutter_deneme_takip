@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
+import 'package:flutter_deneme_takip/components/gradient_widget.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/components/utils.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
@@ -255,6 +256,45 @@ class _DenemeViewState extends State<DenemeView> {
     ]));
   }
 
+  Widget buildEmptyTable() {
+    return Center(
+        child: Column(children: <Widget>[
+      Column(
+        children: [
+          SizedBox(
+            child: Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              defaultColumnWidth: FixedColumnWidth(context.dynamicW(0.20)),
+              border: TableBorder.all(
+                  color: Colors.black, style: BorderStyle.solid, width: 1),
+              children: [
+                getColumns(),
+              ],
+            ),
+          ),
+          Container(
+            height: 800,
+            width: 660,
+            child: Text(
+              "${xd()} Veri yok xd",
+              style: TextStyle(
+                fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+              ),
+            ),
+          )
+        ],
+      ),
+    ]));
+  }
+
+  String xd() {
+    List<String> a = [];
+    for (int i = 0; i < 8; i++) {
+      a.add("\n");
+    }
+    return a.join();
+  }
+
   TableRow getColumns() {
     return TableRow(
       children: List.generate(
@@ -267,30 +307,47 @@ class _DenemeViewState extends State<DenemeView> {
   TableCell getColumnCell(int index) {
     String pngx = initPng(_lessonName);
     return TableCell(
-      child: Padding(
-        padding: const EdgeInsets.all(0.4),
-        child: Column(
-          children: [
-            index == 0
-                ? Container(
-                    height: 100,
-                    width: 200,
-                    decoration: const BoxDecoration(
-                      color: Color(0xff1c0f45),
+        child: Padding(
+      padding: const EdgeInsets.all(0.4),
+      child: Column(
+        children: [
+          index == 0
+              ? Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.blue.withOpacity(0.5),
+                        Colors.green.withOpacity(0.5),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    child: Center(
-                      child: Text(
-                        "Deneme Sıra No",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize:
-                              context.dynamicW(0.01) * context.dynamicH(0.004),
-                        ),
+                  ),
+                  height: 100,
+                  width: 200,
+                  child: Center(
+                    child: Text(
+                      "Deneme Sıra No",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize:
+                            context.dynamicW(0.01) * context.dynamicH(0.004),
                       ),
                     ),
-                  )
-                : Container(
+                  ),
+                )
+              : GradientWidget(
+                  blendModes: BlendMode.srcOut,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.blue.withOpacity(0.5),
+                      Colors.green.withOpacity(0.5),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  widget: Container(
                     height: 100,
                     width: 200,
                     decoration: BoxDecoration(
@@ -303,10 +360,10 @@ class _DenemeViewState extends State<DenemeView> {
                       ),
                     ),
                   ),
-          ],
-        ),
+                ),
+        ],
       ),
-    );
+    ));
   }
 
   Widget getRowCell(int i, dynamic cell, DenemeViewModel denemeProv) {
