@@ -135,7 +135,7 @@ class DenemeView extends StatelessWidget {
 
   TableCell getColumnCell(
       BuildContext context, DenemeViewModel denemeProv, int index) {
-    String pngx = denemeProv.initPng(denemeProv.lessonName ?? 'Tarih');
+    // String pngx = denemeProv.initPng(denemeProv.lessonName ?? 'Tarih');
     return TableCell(
         child: Padding(
       padding: const EdgeInsets.all(0.4),
@@ -183,7 +183,7 @@ class DenemeView extends StatelessWidget {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(
-                            'assets/img/table_columns/$pngx/$index.png'),
+                            'assets/img/table_columns/${denemeProv.getInitPng}/$index.png'),
                         fit: BoxFit.fill,
                         alignment: Alignment.center,
                         repeat: ImageRepeat.noRepeat,
@@ -434,8 +434,6 @@ class DenemeView extends StatelessWidget {
 
     return rowXdata.map((row) {
       k++;
-      print("k $k k % 2 ${k % 2}");
-
       return TableRow(
         decoration: BoxDecoration(
           border: Border.all(

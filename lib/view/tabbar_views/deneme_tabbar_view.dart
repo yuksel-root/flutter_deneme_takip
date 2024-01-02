@@ -48,6 +48,9 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
 
             denemeProv.initTable(
                 LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
+
+            denemeProv.setInitPng = LessonList.lessonPngList[
+                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]];
           }
         });
         return Scaffold(

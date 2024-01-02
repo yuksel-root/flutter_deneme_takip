@@ -29,7 +29,7 @@ class DenemeViewModel extends ChangeNotifier {
   late List<dynamic> columnData;
   late List<Map<String, dynamic>> denemelerData;
   late List<List<int>> _listFalseCounts;
-
+  late String? _initPng;
   DenemeViewModel() {
     _navigation = NavigationService.instance;
     _isAlertOpen = false;
@@ -39,6 +39,8 @@ class DenemeViewModel extends ChangeNotifier {
     _lessonTableName =
         LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
     initTable(lessonName);
+    _initPng =
+        LessonList.lessonPngList[lessonName] ?? LessonList.lessonPngList[0];
     columnData = List.of(findList(lessonName ?? 'Tarih'));
     rowData = [];
     denemelerData = [];
@@ -49,12 +51,6 @@ class DenemeViewModel extends ChangeNotifier {
   set setDenemestate(DenemeState state) {
     _state = state;
     notifyListeners();
-  }
-
-  String initPng(String lessonName) {
-    String? png =
-        LessonList.lessonPngList[lessonName] ?? LessonList.lessonPngList[0];
-    return png!;
   }
 
   List<Map<String, dynamic>> filterByDenemeId(List<Map<String, dynamic>> data) {
@@ -343,6 +339,15 @@ class DenemeViewModel extends ChangeNotifier {
 
   set setLessonName(String? newLesson) {
     _lessonName = newLesson!;
+    notifyListeners();
+  }
+
+  String? get getInitPng {
+    return _initPng ?? 'hs'; //null problems
+  }
+
+  set setInitPng(String? newPng) {
+    _initPng = newPng ?? 'hs';
     notifyListeners();
   }
 
