@@ -97,6 +97,12 @@ class LessonList {
     "Coğrafya": DenemeTables.cografyaTableName,
   };
 
+  static const Map<String, List<String>> subjectListNames = {
+    "Tarih": historySubjects,
+    "Vatandaşlık": vatandasSubject,
+    "Coğrafya": cografySubject,
+  };
+
   static const Map<String, List<String>> lessonListMap = {
     "Tarih": historySubjects,
     "Coğrafya": cografySubject,

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
-import 'package:flutter_deneme_takip/view/insert_deneme_view.dart';
+import 'package:flutter_deneme_takip/view/insert_views/insert_deneme_view.dart';
+
+import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
 class DenemeEditTabbarView extends StatefulWidget {
@@ -38,6 +40,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
   @override
   Widget build(BuildContext context) {
     final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
+    final editDenemeProv = Provider.of<EditDenemeViewModel>(context);
 
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
@@ -47,6 +50,17 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
         tabController.addListener(() {
           if (!tabController.indexIsChanging) {
             tabbarNavProv.setCurrentEditDeneme = tabController.index;
+            editDenemeProv.setLessonName =
+                LessonList.lessonNameList[tabbarNavProv.getCurrentEditDeneme];
+
+            editDenemeProv.setSubjectList =
+                LessonList.subjectListNames[editDenemeProv.getLessonName];
+
+            editDenemeProv.setFalseCountsIntegers =
+                List.filled(editDenemeProv.getFalseCountsIntegers!.length, 0);
+
+            //    editDenemeProv.setFalseControllers =
+            //      editDenemeProv.getFalseControllers.length;
           }
         });
         return Scaffold(
@@ -71,16 +85,9 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
           ),
           body: const TabBarView(
             children: [
-              InsertDeneme(
-                  lessonName: "Tarih", subjectList: LessonList.historySubjects),
-              InsertDeneme(
-                lessonName: "Coğrafya",
-                subjectList: LessonList.cografySubject,
-              ),
-              InsertDeneme(
-                lessonName: "Vatandaşlık",
-                subjectList: LessonList.vatandasSubject,
-              ),
+              InsertDeneme(),
+              InsertDeneme(),
+              InsertDeneme(),
             ],
           ),
         );

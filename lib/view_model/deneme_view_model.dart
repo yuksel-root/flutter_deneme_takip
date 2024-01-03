@@ -331,7 +331,7 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   String? get getLessonName {
-    return _lessonName ?? 'Tarih'; //null problems
+    return _lessonName ?? 'Tarih';
   }
 
   set setLessonName(String? newLesson) {
@@ -374,7 +374,7 @@ class DenemeViewModel extends ChangeNotifier {
             denemeProv.getLessonTableName!, itemDeneme, 'denemeId'),
         denemeProv.setAlert = false,
         Navigator.of(context).pop(),
-        Future.delayed(const Duration(milliseconds: 200), () {
+        Future.delayed(const Duration(milliseconds: 250), () {
           print(denemeProv.getLessonName);
           denemeProv.initData(denemeProv.getLessonName!);
         }),

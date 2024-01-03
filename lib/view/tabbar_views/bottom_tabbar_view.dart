@@ -8,6 +8,7 @@ import 'package:flutter_deneme_takip/view/tabbar_views/deneme_edit_tabbar.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/deneme_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/lesson_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +41,7 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
 
     final lessonProv = Provider.of<LessonViewModel>(context);
     final denemeProv = Provider.of<DenemeViewModel>(context);
-
+    // final editProv = Provider.of<EditDenemeViewModel>(context);
     return Scaffold(
       body: currentScreen[provider.getCurrentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -62,18 +63,7 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
           lessonProv.initData(
               LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
 
-          /*   if (index == 0) {// alternative senario 
-            tabbarProvider.setLessonCurrentIndex = 0;
-            tabbarProvider.setCurrentDenemeIndex = 0;
-            lessonProv.initTable(LessonList.lessonNameList[0]);
-            denemeProv.initTable(LessonList.lessonNameList[0]);
-          } else if (index == 1) {
-            tabbarProvider.setCurrentDenemeIndex = 0;
-            tabbarProvider.setLessonCurrentIndex = 0;
-            lessonProv.initTable(LessonList.lessonNameList[0]);
-            denemeProv.initTable(LessonList.lessonNameList[0]);
-            //  denemeProv.setIsTotal = false;
-          } else {} */
+          //  editProv.setFalseControllers = editProv.getFalseControllers.length;
         },
         items: const [
           BottomNavigationBarItem(

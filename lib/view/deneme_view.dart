@@ -212,7 +212,7 @@ class DenemeView extends StatelessWidget {
                 ),
                 child: InkWell(
                   onLongPress: () {
-                    Future.delayed(const Duration(milliseconds: 100), () {
+                    Future.delayed(const Duration(milliseconds: 250), () {
                       denemeProv.removeAlert(
                         context,
                         'UYARI',
@@ -268,7 +268,7 @@ class DenemeView extends StatelessWidget {
                 ),
                 child: InkWell(
                   onLongPress: () {
-                    Future.delayed(const Duration(milliseconds: 100), () {
+                    Future.delayed(const Duration(milliseconds: 250), () {
                       denemeProv.removeAlert(
                         context,
                         'UYARI',
@@ -328,7 +328,7 @@ class DenemeView extends StatelessWidget {
                 ),
                 child: InkWell(
                   onLongPress: () {
-                    Future.delayed(const Duration(milliseconds: 100), () {
+                    Future.delayed(const Duration(milliseconds: 250), () {
                       denemeProv.removeAlert(
                         context,
                         'UYARI',
@@ -384,7 +384,7 @@ class DenemeView extends StatelessWidget {
                 ),
                 child: InkWell(
                   onLongPress: () {
-                    Future.delayed(const Duration(milliseconds: 100), () {
+                    Future.delayed(const Duration(milliseconds: 250), () {
                       denemeProv.removeAlert(
                         context,
                         'UYARI',
