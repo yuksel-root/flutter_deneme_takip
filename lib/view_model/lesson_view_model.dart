@@ -16,7 +16,6 @@ enum LessonState {
 
 class LessonViewModel extends ChangeNotifier {
   late LessonState? _state;
-  String? lessonName;
   late NavigationService _navigation;
   List<dynamic> tarihDeneme = LessonList.denemeHistory;
   late String? _lessonName;
@@ -27,12 +26,12 @@ class LessonViewModel extends ChangeNotifier {
   LessonViewModel() {
     _navigation = NavigationService.instance;
     _isAlertOpen = false;
-    _lessonName = lessonName;
+    _lessonName = 'Tarih';
     _state = LessonState.empty;
     listDeneme = [];
-    _lessonTableName =
-        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
-    initTable(_lessonName);
+    _lessonTableName = LessonList.tableNames[_lessonName] ??
+        LessonList.tableNames[_lessonName];
+    initData(_lessonName);
   }
 
   LessonState get state => _state!;
@@ -41,7 +40,7 @@ class LessonViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initTable(String? lessonName) async {
+  void initData(String? lessonName) async {
     state = LessonState.loading;
     _lessonTableName =
         LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
@@ -129,7 +128,7 @@ class LessonViewModel extends ChangeNotifier {
   }
 
   String? get getLessonName {
-    return lessonName ?? 'Tarih'; //null problems
+    return _lessonName ?? 'Tarih'; //null problems
   }
 
   set setLessonName(String? newLesson) {
@@ -168,7 +167,7 @@ class LessonViewModel extends ChangeNotifier {
         lessonProv.setAlert = false,
         Navigator.of(context).pop(),
         Future.delayed(const Duration(milliseconds: 200), () {
-          lessonProv.initTable(lessonProv.getLessonName!);
+          lessonProv.initData(lessonProv.getLessonName!);
         }),
       },
     );

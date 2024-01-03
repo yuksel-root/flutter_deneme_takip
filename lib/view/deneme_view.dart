@@ -135,7 +135,6 @@ class DenemeView extends StatelessWidget {
 
   TableCell getColumnCell(
       BuildContext context, DenemeViewModel denemeProv, int index) {
-    // String pngx = denemeProv.initPng(denemeProv.lessonName ?? 'Tarih');
     return TableCell(
         child: Padding(
       padding: const EdgeInsets.all(0.4),

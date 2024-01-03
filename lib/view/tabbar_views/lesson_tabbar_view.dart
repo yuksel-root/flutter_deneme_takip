@@ -53,7 +53,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
 
             lessonProv.setLessonName =
                 LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
-            lessonProv.initTable(
+            lessonProv.initData(
                 LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
           }
         });
@@ -142,8 +142,8 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []),
         lessonProv.setAlert = false,
-        lessonProv.initTable(lessonProv.getLessonName),
-        denemeProv.initTable(denemeProv.getLessonName),
+        lessonProv.initData(lessonProv.getLessonName),
+        denemeProv.initData(denemeProv.getLessonName),
       },
     );
 

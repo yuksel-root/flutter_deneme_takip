@@ -54,12 +54,12 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
           provider.setCurrentIndex = index;
           denemeProv.setLessonName =
               LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
-          denemeProv.initTable(
+          denemeProv.initData(
               LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
 
           lessonProv.setLessonName =
               LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
-          lessonProv.initTable(
+          lessonProv.initData(
               LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
 
           /*   if (index == 0) {// alternative senario 

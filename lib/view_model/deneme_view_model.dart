@@ -17,31 +17,31 @@ enum DenemeState {
 
 class DenemeViewModel extends ChangeNotifier {
   late DenemeState? _state;
-  String? lessonName;
+
   late NavigationService _navigation;
   List<dynamic> tarihDeneme = LessonList.denemeHistory;
   late String? _lessonName;
   late String? _lessonTableName;
   late bool _isAlertOpen;
   late List<Map<String, dynamic>>? listDeneme;
-
   late List<dynamic> rowData;
   late List<dynamic> columnData;
   late List<Map<String, dynamic>> denemelerData;
   late List<List<int>> _listFalseCounts;
   late String? _initPng;
+
   DenemeViewModel() {
     _navigation = NavigationService.instance;
     _isAlertOpen = false;
-    _lessonName = lessonName;
+    _lessonName = 'Tarih';
     _state = DenemeState.empty;
     listDeneme = [];
     _lessonTableName =
-        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
-    initTable(lessonName);
-    _initPng =
-        LessonList.lessonPngList[lessonName] ?? LessonList.lessonPngList[0];
-    columnData = List.of(findList(lessonName ?? 'Tarih'));
+        LessonList.tableNames[_lessonName] ?? LessonList.tableNames['Tarih'];
+    initData(_lessonName);
+    _initPng = LessonList.lessonPngList[_lessonName] ??
+        LessonList.lessonPngList['Tarih'];
+    columnData = List.of(findList(_lessonName ?? 'Tarih'));
     rowData = [];
     denemelerData = [];
     _listFalseCounts = [];
@@ -120,7 +120,6 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   void insertRowData(List<Map<String, dynamic>> denemelerData) {
-    int i = 0;
     rowData.clear();
 
     falseCountsByDenemeId(denemelerData).forEach((denemeId, falseCounts) {
@@ -133,7 +132,6 @@ class DenemeViewModel extends ChangeNotifier {
 
       rowData.add({'row': List.from(arr)});
 
-      i++;
       arr.clear();
     });
 
@@ -235,14 +233,13 @@ class DenemeViewModel extends ChangeNotifier {
     return LessonList.lessonListMap[lessonName] ?? [];
   }
 
-  void initTable(String? lessonName) async {
+  void initData(String? lessonName) async {
     setDenemestate = DenemeState.loading;
     _lessonTableName =
-        LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
+        LessonList.tableNames[lessonName] ?? LessonList.tableNames['Tarih'];
     //print("deneme less init table $_lessonTableName");
 
-    listDeneme = await DenemeDbProvider.db
-        .getLessonDeneme(_lessonTableName ?? DenemeTables.historyTableName);
+    listDeneme = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
     setDenemestate = DenemeState.completed;
   }
 
@@ -334,7 +331,7 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   String? get getLessonName {
-    return lessonName ?? 'Tarih'; //null problems
+    return _lessonName ?? 'Tarih'; //null problems
   }
 
   set setLessonName(String? newLesson) {
@@ -378,7 +375,8 @@ class DenemeViewModel extends ChangeNotifier {
         denemeProv.setAlert = false,
         Navigator.of(context).pop(),
         Future.delayed(const Duration(milliseconds: 200), () {
-          denemeProv.initTable(denemeProv.getLessonName!);
+          print(denemeProv.getLessonName);
+          denemeProv.initData(denemeProv.getLessonName!);
         }),
       },
     );
