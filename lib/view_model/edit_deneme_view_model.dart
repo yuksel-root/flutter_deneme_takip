@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
@@ -12,49 +11,50 @@ import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 
 class EditDenemeViewModel extends ChangeNotifier {
   late NavigationService _navigation;
-  late bool _isAlertOpen;
-  late String _date;
   final DateTime _now = DateTime.now();
 
   late bool _isDiffZero;
   late bool _isLoading;
+  late bool _isAlertOpen;
 
   late String? _lessonName;
   late int? _lastSubjectId;
   late int? _lastDenemeId;
+  late String _date;
 
   late List<String>? _subjectList;
   List<String?> _subjectSavedList = [];
-//  late List<TextEditingController> _falseCountControllers;
+  late List<TextEditingController> _falseCountControllers;
+  late int? _falseInputCount;
+  List<int?> _falseCountsIntegers = [];
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final formKey0 = GlobalKey<FormState>();
-
-  late int? _falseInputCount;
-  List<int?> _falseCountsIntegers = [];
 
   EditDenemeViewModel() {
     _falseCountsIntegers.clear();
     _subjectSavedList.clear();
 
     _navigation = NavigationService.instance;
-
-    _isAlertOpen = false;
     _date =
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(_now).toString();
 
-    _lessonName = 'Tarih';
     _isLoading = true;
     _isDiffZero = false;
+    _isAlertOpen = false;
+
+    _lessonName = 'Tarih';
     _subjectList = LessonList.historySubjects;
     _falseInputCount = _subjectList!.length;
     _formKey = formKey0;
+
     _lastSubjectId = 0;
     _lastDenemeId = 0;
+
     _falseCountsIntegers = List.generate(_falseInputCount!, (index) => 0);
     _subjectSavedList = List.of(findList(_lessonName!));
-    /* _falseCountControllers = List.generate(_falseCountsIntegers.length,
-        (index) => TextEditingController(text: '0')); */
+    _falseCountControllers = List.generate(_falseCountsIntegers.length,
+        (index) => TextEditingController(text: '0'));
   }
 
   List<String> findList(String lessonName) {
@@ -114,7 +114,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     return _falseCountsIntegers;
   }
 
-  /*  set setFalseControllers(int controllerCount) {
+  set setFalseControllers(int controllerCount) {
     _falseCountControllers = List.generate(
         controllerCount, (index) => TextEditingController(text: "0"));
     notifyListeners();
@@ -122,7 +122,7 @@ class EditDenemeViewModel extends ChangeNotifier {
 
   List<TextEditingController> get getFalseControllers {
     return _falseCountControllers;
-  } */
+  }
 
   int getFindDenemeId(List<int> existingIds, int latestId) {
     int lastId = 1;
@@ -198,7 +198,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     _isAlertOpen = newBool;
   }
 
-  Future<dynamic> buildLoadingDialog(BuildContext context) {
+  Future<dynamic> buildLoadingAlert(BuildContext context) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -257,14 +257,10 @@ class EditDenemeViewModel extends ChangeNotifier {
       title: title,
       content: content,
       isAlert: true,
-      noFunction: () => {
-        setAlert = false,
-        Navigator.of(context).pop(),
-      },
-      yesFunction: () => {
-        setAlert = false,
-        Navigator.of(context).pop(),
-      },
+      noFunction: () =>
+          {setAlert = false, Navigator.of(context, rootNavigator: true).pop()},
+      yesFunction: () =>
+          {setAlert = false, Navigator.of(context, rootNavigator: true).pop()},
     );
     if (getIsAlertOpen == false) {
       setAlert = true;
