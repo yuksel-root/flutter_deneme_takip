@@ -7,7 +7,7 @@ import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
 class DenemeTabbarView extends StatefulWidget {
-  const DenemeTabbarView({Key? key}) : super(key: key);
+  const DenemeTabbarView({super.key});
 
   @override
   State<DenemeTabbarView> createState() => _DenemeTabbarViewState();

@@ -6,7 +6,7 @@ import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
 class InsertDeneme extends StatelessWidget {
-  const InsertDeneme({Key? key}) : super(key: key);
+  const InsertDeneme({super.key});
 
   @override
   Widget build(BuildContext context) {

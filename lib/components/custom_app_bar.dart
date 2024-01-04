@@ -6,11 +6,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double? dynamicPreferredSize;
   final Gradient? gradients;
   const CustomAppBar(
-      {Key? key,
+      {super.key,
       required this.appBar,
       required this.dynamicPreferredSize,
-      required this.gradients})
-      : super(key: key);
+      required this.gradients});
 
   @override
   Widget build(BuildContext context) {

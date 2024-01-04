@@ -11,8 +11,7 @@ class DenemeEditTabbarView extends StatefulWidget {
   final List<String>? denemeSubjectList;
   final List<String>? lessonNameList;
   const DenemeEditTabbarView(
-      {Key? key, this.denemeSubjectList, this.lessonNameList})
-      : super(key: key);
+      {super.key, this.denemeSubjectList, this.lessonNameList});
 
   @override
   State<DenemeEditTabbarView> createState() => _DenemeTabbarViewState();
@@ -92,7 +91,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
           body: TabBarView(
             children: [
               FutureBuilder(
-                future: Future.delayed(const Duration(milliseconds: 800)),
+                future: Future.delayed(const Duration(milliseconds: 200)),
                 builder: (context, snapshot) {
                   if (tabController.indexIsChanging) {
                     return const FadedForm();
@@ -102,7 +101,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                 },
               ),
               FutureBuilder(
-                future: Future.delayed(const Duration(milliseconds: 800)),
+                future: Future.delayed(const Duration(milliseconds: 200)),
                 builder: (context, snapshot) {
                   if (tabController.indexIsChanging) {
                     return const FadedForm();
@@ -112,7 +111,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                 },
               ),
               FutureBuilder(
-                future: Future.delayed(const Duration(milliseconds: 800)),
+                future: Future.delayed(const Duration(milliseconds: 200)),
                 builder: (context, snapshot) {
                   if (tabController.indexIsChanging) {
                     return const FadedForm();

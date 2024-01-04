@@ -14,7 +14,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class BottomTabbarView extends StatefulWidget {
-  const BottomTabbarView({Key? key}) : super(key: key);
+  const BottomTabbarView({super.key});
 
   @override
   State<BottomTabbarView> createState() => _BottomTabbarViewState();

@@ -4,13 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 
 class FadedForm extends StatefulWidget {
-  const FadedForm({Key? key}) : super(key: key);
+  const FadedForm({super.key});
 
   @override
-  _FadedFormState createState() => _FadedFormState();
+  FadedFormState createState() => FadedFormState();
 }
 
-class _FadedFormState extends State<FadedForm>
+class FadedFormState extends State<FadedForm>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Color?> _fadedColor;
@@ -37,7 +37,7 @@ class _FadedFormState extends State<FadedForm>
           const Color(0xFF00bfff).withOpacity(0.5),
           const Color(0xFFbdc3c7).withOpacity(0.5),
         ],
-        stops: [0.0, 1.0],
+        stops: const [0.0, 1.0],
       ),
     ).animate(_controller);
 
@@ -197,8 +197,7 @@ class _FadedFormState extends State<FadedForm>
 }
 
 class LinearGradientTween extends Tween<LinearGradient?> {
-  LinearGradientTween({LinearGradient? begin, LinearGradient? end})
-      : super(begin: begin, end: end);
+  LinearGradientTween({super.begin, super.end});
 
   @override
   LinearGradient? lerp(double t) {

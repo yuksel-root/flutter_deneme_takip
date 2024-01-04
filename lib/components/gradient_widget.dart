@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class GradientWidget extends StatelessWidget {
   const GradientWidget({
-    Key? key,
+    super.key,
     required this.gradient,
     required this.widget,
     required this.blendModes,
-  }) : super(key: key);
+  });
 
   final Widget widget;
   final Gradient gradient;

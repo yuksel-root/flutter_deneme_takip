@@ -9,13 +9,12 @@ class AlertView extends StatelessWidget {
   final Function yesFunction;
   final bool isAlert;
   const AlertView(
-      {Key? key,
+      {super.key,
       required this.title,
       required this.content,
       required this.yesFunction,
       required this.noFunction,
-      required this.isAlert})
-      : super(key: key);
+      required this.isAlert});
 
   @override
   Widget build(BuildContext context) {

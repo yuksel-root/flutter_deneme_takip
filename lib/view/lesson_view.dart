@@ -4,7 +4,7 @@ import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:provider/provider.dart';
 
 class LessonView extends StatelessWidget {
-  const LessonView({Key? key}) : super(key: key);
+  const LessonView({super.key});
 
   @override
   Widget build(BuildContext context) {

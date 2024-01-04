@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 
 class LessonTabbarView extends StatefulWidget {
-  const LessonTabbarView({Key? key}) : super(key: key);
+  const LessonTabbarView({super.key});
 
   @override
   State<LessonTabbarView> createState() => _LessonTabbarViewState();

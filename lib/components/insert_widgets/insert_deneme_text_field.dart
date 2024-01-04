@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 
 class InsertDenemeTextField extends StatelessWidget {
-  const InsertDenemeTextField({Key? key}) : super(key: key);
+  const InsertDenemeTextField({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 
 class InsertDenemeButton extends StatelessWidget {
-  const InsertDenemeButton({Key? key}) : super(key: key);
+  const InsertDenemeButton({super.key});
 
   @override
   Widget build(BuildContext context) {
