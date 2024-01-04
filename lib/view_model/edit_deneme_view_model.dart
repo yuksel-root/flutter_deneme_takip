@@ -170,7 +170,7 @@ class EditDenemeViewModel extends ChangeNotifier {
           subjectName: _subjectSavedList[i]);
 
       saveDeneme(denemeModel);
-      Future.delayed(const Duration(milliseconds: 250), () async {
+      Future.delayed(const Duration(milliseconds: 200), () async {
         setLoading = false;
         _navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []);

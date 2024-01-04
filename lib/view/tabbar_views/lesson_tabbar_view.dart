@@ -142,8 +142,10 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []),
         lessonProv.setAlert = false,
-        lessonProv.initData(lessonProv.getLessonName),
-        denemeProv.initData(denemeProv.getLessonName),
+        Future.delayed(const Duration(milliseconds: 200), () {
+          lessonProv.initData(lessonProv.getLessonName);
+          denemeProv.initData(denemeProv.getLessonName);
+        }),
       },
     );
 

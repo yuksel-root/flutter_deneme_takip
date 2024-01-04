@@ -166,7 +166,7 @@ class LessonViewModel extends ChangeNotifier {
             lessonProv.getLessonTableName!, itemDeneme, 'denemeId'),
         lessonProv.setAlert = false,
         Navigator.of(context).pop(),
-        Future.delayed(const Duration(milliseconds: 250), () {
+        Future.delayed(const Duration(milliseconds: 200), () {
           lessonProv.initData(lessonProv.getLessonName!);
         }),
       },

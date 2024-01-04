@@ -36,7 +36,7 @@ class InsertDenemeTextField extends StatelessWidget {
                         final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
                         if (!isNumeric) {
                           Future.delayed(
-                            const Duration(milliseconds: 180500),
+                            const Duration(milliseconds: 200),
                             () {
                               editProv.getFormKey.currentState!.reset();
                             },

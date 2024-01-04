@@ -25,24 +25,24 @@ class InsertDenemeButton extends StatelessWidget {
                 ? editProv.buildLoadingAlert(context)
                 : const SizedBox();
 
-            Future.delayed(const Duration(milliseconds: 250), () {
+            Future.delayed(const Duration(milliseconds: 200), () {
               editProv.setLoading = false;
             });
             editProv.saveButton(context);
           } else if (editProv.getIsDiffZero == false) {
-            Future.delayed(const Duration(milliseconds: 250), () {
+            Future.delayed(const Duration(milliseconds: 200), () {
               editProv.valAlert(context, 'HATA', 'En az 1 değer gir!');
             });
           } else {
             Future.delayed(
-              const Duration(milliseconds: 250),
+              const Duration(milliseconds: 200),
               () {
                 editProv.valAlert(context, 'HATA', 'Sadece Tam sayı giriniz!');
               },
             );
           }
           Future.delayed(
-            const Duration(milliseconds: 250),
+            const Duration(milliseconds: 200),
             () {
               editProv.setLoading = true;
               editProv.getFormKey.currentState!.reset();
