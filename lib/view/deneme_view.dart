@@ -5,66 +5,67 @@ import 'package:flutter_deneme_takip/components/utils.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DenemeView extends StatelessWidget {
-  const DenemeView({Key? key}) : super(key: key);
+  const DenemeView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final denemeProv = Provider.of<DenemeViewModel>(context);
     final denemeData = context.read<DenemeViewModel>().listDeneme ?? [];
+
     return buildFutureView(denemeProv, denemeData);
   }
 
   FutureBuilder buildFutureView(DenemeViewModel denemeProv, denemeData) {
     return FutureBuilder(
-      future: Future.delayed(Duration.zero, () => denemeData),
-      builder: (BuildContext context, _) {
-        if (context.watch<DenemeViewModel>().getDenemeState ==
-            DenemeState.loading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (context.watch<DenemeViewModel>().listDeneme!.isEmpty) {
-          return Center(
-              child: Text(
-                  style: TextStyle(
-                      color: const Color(0xff1c0f45),
-                      fontSize:
-                          context.dynamicW(0.01) * context.dynamicH(0.005)),
-                  'Gösterilecek veri yok'));
-        } else {
-          denemeProv.convertToRow(denemeData);
-          if (denemeProv.getIsTotal == false) {
-            denemeProv.insertRowData(denemeProv.denemelerData);
+        future: Future.delayed(Duration.zero, () => denemeData),
+        builder: (BuildContext context, _) {
+          if (context.watch<DenemeViewModel>().getDenemeState ==
+              DenemeState.loading) {
+            return Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: buildDataTable(context, denemeProv));
+          } else if (context.watch<DenemeViewModel>().listDeneme!.isEmpty) {
+            return Center(
+                child: Text(
+                    style: TextStyle(
+                        color: const Color(0xff1c0f45),
+                        fontSize:
+                            context.dynamicW(0.01) * context.dynamicH(0.005)),
+                    'Gösterilecek veri yok'));
           } else {
-            denemeProv.totalInsertRowData(denemeProv.denemelerData);
-          }
+            denemeProv.convertToRow(denemeData);
+            if (denemeProv.getIsTotal == false) {
+              denemeProv.insertRowData(denemeProv.denemelerData);
+            } else {
+              denemeProv.totalInsertRowData(denemeProv.denemelerData);
+            }
 
-          return Scaffold(
-            body: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 20,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
+            return Scaffold(
+              body: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 20,
                       child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: buildDataTable(context, denemeProv),
+                        scrollDirection: Axis.vertical,
+                        child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: buildDataTable(context, denemeProv)),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        }
-      },
-    );
+            );
+          }
+        });
   }
 
   Widget buildDataTable(BuildContext context, DenemeViewModel denemeProv) {
