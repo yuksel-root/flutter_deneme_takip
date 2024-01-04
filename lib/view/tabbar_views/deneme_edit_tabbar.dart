@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/custom_shimmer_loading.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
@@ -85,11 +86,38 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                   Tab(text: "Vatandaşlık"),
                 ]),
           ),
-          body: const TabBarView(
+          body: TabBarView(
             children: [
-              InsertDeneme(),
-              InsertDeneme(),
-              InsertDeneme(),
+              FutureBuilder(
+                future: Future.delayed(const Duration(milliseconds: 800)),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CustomShimmerLoading());
+                  } else {
+                    return const InsertDeneme();
+                  }
+                },
+              ),
+              FutureBuilder(
+                future: Future.delayed(const Duration(milliseconds: 800)),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CustomShimmerLoading());
+                  } else {
+                    return const InsertDeneme();
+                  }
+                },
+              ),
+              FutureBuilder(
+                future: Future.delayed(const Duration(milliseconds: 800)),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CustomShimmerLoading());
+                  } else {
+                    return const InsertDeneme();
+                  }
+                },
+              ),
             ],
           ),
         );
