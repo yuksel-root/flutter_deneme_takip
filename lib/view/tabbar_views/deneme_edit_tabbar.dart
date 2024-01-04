@@ -59,8 +59,10 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
             editDenemeProv.setFalseCountsIntegers =
                 List.filled(editDenemeProv.getFalseCountsIntegers!.length, 0);
 
-            //    editDenemeProv.setFalseControllers =
-            //      editDenemeProv.getFalseControllers.length;
+            editDenemeProv.setFalseControllers =
+                editDenemeProv.getFalseCountsIntegers!.length;
+
+            editDenemeProv.setLoading = true;
           }
         });
         return Scaffold(

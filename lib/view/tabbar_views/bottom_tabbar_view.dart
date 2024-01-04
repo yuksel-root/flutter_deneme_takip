@@ -41,7 +41,7 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
 
     final lessonProv = Provider.of<LessonViewModel>(context);
     final denemeProv = Provider.of<DenemeViewModel>(context);
-    // final editProv = Provider.of<EditDenemeViewModel>(context);
+    final editProv = Provider.of<EditDenemeViewModel>(context);
     return Scaffold(
       body: currentScreen[provider.getCurrentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -63,7 +63,10 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
           lessonProv.initData(
               LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
 
-          //  editProv.setFalseControllers = editProv.getFalseControllers.length;
+          editProv.setFalseControllers =
+              editProv.getFalseCountsIntegers!.length;
+
+          editProv.setLoading = true;
         },
         items: const [
           BottomNavigationBarItem(

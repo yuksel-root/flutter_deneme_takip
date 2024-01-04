@@ -22,7 +22,7 @@ class InsertDenemeButton extends StatelessWidget {
           if (editProv.getFormKey.currentState!.validate() &&
               editProv.getIsDiffZero == true) {
             editProv.getIsLoading
-                ? editProv.buildLoadingDialog(context)
+                ? editProv.buildLoadingAlert(context)
                 : const SizedBox();
 
             Future.delayed(const Duration(milliseconds: 250), () {

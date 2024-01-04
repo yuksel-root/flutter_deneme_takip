@@ -34,6 +34,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     final tabbarNavProv =
         Provider.of<TabbarNavigationProvider>(context, listen: true);
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
+
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
       initialIndex: tabbarNavProv.getCurrentDenemeIndex,
@@ -56,6 +57,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
         return Scaffold(
           appBar: buildAppbar(denemeProv),
           body: TabBarView(
+            controller: tabController,
             physics: const NeverScrollableScrollPhysics(),
             children: List.generate(
               LessonList.lessonNameList.length,
