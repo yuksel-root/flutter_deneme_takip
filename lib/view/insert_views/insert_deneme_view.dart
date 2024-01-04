@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/custom_app_bar.dart';
 import 'package:flutter_deneme_takip/components/insert_widgets/insert_deneme_button.dart';
 import 'package:flutter_deneme_takip/components/insert_widgets/insert_deneme_form.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
@@ -14,41 +13,43 @@ class InsertDeneme extends StatelessWidget {
     final editDenemeProv =
         Provider.of<EditDenemeViewModel>(context, listen: true);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: CustomAppBar(
-            dynamicPreferredSize: context.mediaQuery.size.height / 14,
-            appBar: AppBar(
-                flexibleSpace: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    alignment: WrapAlignment.spaceEvenly,
-                    spacing: 10,
-                    children: [
-                  Text(
-                    '${editDenemeProv.getLessonName} Dersi Girişi',
-                    style: TextStyle(
-                        fontSize:
-                            context.dynamicW(0.01) * context.dynamicH(0.005)),
-                  ),
-                  SizedBox(
-                      height: context.dynamicH(0.0571),
-                      child: const InsertDenemeButton()),
-                ]))),
-        body: Padding(
-          padding: EdgeInsets.all(context.dynamicW(0.00714)),
-          child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Scaffold(
+        body: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF00bfff),
+                Color(0xFFbdc3c7),
+              ],
+              stops: [0.0, 1.0],
+            ),
+          ),
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.spaceEvenly,
+            spacing: 10,
             children: [
-              Expanded(
-                flex: 50,
-                child: InsertDenemeForm(),
+              Text(
+                '${editDenemeProv.getLessonName} Dersi Girişi',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
               ),
+              SizedBox(
+                  height: context.dynamicH(0.0571),
+                  child: const InsertDenemeButton()),
             ],
           ),
         ),
-      ),
-    );
+        const Expanded(
+          flex: 50,
+          child: InsertDenemeForm(),
+        ),
+      ],
+    ));
   }
 
   Future<dynamic> buildLoadingDialog(BuildContext context) {

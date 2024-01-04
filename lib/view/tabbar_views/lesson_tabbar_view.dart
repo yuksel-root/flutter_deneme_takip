@@ -56,8 +56,6 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
 
             lessonProv
                 .initLessonData(LessonList.lessonNameList[tabController.index]);
-
-            print(lessonProv.listDeneme);
           }
         });
         return Scaffold(

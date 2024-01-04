@@ -266,7 +266,6 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   void saveDeneme(DenemeModel deneme, String lessonTable) {
-    print(deneme.subjectName);
     try {
       DenemeDbProvider.db.insertDeneme(deneme, lessonTable);
     } catch (e) {
