@@ -240,6 +240,7 @@ class DenemeViewModel extends ChangeNotifier {
     //print("deneme less init table $_lessonTableName");
 
     listDeneme = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
+
     setDenemestate = DenemeState.completed;
   }
 
@@ -265,6 +266,7 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   void saveDeneme(DenemeModel deneme, String lessonTable) {
+    print(deneme.subjectName);
     try {
       DenemeDbProvider.db.insertDeneme(deneme, lessonTable);
     } catch (e) {

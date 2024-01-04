@@ -60,7 +60,7 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
 
           lessonProv.setLessonName =
               LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
-          lessonProv.initData(
+          lessonProv.initLessonData(
               LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
 
           editProv.setFalseControllers =

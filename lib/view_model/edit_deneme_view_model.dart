@@ -148,6 +148,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     _date =
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(now).toString();
 
+    _subjectSavedList = getSubjectList;
     _lastSubjectId = await DenemeDbProvider.db
         .getFindLastId(LessonList.tableNames[_lessonName]!, "subjectId");
     List<int> existingIds = await DenemeDbProvider.db
@@ -157,8 +158,9 @@ class EditDenemeViewModel extends ChangeNotifier {
         0;
 
     int k = 1;
-    //   denemeProv.printFunct("subjectList", _subjectSavedList);
-    // printFunct("falseCounters", _falseCountsIntegers);
+
+    printFunct("falseCounters", _falseCountsIntegers);
+    printFunct("subjectSavedList", _subjectSavedList);
     final int lastDenemeId = getFindDenemeId(existingIds, latestId);
 
     for (int i = 0; i < _falseCountsIntegers.length; i++) {

@@ -49,6 +49,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
 
             denemeProv.initData(
                 LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
+            //  print(denemeProv.listDeneme);
 
             denemeProv.setInitPng = LessonList.lessonPngList[
                 LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]];

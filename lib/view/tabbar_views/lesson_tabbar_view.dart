@@ -52,9 +52,12 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             tabbarNavProv.setLessonCurrentIndex = tabController.index;
 
             lessonProv.setLessonName =
-                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
-            lessonProv.initData(
-                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
+                LessonList.lessonNameList[tabController.index];
+
+            lessonProv
+                .initLessonData(LessonList.lessonNameList[tabController.index]);
+
+            print(lessonProv.listDeneme);
           }
         });
         return Scaffold(
@@ -143,7 +146,8 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             .navigateToPageClear(path: NavigationConstants.homeView, data: []),
         lessonProv.setAlert = false,
         Future.delayed(const Duration(milliseconds: 200), () {
-          lessonProv.initData(lessonProv.getLessonName);
+          lessonProv.initLessonData(lessonProv.getLessonName);
+
           denemeProv.initData(denemeProv.getLessonName);
         }),
       },

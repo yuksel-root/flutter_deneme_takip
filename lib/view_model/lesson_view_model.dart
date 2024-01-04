@@ -31,7 +31,8 @@ class LessonViewModel extends ChangeNotifier {
     listDeneme = [];
     _lessonTableName = LessonList.tableNames[_lessonName] ??
         LessonList.tableNames[_lessonName];
-    initData(_lessonName);
+
+    initLessonData(_lessonName);
   }
 
   LessonState get state => _state!;
@@ -40,14 +41,14 @@ class LessonViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initData(String? lessonName) async {
+  void initLessonData(String? lessonName) async {
     state = LessonState.loading;
+
     _lessonTableName =
         LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
     // print("lesson table $_lessonTableName");
 
-    listDeneme = await DenemeDbProvider.db
-        .getLessonDeneme(_lessonTableName ?? DenemeTables.historyTableName);
+    listDeneme = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
     state = LessonState.completed;
   }
 
@@ -167,7 +168,7 @@ class LessonViewModel extends ChangeNotifier {
         lessonProv.setAlert = false,
         Navigator.of(context).pop(),
         Future.delayed(const Duration(milliseconds: 200), () {
-          lessonProv.initData(lessonProv.getLessonName!);
+          lessonProv.initLessonData(lessonProv.getLessonName!);
         }),
       },
     );

@@ -10,6 +10,7 @@ class LessonView extends StatelessWidget {
   Widget build(BuildContext context) {
     final lessonProv = Provider.of<LessonViewModel>(context);
     final lessonData = context.read<LessonViewModel>().listDeneme;
+//    print(lessonData);
 
     return futureListSubjectName(context, lessonProv, lessonData);
   }
