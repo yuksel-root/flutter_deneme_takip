@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/insert_widgets/insert_deneme_button.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-import 'package:flutter_deneme_takip/components/custom_app_bar.dart';
 
 class FadedForm extends StatefulWidget {
   const FadedForm({Key? key}) : super(key: key);
@@ -36,8 +34,8 @@ class _FadedFormState extends State<FadedForm>
       ),
       end: LinearGradient(
         colors: [
-          Color(0xFF00bfff).withOpacity(0.5),
-          Color(0xFFbdc3c7).withOpacity(0.5),
+          const Color(0xFF00bfff).withOpacity(0.5),
+          const Color(0xFFbdc3c7).withOpacity(0.5),
         ],
         stops: [0.0, 1.0],
       ),
@@ -66,20 +64,24 @@ class _FadedFormState extends State<FadedForm>
     final EditDenemeViewModel editProv =
         Provider.of<EditDenemeViewModel>(context, listen: true);
     return Scaffold(
-      body: SingleChildScrollView(
+      body: Form(
         child: Center(
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (BuildContext context, Widget? child) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  fadedAppBarWidget(editProv, context),
-                  for (int i = 1; i < 11; i++)
-                    fadedInputFormWidget(editProv, i, context),
-                ],
-              );
-            },
+          child: SingleChildScrollView(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (BuildContext context, Widget? child) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    fadedAppBarWidget(editProv, context),
+                    for (int i = 1;
+                        i < editProv.getFalseCountsIntegers!.length;
+                        i++)
+                      fadedInputFormWidget(editProv, i, context),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -97,10 +99,13 @@ class _FadedFormState extends State<FadedForm>
             Expanded(
               child: TextFormField(
                 controller: editProv.getFalseControllers[i],
+                autofocus: false,
+                keyboardType: TextInputType.number,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                textInputAction: TextInputAction.next,
                 style: TextStyle(
-                  color: _fadedWidgetColor(Colors.black).value!,
-                  fontSize: MediaQuery.of(context).size.width * 0.02,
-                ),
+                    color: _fadedWidgetColor(Colors.black).value!,
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
                 decoration: InputDecoration(
                   hintText: "Konu Yanlış Sayısı",
                   label: Text(
@@ -125,7 +130,7 @@ class _FadedFormState extends State<FadedForm>
           ],
         ),
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.0428,
+          height: context.dynamicH(0.0428),
         ),
       ],
     );

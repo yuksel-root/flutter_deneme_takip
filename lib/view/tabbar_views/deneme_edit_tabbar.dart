@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/custom_shimmer_loading.dart';
+import 'package:flutter_deneme_takip/components/insert_widgets/faded_insert_form.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/insert_views/insert_deneme_view.dart';
-
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -76,11 +75,15 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                             context.dynamicW(0.01) * context.dynamicH(0.005)),
                     'Deneme App')),
             backgroundColor: const Color(0xff1c0f45),
-            bottom: const TabBar(
+            bottom: TabBar(
                 indicatorColor: Colors.greenAccent,
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,
-                tabs: [
+                unselectedLabelStyle: TextStyle(
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
+                labelStyle: TextStyle(
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
+                tabs: const [
                   Tab(text: "Tarih"),
                   Tab(text: "Coğrafya"),
                   Tab(text: "Vatandaşlık"),
@@ -91,8 +94,8 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
               FutureBuilder(
                 future: Future.delayed(const Duration(milliseconds: 800)),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CustomShimmerLoading());
+                  if (tabController.indexIsChanging) {
+                    return const FadedForm();
                   } else {
                     return const InsertDeneme();
                   }
@@ -101,8 +104,8 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
               FutureBuilder(
                 future: Future.delayed(const Duration(milliseconds: 800)),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CustomShimmerLoading());
+                  if (tabController.indexIsChanging) {
+                    return const FadedForm();
                   } else {
                     return const InsertDeneme();
                   }
@@ -111,8 +114,8 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
               FutureBuilder(
                 future: Future.delayed(const Duration(milliseconds: 800)),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CustomShimmerLoading());
+                  if (tabController.indexIsChanging) {
+                    return const FadedForm();
                   } else {
                     return const InsertDeneme();
                   }

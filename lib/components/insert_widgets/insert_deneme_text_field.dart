@@ -29,6 +29,10 @@ class InsertDenemeTextField extends StatelessWidget {
                       keyboardType: TextInputType.number,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       textInputAction: TextInputAction.next,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize:
+                              context.dynamicW(0.01) * context.dynamicH(0.005)),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Lütfen boş bırakmayın';
