@@ -159,8 +159,8 @@ class EditDenemeViewModel extends ChangeNotifier {
 
     int k = 1;
 
-    printFunct("falseCounters", _falseCountsIntegers);
-    printFunct("subjectSavedList", _subjectSavedList);
+    //printFunct("falseCounters", _falseCountsIntegers);
+    //printFunct("subjectSavedList", _subjectSavedList);
     final int lastDenemeId = getFindDenemeId(existingIds, latestId);
 
     for (int i = 0; i < _falseCountsIntegers.length; i++) {

@@ -2,25 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class LessonView extends StatelessWidget {
   const LessonView({super.key});
+  static const Color titleColor1 = Color.fromRGBO(28, 15, 69, 1);
+  static const Color subTitleColor1 = Color.fromARGB(220, 92, 0, 92);
+  static const Color contentColor1 = Color.fromARGB(255, 122, 0, 0);
 
   @override
   Widget build(BuildContext context) {
     final lessonProv = Provider.of<LessonViewModel>(context);
     final lessonData = context.read<LessonViewModel>().listDeneme;
 
-    return futureListSubjectName(context, lessonProv, lessonData);
+    Map<String, List<Map<String, dynamic>>> groupedData =
+        lessonProv.groupBySubjects(lessonData!);
+    return futureListSubjectName(context, lessonProv, lessonData, groupedData);
   }
 
-  FutureBuilder futureListSubjectName(
-      BuildContext context, LessonViewModel lessonProv, lessonData) {
+  FutureBuilder futureListSubjectName(BuildContext context,
+      LessonViewModel lessonProv, lessonData, groupedData) {
     return FutureBuilder(
       future: Future.delayed(Duration.zero, () => lessonData),
       builder: (context, _) {
         if (context.watch<LessonViewModel>().state == LessonState.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: listSubjects(context, groupedData, lessonProv));
         } else if (context.watch<LessonViewModel>().listDeneme!.isEmpty) {
           return Center(
               child: Text(
@@ -68,34 +77,64 @@ class LessonView extends StatelessWidget {
       LessonViewModel lessonProv) {
     return ExpansionTile(
       tilePadding: const EdgeInsets.all(5),
-      title: Text(
-        'Konu: $subjectName  Toplam Yanlış = ${totalSubjectFalse[subjectName]}',
-        style: TextStyle(
-            fontSize: context.dynamicW(0.01) * context.dynamicH(0.0052),
-            fontWeight: FontWeight.bold),
-        maxLines: 2,
+      title: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Konu: $subjectName  ',
+            style: TextStyle(
+                color: titleColor1,
+                fontSize: context.dynamicW(0.01) * context.dynamicH(0.0052),
+                fontWeight: FontWeight.bold),
+            maxLines: 1,
+          ),
+          Text(
+            'Toplam Yanlış = ${totalSubjectFalse[subjectName]}',
+            style: TextStyle(
+                color: contentColor1,
+                fontSize: context.dynamicW(0.01) * context.dynamicH(0.0052),
+                fontWeight: FontWeight.bold),
+            maxLines: 3,
+          ),
+        ],
       ),
       children: [
         for (var i = 0; i < denemeFalseCounts.length; i++)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
-            child: Text(
-              i == 0
-                  ? ('Deneme 1-5  Toplam yanlış: ${denemeFalseCounts[i]}')
-                  : 'Deneme ${((i * 5) + 1)}- ${((i * 5)) + 5}  Toplam Yanlış: ${denemeFalseCounts[i]}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: context.dynamicW(0.01) * context.dynamicH(0.004),
-                color: const Color(0xff1c0f45),
-              ),
+            child: Row(
+              children: [
+                Text(
+                    i == 0
+                        ? ('Deneme 1-5 :  ')
+                        : 'Deneme: ${((i * 5) + 1)}- ${((i * 5)) + 5}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize:
+                          context.dynamicW(0.01) * context.dynamicH(0.0048),
+                      color: const Color.fromARGB(255, 0, 0, 0),
+                    )),
+                Text(
+                  i == 0
+                      ? ('Toplam Yanlış => ${denemeFalseCounts[i]}')
+                      : 'Toplam Yanlış => ${denemeFalseCounts[i]}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.0048),
+                    color: const Color.fromARGB(255, 161, 0, 0),
+                  ),
+                ),
+              ],
             ),
           ),
         ExpansionTile(
           title: Text(
             "Denemeler",
             style: TextStyle(
+              color: subTitleColor1,
               fontWeight: FontWeight.bold,
-              fontSize: context.dynamicW(0.01) * context.dynamicH(0.0052),
+              fontSize: context.dynamicW(0.01) * context.dynamicH(0.0055),
             ),
           ),
           children: [
@@ -124,11 +163,25 @@ class LessonView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    'Deneme${item['denemeId']} :  Yanlış Sayısı = ${item['falseCount']}',
-                    style: TextStyle(
-                        fontSize:
-                            context.dynamicW(0.01) * context.dynamicH(0.005)),
+                  Row(
+                    children: [
+                      Text(
+                        '${item['denemeId']}.Deneme :  ',
+                        style: TextStyle(
+                            color: const Color(0xff1c0f45),
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.dynamicW(0.01) *
+                                context.dynamicH(0.0046)),
+                      ),
+                      Text(
+                        'Yanlış Sayısı = ${item['falseCount']}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xff6f0000),
+                            fontSize: context.dynamicW(0.01) *
+                                context.dynamicH(0.0046)),
+                      ),
+                    ],
                   ),
                   const SizedBox(
                     width: 50,
@@ -149,12 +202,18 @@ class LessonView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8.0),
-              Text(
-                'Tarih: ${item['denemeDate']}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.004),
-                ),
+              Row(
+                children: [
+                  Text(
+                    'Tarih: ${item['denemeDate']}',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 87, 27, 0),
+                      fontWeight: FontWeight.bold,
+                      fontSize:
+                          context.dynamicW(0.01) * context.dynamicH(0.0044),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8.0),
             ],

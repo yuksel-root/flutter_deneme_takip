@@ -49,7 +49,10 @@ class LessonViewModel extends ChangeNotifier {
     // print("lesson table $_lessonTableName");
 
     listDeneme = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
-    state = LessonState.completed;
+
+    Future.delayed(const Duration(milliseconds: 200), () {
+      state = LessonState.completed;
+    });
   }
 
   Map<String, List<Map<String, dynamic>>> groupBySubjects(

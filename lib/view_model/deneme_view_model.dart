@@ -241,7 +241,9 @@ class DenemeViewModel extends ChangeNotifier {
 
     listDeneme = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
 
-    setDenemestate = DenemeState.completed;
+    Future.delayed(const Duration(milliseconds: 200), () {
+      setDenemestate = DenemeState.completed;
+    });
   }
 
   bool compareLists(List<dynamic> list1, List<dynamic> list2) {
