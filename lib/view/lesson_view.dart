@@ -207,7 +207,7 @@ class LessonView extends StatelessWidget {
                   Text(
                     'Tarih: ${item['denemeDate']}',
                     style: TextStyle(
-                      color: Color.fromARGB(255, 87, 27, 0),
+                      color: const Color.fromARGB(255, 87, 27, 0),
                       fontWeight: FontWeight.bold,
                       fontSize:
                           context.dynamicW(0.01) * context.dynamicH(0.0044),
