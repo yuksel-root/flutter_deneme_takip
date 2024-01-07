@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:provider/provider.dart';
@@ -11,23 +12,28 @@ class UserLoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Deneme Takip Giriş'),
+          backgroundColor: const Color(0xff1c0f45),
+          title: Text(
+            'Deneme Takip Google Giriş',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: context.dynamicW(0.01) * context.dynamicH(0.0065)),
+          ),
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Expanded(
-                flex: 2,
+                flex: 40,
                 child: Container(
-                  height: 100,
-                  width: 200,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('assets/img/icon/login.png'),
-                      fit: BoxFit.fill,
+                      fit: BoxFit.contain,
                       alignment: Alignment.center,
                       repeat: ImageRepeat.noRepeat,
                     ),
@@ -36,8 +42,11 @@ class UserLoginView extends StatelessWidget {
               ),
               const Spacer(flex: 1),
               Expanded(
-                flex: 1,
+                flex: 5,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xff1c0f45),
+                  ),
                   onPressed: () {
                     if (context.read<DenemeLoginViewModel>().getState ==
                         LoginState.notLoggedIn) {
@@ -60,9 +69,30 @@ class UserLoginView extends StatelessWidget {
                     loginProv.errorAlert(
                         context, "Uyarı", loginProv.getError, loginProv);
                   },
-                  child: const Text('Google ile Giriş'),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/img/icon/login.png',
+                        width: context.dynamicW(0.1),
+                        height: context.dynamicH(0.0714),
+                      ),
+                      SizedBox(
+                        width: context.dynamicW(0.05),
+                      ),
+                      Text(
+                        'Google ile Giriş',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: context.dynamicW(0.01) *
+                                context.dynamicH(0.005)),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+              const Spacer(flex: 5),
             ],
           ),
         ),
