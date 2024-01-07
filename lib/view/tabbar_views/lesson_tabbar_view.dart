@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
-import 'package:flutter_deneme_takip/components/sign_out_button.dart';
+import 'package:flutter_deneme_takip/components/sign_button.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
+import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/lesson_view.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
+import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +44,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         Provider.of<TabbarNavigationProvider>(context, listen: true);
     final lessonProv = Provider.of<LessonViewModel>(context, listen: false);
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
+    final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
 
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
@@ -62,7 +65,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         return Scaffold(
             appBar: AppBar(
                 actions: <Widget>[
-                  const SignOutButton(),
+                  // buildSignOutButton(context, loginProv),
                   PopupMenuButton(
                     itemBuilder: (BuildContext context) {
                       return <PopupMenuEntry>[
@@ -75,11 +78,20 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                                     context.dynamicH(0.004)),
                           ),
                         ),
+                        PopupMenuItem(
+                          value: 'option2',
+                          child: Text(
+                            'Google Çıkış',
+                            style: TextStyle(
+                                fontSize: context.dynamicW(0.01) *
+                                    context.dynamicH(0.004)),
+                          ),
+                        ),
 
                         // Diğer seçenekler
                       ];
                     },
-                    onSelected: (value) {
+                    onSelected: (value) async {
                       if (value == 'option1') {
                         _showDialog(
                             context,
@@ -88,18 +100,29 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                             lessonProv,
                             denemeProv);
                       }
+                      if (value == 'option2') {
+                        if (AuthService().fAuth.currentUser != null ||
+                            await loginProv.getIsAnonymous == true) {
+                          AuthService().signOut();
+                          loginProv.setAnonymousLogin = false;
+                          loginProv.setState = LoginState.notLoggedIn;
+                          navigation.navigateToPageClear(
+                              path: NavigationConstants.loginView);
+                        }
+                      }
                     },
                   ),
                 ],
                 title: Center(
                     child: Text(
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize:
-                          context.dynamicW(0.01) * context.dynamicH(0.005)),
-                  '        Deneme App',
-                )),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: context.dynamicW(0.01) *
+                                context.dynamicH(0.005)),
+                        AuthService().fAuth.currentUser != null
+                            ? ' ${AuthService().fAuth.currentUser?.email ?? ""}       '
+                            : "Deneme App")),
                 backgroundColor: const Color(0xff1c0f45),
                 bottom: TabBar(
                   labelColor: Colors.green,
@@ -165,5 +188,28 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         (value) => lessonProv.setAlert = false,
       );
     }
+  }
+
+  SignButton buildSignOutButton(
+      BuildContext context, DenemeLoginViewModel loginProv) {
+    return SignButton(
+        isGreyPng: true,
+        onPressFunct: () async {
+          if (AuthService().fAuth.currentUser != null ||
+              await loginProv.getIsAnonymous == true) {
+            AuthService().signOut();
+            loginProv.setAnonymousLogin = false;
+            loginProv.setState = LoginState.notLoggedIn;
+            navigation.navigateToPageClear(path: NavigationConstants.loginView);
+          } else {}
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        labelText: "Çıkış",
+        labelStyle: TextStyle(
+          color: Colors.white,
+          fontSize: context.dynamicH(0.00571) * context.dynamicW(0.01),
+        ));
   }
 }
