@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
+import 'package:flutter_deneme_takip/core/local_storage/local_storage_manager.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 
@@ -16,13 +18,33 @@ enum LoginState {
 class DenemeLoginViewModel extends ChangeNotifier {
   LoginState? _loggedInStatus;
   User? _currentUser;
+  bool? _isAnonymous;
   String? _error;
   late bool _isAlertOpen;
+  final LocalStorageManager _storageManager = LocalStorageManager.instance;
 
   DenemeLoginViewModel() {
     _loggedInStatus = LoginState.notLoggedIn;
     _isAlertOpen = false;
+    _isAnonymous = false;
+
     _currentUser = AuthService().fAuth.currentUser;
+  }
+
+  set setAnonymousLogin(bool newBool) {
+    _isAnonymous = newBool;
+    isAnonymousSave(_isAnonymous!);
+    notifyListeners();
+  }
+
+  Future<bool?> get getIsAnonymous async {
+    bool? isAnonymous = await _storageManager.getBool('isAnonymous');
+    return Future.value(isAnonymous);
+  }
+
+  Future<void> isAnonymousSave(bool newBool) async {
+    _storageManager.setBool("isAnonymous", newBool);
+    //print(await _storageManager.getAllValues);
   }
 
   bool get getIsAlertOpen => _isAlertOpen;
@@ -37,43 +59,52 @@ class DenemeLoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get getError => _error!;
+  String get getError => _error ?? 'Bİlinmeyen hata';
   set setError(String newError) {
     _error = newError;
   }
 
-  Future<void> loginWithGoogle(BuildContext context) async {
-    print("oldUser $_currentUser");
+  Future<void> loginWithGoogle(
+      BuildContext context, DenemeLoginViewModel loginProv) async {
     _currentUser = AuthService().fAuth.currentUser;
     print("newUser $_currentUser");
 
-    if (_currentUser == null && getState == LoginState.notLoggedIn) {
+    if (_currentUser == null &&
+        getState == LoginState.notLoggedIn &&
+        await loginProv.getIsAnonymous == false) {
       setState = LoginState.authenticating;
       try {
         _currentUser = await AuthService().signInWithGoogle();
         if (_currentUser != null) {
           setState = LoginState.loggedIn;
-          navigation.navigateToPage(path: NavigationConstants.homeView);
+          navigation.navigateToPageClear(path: NavigationConstants.homeView);
         }
       } on FirebaseAuthException catch (error) {
         print("Login FIREBASE CATCH ERROR ${error.message}");
         setState = LoginState.loginError;
         setError = "İnternet bağlantısı yok!";
+        SystemNavigator.pop();
       } catch (e) {
         print("Login CATCH ERROR $e");
         setState = LoginState.loginError;
         setError = e.toString();
       }
     } else {
-      print("CURRENTUser not null error $_currentUser");
-      setState = LoginState.loginError;
-      setError = "CURRENTUser Not Null Error";
-      Future.delayed(Duration.zero, () {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Kullanıcı verisi  zaten var")));
-        }
-      });
+      print("CURRENTUserViewModel else  $_currentUser");
+      setState = LoginState.loggedIn;
+      navigation.navigateToPageClear(path: NavigationConstants.homeView);
+    }
+  }
+
+  Future<void> loginWithOutGoogle(BuildContext context) async {
+    setAnonymousLogin = true;
+    if (await getIsAnonymous == true) {
+      navigation.navigateToPageClear(path: NavigationConstants.homeView);
+      setState = LoginState.loggedIn;
+    } else {
+      setState = LoginState.notLoggedIn;
+      setAnonymousLogin = false;
+      navigation.navigateToPageClear(path: NavigationConstants.loginView);
     }
   }
 
@@ -85,11 +116,11 @@ class DenemeLoginViewModel extends ChangeNotifier {
       isAlert: true,
       noFunction: () => {
         loginProv.setAlert = false,
-        Navigator.of(context).pop(),
+        Navigator.of(context, rootNavigator: true).pop(),
       },
       yesFunction: () async => {
         loginProv.setAlert = false,
-        Navigator.of(context).pop(),
+        Navigator.of(context, rootNavigator: true).pop(),
       },
     );
 
