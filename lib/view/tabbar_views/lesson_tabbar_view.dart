@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
+import 'package:flutter_deneme_takip/components/sign_out_button.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
@@ -61,6 +62,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         return Scaffold(
             appBar: AppBar(
                 actions: <Widget>[
+                  const SignOutButton(),
                   PopupMenuButton(
                     itemBuilder: (BuildContext context) {
                       return <PopupMenuEntry>[
