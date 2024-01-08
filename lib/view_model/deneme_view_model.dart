@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
@@ -7,6 +8,9 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
+import 'package:flutter_deneme_takip/models/deneme_post_model.dart';
+import 'package:flutter_deneme_takip/services/auth_service.dart';
+import 'package:flutter_deneme_takip/services/firebase_service.dart';
 
 enum DenemeState {
   empty,
@@ -17,8 +21,10 @@ enum DenemeState {
 
 class DenemeViewModel extends ChangeNotifier {
   late DenemeState? _state;
-
   late NavigationService _navigation;
+
+  FirebaseFirestore? firestore = FirebaseFirestore.instance;
+
   List<dynamic> tarihDeneme = LessonList.denemeHistory;
   late String? _lessonName;
   late String? _lessonTableName;
@@ -32,6 +38,7 @@ class DenemeViewModel extends ChangeNotifier {
 
   DenemeViewModel() {
     _navigation = NavigationService.instance;
+
     _isAlertOpen = false;
     _lessonName = 'Tarih';
     _state = DenemeState.empty;
@@ -394,6 +401,74 @@ class DenemeViewModel extends ChangeNotifier {
           }).then(
         (value) => denemeProv.setAlert = false,
       );
+    }
+  }
+
+  Future<void> sendMultiplePostsToFirebase(String userId) async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      List<DenemePostModel> postModels = [
+        DenemePostModel(
+          userId: userId,
+          tableName: DenemeTables.historyTableName,
+          tableData: await DenemeDbProvider.db
+              .getLessonDeneme(DenemeTables.historyTableName),
+        ),
+        DenemePostModel(
+          userId: userId,
+          tableName: DenemeTables.cografyaTableName,
+          tableData: await DenemeDbProvider.db
+              .getLessonDeneme(DenemeTables.cografyaTableName),
+        ),
+        DenemePostModel(
+          userId: userId,
+          tableName: DenemeTables.vatandasTableName,
+          tableData: await DenemeDbProvider.db
+              .getLessonDeneme(DenemeTables.vatandasTableName),
+        ),
+      ];
+
+      Map<String, dynamic> combinedData = {};
+
+      for (var postModel in postModels) {
+        combinedData[postModel.tableName] = {
+          'userId': postModel.userId,
+          'tableData': postModel.tableData,
+        };
+      }
+
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .set({'denemePosts': combinedData}, SetOptions(merge: true));
+
+      print('Veriler başarıyla gönderildi!');
+    } catch (e) {
+      print('Veri gönderirken hata oluştu: $e');
+    }
+  }
+
+  Future<DenemePostModel> getTablesFromFirebase(String userId) async {
+    var tables = await FirebaseService().getDataByUsers(userId);
+    return tables;
+  }
+
+  Future<void> removeUserCollectionData(String userId) async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      DocumentSnapshot userDoc =
+          await firestore.collection('users').doc(userId).get();
+
+      if (userDoc.exists) {
+        await firestore.collection('users').doc(userId).delete();
+        print('Kullanıcı verileri başarıyla silindi!');
+      } else {
+        print('Kullanıcı bulunamadı!');
+      }
+    } catch (e) {
+      print('Kullanıcı verileri silinirken hata oluştu: $e');
     }
   }
 }

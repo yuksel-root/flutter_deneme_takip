@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/local_storage/local_storage_manager.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
+import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 
 enum LoginState {
@@ -78,6 +81,9 @@ class DenemeLoginViewModel extends ChangeNotifier {
         if (_currentUser != null) {
           setState = LoginState.loggedIn;
           navigation.navigateToPageClear(path: NavigationConstants.homeView);
+
+          FirebaseService().addUserToCollection(_currentUser!.displayName!,
+              _currentUser!.email!, _currentUser!.uid);
         }
       } on FirebaseAuthException catch (error) {
         print("Login FIREBASE CATCH ERROR ${error.message}");

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/sign_button.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
+import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
@@ -75,6 +77,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
   AppBar buildAppbar(DenemeViewModel denemeProv) {
     return AppBar(
       actions: <Widget>[
+        buildBackUpButton(context, denemeProv),
         buildPopupMenu(Icons.more_vert_sharp, denemeProv),
       ],
       title: Center(
@@ -147,4 +150,28 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
       text: tabName,
     );
   }).toList();
+
+  SignButton buildBackUpButton(
+      BuildContext context, DenemeViewModel denemeProv) {
+    return SignButton(
+        isGreyPng: true,
+        onPressFunct: () async {
+          String userId = AuthService().fAuth.currentUser!.uid;
+
+          denemeProv.removeUserCollectionData(userId).then((value) {
+            denemeProv.sendMultiplePostsToFirebase(userId).then((value) async {
+              final table = await denemeProv.getTablesFromFirebase(userId);
+              print(table.tableName);
+            });
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        labelText: "Yedekle",
+        labelStyle: TextStyle(
+          color: Colors.white,
+          fontSize: context.dynamicH(0.00571) * context.dynamicW(0.01),
+        ));
+  }
 }
