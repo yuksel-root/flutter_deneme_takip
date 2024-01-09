@@ -17,7 +17,6 @@ enum LessonState {
 class LessonViewModel extends ChangeNotifier {
   late LessonState? _state;
   late NavigationService _navigation;
-  List<dynamic> tarihDeneme = LessonList.denemeHistory;
   late String? _lessonName;
   late String? _lessonTableName;
   late bool _isAlertOpen;

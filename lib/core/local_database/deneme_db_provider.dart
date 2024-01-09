@@ -23,11 +23,11 @@ class DenemeDbProvider {
     final Database db;
     db = await openDatabase(join(await getDatabasesPath(), "deneme_app.db"),
         onCreate: (db, version) async {
-          await DenemeTables.tarihCreateTable(db);
+          await DenemeTables.historyCreateTable(db);
           await DenemeTables.mathCreateTable(db);
-          await DenemeTables.cografyaCreateTable(db);
-          await DenemeTables.vatandasCreateTable(db);
-          await DenemeTables.turkceCreateTable(db);
+          await DenemeTables.geographyCreateTable(db);
+          await DenemeTables.citizenCreateTable(db);
+          await DenemeTables.turkishCreateTable(db);
         },
         version: 1,
         onOpen: (Database db) async {
@@ -99,8 +99,8 @@ class DenemeDbProvider {
     final db = await database;
     await db.rawQuery("DELETE FROM ${DenemeTables.historyTableName}");
     await db.rawQuery("DELETE FROM ${DenemeTables.mathTableName}");
-    await db.rawQuery("DELETE FROM ${DenemeTables.cografyaTableName}");
-    await db.rawQuery("DELETE FROM ${DenemeTables.vatandasTableName}");
-    await db.rawQuery("DELETE FROM ${DenemeTables.turkceTableName}");
+    await db.rawQuery("DELETE FROM ${DenemeTables.geographyTable}");
+    await db.rawQuery("DELETE FROM ${DenemeTables.citizenTable}");
+    await db.rawQuery("DELETE FROM ${DenemeTables.turkishTable}");
   }
 }

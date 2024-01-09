@@ -1,11 +1,11 @@
 import 'package:sqflite/sqflite.dart';
 
 class DenemeTables {
-  static const String historyTableName = 'tarihTable';
+  static const String historyTableName = 'historyTable';
   static const String mathTableName = 'mathTable';
-  static const String vatandasTableName = 'vatandasTable';
-  static const String cografyaTableName = 'cografyaTable';
-  static const String turkceTableName = 'turkceDeneme';
+  static const String citizenTable = 'citizenTable';
+  static const String geographyTable = 'geographyTable';
+  static const String turkishTable = 'turkishTable';
 
   static Future<void> reCreateTable(Database db) async {
     await db.execute(''' 
@@ -17,25 +17,25 @@ class DenemeTables {
     ''');
 
     await db.execute(''' 
-      DROP TABLE IF EXISTS $vatandasTableName
+      DROP TABLE IF EXISTS $citizenTable
     ''');
 
     await db.execute(''' 
-      DROP TABLE IF EXISTS $cografyaTableName
+      DROP TABLE IF EXISTS $geographyTable
     ''');
 
     await db.execute(''' 
-      DROP TABLE IF EXISTS $turkceTableName
+      DROP TABLE IF EXISTS $turkishTable
     ''');
 
-    await tarihCreateTable(db);
+    await historyCreateTable(db);
     await mathCreateTable(db);
-    await vatandasCreateTable(db);
-    await cografyaCreateTable(db);
-    await turkceCreateTable(db);
+    await citizenCreateTable(db);
+    await geographyCreateTable(db);
+    await turkishCreateTable(db);
   }
 
-  static Future<void> tarihCreateTable(Database db) async {
+  static Future<void> historyCreateTable(Database db) async {
     await db.execute('''
       CREATE TABLE $historyTableName (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,9 +61,9 @@ class DenemeTables {
     ''');
   }
 
-  static Future<void> vatandasCreateTable(Database db) async {
+  static Future<void> citizenCreateTable(Database db) async {
     await db.execute('''
-      CREATE TABLE $vatandasTableName (
+      CREATE TABLE $citizenTable (
        id INTEGER PRIMARY KEY AUTOINCREMENT,
         subjectId INTEGER,
         falseCount INTEGER,
@@ -74,9 +74,9 @@ class DenemeTables {
     ''');
   }
 
-  static Future<void> cografyaCreateTable(Database db) async {
+  static Future<void> geographyCreateTable(Database db) async {
     await db.execute('''
-      CREATE TABLE $cografyaTableName (
+      CREATE TABLE $geographyTable (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         subjectId INTEGER,
         falseCount INTEGER,
@@ -87,9 +87,9 @@ class DenemeTables {
     ''');
   }
 
-  static Future<void> turkceCreateTable(Database db) async {
+  static Future<void> turkishCreateTable(Database db) async {
     await db.execute('''
-      CREATE TABLE $turkceTableName (
+      CREATE TABLE $turkishTable (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         subjectId INTEGER,
         falseCount INTEGER,

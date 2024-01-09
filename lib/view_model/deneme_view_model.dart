@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
@@ -9,7 +9,6 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
 import 'package:flutter_deneme_takip/models/deneme_post_model.dart';
-import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
 
 enum DenemeState {
@@ -19,13 +18,20 @@ enum DenemeState {
   error,
 }
 
+enum FirebaseState {
+  empty,
+  start,
+  completed,
+  catchError,
+}
+
 class DenemeViewModel extends ChangeNotifier {
   late DenemeState? _state;
+  late FirebaseState? _firebaseState;
   late NavigationService _navigation;
 
   FirebaseFirestore? firestore = FirebaseFirestore.instance;
 
-  List<dynamic> tarihDeneme = LessonList.denemeHistory;
   late String? _lessonName;
   late String? _lessonTableName;
   late bool _isAlertOpen;
@@ -42,6 +48,8 @@ class DenemeViewModel extends ChangeNotifier {
     _isAlertOpen = false;
     _lessonName = 'Tarih';
     _state = DenemeState.empty;
+    _firebaseState = FirebaseState.empty;
+
     listDeneme = [];
     _lessonTableName =
         LessonList.tableNames[_lessonName] ?? LessonList.tableNames['Tarih'];
@@ -57,6 +65,12 @@ class DenemeViewModel extends ChangeNotifier {
   DenemeState get getDenemeState => _state!;
   set setDenemestate(DenemeState state) {
     _state = state;
+    notifyListeners();
+  }
+
+  FirebaseState get getFirebaseState => _firebaseState!;
+  set setFirebaseState(FirebaseState state) {
+    _firebaseState = state;
     notifyListeners();
   }
 
@@ -404,71 +418,88 @@ class DenemeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> sendMultiplePostsToFirebase(String userId) async {
+  Future<void> backUpAllTablesData(
+      BuildContext context, String userId, DenemeViewModel denemeProv) async {
     try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      setFirebaseState = FirebaseState.start;
+      FirebaseService().sendMultiplePostsToFirebase(userId);
+      Future.delayed(const Duration(milliseconds: 200), () {
+        setFirebaseState = FirebaseState.completed;
+      });
+    } on FirebaseAuthException catch (error) {
+      print("on Catch denemeVM FIREBASE CATCH ERROR ${error.code}");
 
-      List<DenemePostModel> postModels = [
-        DenemePostModel(
-          userId: userId,
-          tableName: DenemeTables.historyTableName,
-          tableData: await DenemeDbProvider.db
-              .getLessonDeneme(DenemeTables.historyTableName),
-        ),
-        DenemePostModel(
-          userId: userId,
-          tableName: DenemeTables.cografyaTableName,
-          tableData: await DenemeDbProvider.db
-              .getLessonDeneme(DenemeTables.cografyaTableName),
-        ),
-        DenemePostModel(
-          userId: userId,
-          tableName: DenemeTables.vatandasTableName,
-          tableData: await DenemeDbProvider.db
-              .getLessonDeneme(DenemeTables.vatandasTableName),
-        ),
-      ];
-
-      Map<String, dynamic> combinedData = {};
-
-      for (var postModel in postModels) {
-        combinedData[postModel.tableName] = {
-          'userId': postModel.userId,
-          'tableData': postModel.tableData,
-        };
-      }
-
-      await firestore
-          .collection('users')
-          .doc(userId)
-          .set({'denemePosts': combinedData}, SetOptions(merge: true));
-
-      print('Veriler başarıyla gönderildi!');
+      setFirebaseState = FirebaseState.catchError;
+      errorAlert(context, "Uyarı", "İnternet bağlantısı yok!", denemeProv);
     } catch (e) {
-      print('Veri gönderirken hata oluştu: $e');
+      print("catch denemeVM  CATCH ERROR ${e.toString()}");
+
+      setFirebaseState = FirebaseState.catchError;
     }
   }
 
-  Future<DenemePostModel> getTablesFromFirebase(String userId) async {
-    var tables = await FirebaseService().getDataByUsers(userId);
-    return tables;
+  Future<DenemePostModel?> getTablesFromFirebase(
+      String userId, String tableName) async {
+    var tables = await FirebaseService().getTableDataByUsers(userId, tableName);
+    if (tables != null) {
+      return tables;
+    }
+    return null;
   }
 
-  Future<void> removeUserCollectionData(String userId) async {
+  Future<void> removeUserPostData(String userId) async {
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
       DocumentSnapshot userDoc =
           await firestore.collection('users').doc(userId).get();
-
       if (userDoc.exists) {
-        await firestore.collection('users').doc(userId).delete();
-        print('Kullanıcı verileri başarıyla silindi!');
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+        if (userData.containsKey('denemePosts')) {
+          await firestore.collection('users').doc(userId).update({
+            'denemePosts': FieldValue.delete(),
+          });
+
+          print('Belge başarıyla silindi: ');
+        } else {
+          print('Belirtilen tablo bulunamadı veya zaten silinmiş.');
+        }
       } else {
-        print('Kullanıcı bulunamadı!');
+        print('Kullanıcı belgesi bulunamadı.');
       }
     } catch (e) {
-      print('Kullanıcı verileri silinirken hata oluştu: $e');
+      print('Hata oluştu: $e');
+    }
+  }
+
+  Future<void> errorAlert(BuildContext context, String title, String content,
+      DenemeViewModel denemeProv) async {
+    AlertView alert = AlertView(
+      title: title,
+      content: content,
+      isAlert: true,
+      noFunction: () => {
+        denemeProv.setAlert = false,
+        Navigator.of(context, rootNavigator: true).pop(),
+      },
+      yesFunction: () async => {
+        denemeProv.setAlert = false,
+        Navigator.of(context, rootNavigator: true).pop(),
+      },
+    );
+
+    if (denemeProv.getIsAlertOpen == false) {
+      denemeProv.setAlert = true;
+      await showDialog(
+          barrierDismissible: false,
+          barrierColor: const Color(0x66000000),
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          }).then(
+        (value) => denemeProv.setAlert = false,
+      );
     }
   }
 }

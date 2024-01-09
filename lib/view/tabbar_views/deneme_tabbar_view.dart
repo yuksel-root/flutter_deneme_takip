@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/sign_button.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
+import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
+import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -36,6 +38,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     final tabbarNavProv =
         Provider.of<TabbarNavigationProvider>(context, listen: true);
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
+    final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
 
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
@@ -58,7 +61,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
           }
         });
         return Scaffold(
-          appBar: buildAppbar(denemeProv),
+          appBar: buildAppbar(denemeProv, loginProv),
           body: TabBarView(
             controller: tabController,
             physics: const NeverScrollableScrollPhysics(),
@@ -74,10 +77,11 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     );
   }
 
-  AppBar buildAppbar(DenemeViewModel denemeProv) {
+  AppBar buildAppbar(
+      DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) {
     return AppBar(
       actions: <Widget>[
-        buildBackUpButton(context, denemeProv),
+        buildBackUpButton(context, denemeProv, loginProv),
         buildPopupMenu(Icons.more_vert_sharp, denemeProv),
       ],
       title: Center(
@@ -151,19 +155,24 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     );
   }).toList();
 
-  SignButton buildBackUpButton(
-      BuildContext context, DenemeViewModel denemeProv) {
+  SignButton buildBackUpButton(BuildContext context, DenemeViewModel denemeProv,
+      DenemeLoginViewModel loginProv) {
     return SignButton(
         isGreyPng: true,
         onPressFunct: () async {
-          String userId = AuthService().fAuth.currentUser!.uid;
+          String? userId = AuthService().fAuth.currentUser?.uid;
 
-          denemeProv.removeUserCollectionData(userId).then((value) {
-            denemeProv.sendMultiplePostsToFirebase(userId).then((value) async {
-              final table = await denemeProv.getTablesFromFirebase(userId);
-              print(table.tableName);
+          if (userId != null) {
+            denemeProv.removeUserPostData(userId).then((value) {
+              denemeProv
+                  .backUpAllTablesData(context, userId, denemeProv)
+                  .then((value) async {
+                var table = await denemeProv.getTablesFromFirebase(
+                    userId, DenemeTables.historyTableName);
+                //print(table!.tableData);
+              });
             });
-          });
+          }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).primaryColor,

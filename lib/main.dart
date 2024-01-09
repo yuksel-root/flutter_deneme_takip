@@ -42,9 +42,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("mainYY ${AuthService().fAuth.currentUser}");
+    // print("mainYY ${AuthService().fAuth.currentUser}");
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
-  
+
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

@@ -1,6 +1,9 @@
 // ignore_for_file: avoid_print
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
+import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/models/deneme_post_model.dart';
 
 class FirebaseService {
@@ -11,24 +14,65 @@ class FirebaseService {
 
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
-  Future<DenemePostModel> getDataByUsers(String userId) async {
-    final userDoc = await usersCollection.doc(userId).get();
-    Map<String, dynamic>? postData = userDoc.data();
+  Future<DenemePostModel?> getTableDataByUsers(
+      String userId, String tableName) async {
+    try {
+      final userDoc = await usersCollection.doc(userId).get();
+      Map<String, dynamic>? postData = userDoc.data();
 
-    final postModel = DenemePostModel.fromJson(postData ?? {});
-    return postModel;
+      final postModel =
+          DenemePostModel.fromJson(postData?['denemePosts'][tableName]);
+      return postModel;
+    } catch (e) {
+      print("Fs getTable catch $e");
+    }
+    return null;
   }
 
-  Future<void> insertDenemePostModel(DenemePostModel denemePostModel) async {
+  Future<void> sendMultiplePostsToFirebase(String userId) async {
     try {
-      await _firestore!.collection('denemePosts').add({
-        'id': denemePostModel.userId,
-        'tableName': denemePostModel.tableName,
-        'tableData': denemePostModel.tableData,
-      });
-      print('DenemePostModel added successfully!');
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      List<DenemePostModel> postModels = [];
+      postModels = [
+        DenemePostModel(
+          userId: userId,
+          tableName: DenemeTables.historyTableName,
+          tableData: await DenemeDbProvider.db
+              .getLessonDeneme(DenemeTables.historyTableName),
+        ),
+        DenemePostModel(
+          userId: userId,
+          tableName: DenemeTables.geographyTable,
+          tableData: await DenemeDbProvider.db
+              .getLessonDeneme(DenemeTables.geographyTable),
+        ),
+        DenemePostModel(
+          userId: userId,
+          tableName: DenemeTables.citizenTable,
+          tableData: await DenemeDbProvider.db
+              .getLessonDeneme(DenemeTables.citizenTable),
+        ),
+      ];
+
+      Map<String, dynamic> combinedData = {};
+
+      for (var postModel in postModels) {
+        combinedData[postModel.tableName] = {
+          'userId': postModel.userId,
+          'tableData': postModel.tableData,
+          'tableName': postModel.tableName,
+        };
+      }
+
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .set({'denemePosts': combinedData}, SetOptions(merge: true));
+    } on FirebaseAuthException catch (error) {
+      return print(
+          "---------sendTable FS CATCH ERROR------------------ ${error.message}");
     } catch (e) {
-      print('Error adding DenemePostModel: $e');
+      return print('Cathch fS sendTable $e');
     }
   }
 
@@ -37,14 +81,14 @@ class FirebaseService {
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      // Önce kullanıcının var olup olmadığını kontrol et
       var userDoc = await firestore.collection('users').doc(userId).get();
 
       if (!userDoc.exists) {
         await firestore.collection('users').doc(userId).set({
-          'name': name,
-          'email': email,
-          // Diğer alanları buraya ekleyebilirsiniz
+          'denemeUser': {
+            'name': name,
+            'email': email,
+          }
         });
         print('Kullanıcı başarıyla eklendi!');
       } else {
