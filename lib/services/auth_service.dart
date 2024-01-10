@@ -15,15 +15,6 @@ class AuthService {
     final UserCredential userCredential =
         await fAuth.signInWithCredential(credential);
 
-    User? userDetails = userCredential.user;
-    if (userCredential.user != null) {
-      Map<String, dynamic> userInfoMap = {
-        "email": userDetails!.email,
-        "id": userDetails.uid,
-        "name": userDetails.displayName,
-        "imgUrl": userDetails.photoURL,
-      };
-    }
     return userCredential.user;
   }
 

@@ -24,9 +24,9 @@ class DenemeDbProvider {
     db = await openDatabase(join(await getDatabasesPath(), "deneme_app.db"),
         onCreate: (db, version) async {
           await DenemeTables.historyCreateTable(db);
-          await DenemeTables.mathCreateTable(db);
           await DenemeTables.geographyCreateTable(db);
           await DenemeTables.citizenCreateTable(db);
+          await DenemeTables.mathCreateTable(db);
           await DenemeTables.turkishCreateTable(db);
         },
         version: 1,
@@ -41,6 +41,40 @@ class DenemeDbProvider {
 
     db.insert(lessonTable, deneme.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> inserAllDenemeData(List<dynamic> denemePost) async {
+    final db = await database;
+
+    List<String> lessonTables = [
+      DenemeTables.historyTableName,
+      DenemeTables.geographyTable,
+      DenemeTables.citizenTable,
+    ];
+    int i = 0;
+    for (var tableData in denemePost) {
+      if (tableData != null) {
+        String tableName = lessonTables[i];
+        print(tableName);
+        Batch batch = db.batch();
+
+        for (var item in tableData) {
+          DenemeModel denemeData = DenemeModel(
+            denemeId: item['denemeId'],
+            subjectId: item['subjectId'],
+            falseCount: item['falseCount'],
+            subjectName: item['subjectName'],
+            denemeDate: item['denemeDate'],
+          );
+
+          batch.insert(tableName, denemeData.toMap(),
+              conflictAlgorithm: ConflictAlgorithm.replace);
+        }
+
+        await batch.commit();
+      }
+      i++;
+    }
   }
 
   Future<List<Map<String, dynamic>>> getDenemelerByDenemeId(
@@ -102,5 +136,10 @@ class DenemeDbProvider {
     await db.rawQuery("DELETE FROM ${DenemeTables.geographyTable}");
     await db.rawQuery("DELETE FROM ${DenemeTables.citizenTable}");
     await db.rawQuery("DELETE FROM ${DenemeTables.turkishTable}");
+  }
+
+  Future<void> clearDatabeByTableName(String tableName) async {
+    final db = await database;
+    await db.rawQuery("DELETE FROM $tableName");
   }
 }

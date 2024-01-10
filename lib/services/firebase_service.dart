@@ -14,15 +14,21 @@ class FirebaseService {
 
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
-  Future<DenemePostModel?> getTableDataByUsers(
-      String userId, String tableName) async {
+  Future<Map<String, List<dynamic>>?> getPostDataByUser(String userId) async {
     try {
       final userDoc = await usersCollection.doc(userId).get();
       Map<String, dynamic>? postData = userDoc.data();
 
-      final postModel =
-          DenemePostModel.fromJson(postData?['denemePosts'][tableName]);
-      return postModel;
+      Map<String, List<dynamic>>? postModels = {
+        DenemeTables.historyTableName: postData?['denemePosts']
+            [DenemeTables.historyTableName]['tableData'],
+        DenemeTables.geographyTable: postData?['denemePosts']
+            [DenemeTables.geographyTable]['tableData'],
+        DenemeTables.citizenTable: postData?['denemePosts']
+            [DenemeTables.citizenTable]['tableData'],
+      };
+
+      return postModels;
     } catch (e) {
       print("Fs getTable catch $e");
     }
@@ -63,7 +69,7 @@ class FirebaseService {
           'tableName': postModel.tableName,
         };
       }
-
+      print("DenemePosts successfully added.");
       await firestore
           .collection('users')
           .doc(userId)
@@ -90,12 +96,12 @@ class FirebaseService {
             'email': email,
           }
         });
-        print('Kullanıcı başarıyla eklendi!');
+        print('User succesfully added.');
       } else {
-        print('Bu kullanıcı zaten var!');
+        print('This user already exist');
       }
     } catch (e) {
-      print('Kullanıcı eklenirken hata oluştu: $e');
+      print('Add User exception in FirebaseS $e');
     }
   }
 }

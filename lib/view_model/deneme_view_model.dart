@@ -10,6 +10,7 @@ import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
 import 'package:flutter_deneme_takip/models/deneme_post_model.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
+import 'package:flutter_deneme_takip/view/deneme_view.dart';
 
 enum DenemeState {
   empty,
@@ -438,13 +439,27 @@ class DenemeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<DenemePostModel?> getTablesFromFirebase(
-      String userId, String tableName) async {
-    var tables = await FirebaseService().getTableDataByUsers(userId, tableName);
+  Future<Map<String, List<dynamic>>?> getTablesFromFirebase(
+      String userId) async {
+    final tables = await FirebaseService().getPostDataByUser(userId);
     if (tables != null) {
       return tables;
     }
     return null;
+  }
+
+  List<Map<String, dynamic>>? convertFirebaseToSqliteData(
+      List<dynamic> firebaseTableData, DenemeViewModel denemeProv) {
+    List<Map<String, dynamic>>? listDeneme = [];
+
+    listDeneme.addAll(firebaseTableData.map((e) => e));
+
+    return listDeneme;
+  }
+
+  Future<void> sendFirebaseToSqlite(
+      List<dynamic> denemeData) async {
+    await DenemeDbProvider.db.inserAllDenemeData(denemeData);
   }
 
   Future<void> removeUserPostData(String userId) async {
