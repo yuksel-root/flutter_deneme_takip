@@ -93,14 +93,14 @@ class LessonList {
 
   static const Map<String, String> tableNames = {
     "Tarih": DenemeTables.historyTableName,
-    "Vatandaşlık": DenemeTables.citizenTable,
     "Coğrafya": DenemeTables.geographyTable,
+    "Vatandaşlık": DenemeTables.citizenTable,
   };
 
   static const Map<String, List<String>> subjectListNames = {
     "Tarih": historySubjects,
-    "Vatandaşlık": citizenSubject,
     "Coğrafya": geographySubject,
+    "Vatandaşlık": citizenSubject,
   };
 
   static const Map<String, List<String>> lessonListMap = {

@@ -42,6 +42,7 @@ class DenemeLoginViewModel extends ChangeNotifier {
 
   Future<bool?> get getIsAnonymous async {
     bool? isAnonymous = await _storageManager.getBool('isAnonymous');
+
     return Future.value(isAnonymous);
   }
 
@@ -71,34 +72,26 @@ class DenemeLoginViewModel extends ChangeNotifier {
       BuildContext context, DenemeLoginViewModel loginProv) async {
     _currentUser = AuthService().fAuth.currentUser;
     print("newUser $_currentUser");
+    setState = LoginState.notLoggedIn;
+    _currentUser = await AuthService().signInWithGoogle();
+    setState = LoginState.authenticating;
+    try {
+      if (_currentUser != null) {
+        setState = LoginState.loggedIn;
+        navigation.navigateToPageClear(path: NavigationConstants.homeView);
 
-    if (_currentUser == null &&
-        getState == LoginState.notLoggedIn &&
-        await loginProv.getIsAnonymous == false) {
-      setState = LoginState.authenticating;
-      try {
-        _currentUser = await AuthService().signInWithGoogle();
-        if (_currentUser != null) {
-          setState = LoginState.loggedIn;
-          navigation.navigateToPageClear(path: NavigationConstants.homeView);
-
-          FirebaseService().addUserToCollection(_currentUser!.displayName!,
-              _currentUser!.email!, _currentUser!.uid);
-        }
-      } on FirebaseAuthException catch (error) {
-        print("Login FIREBASE CATCH ERROR ${error.message}");
-        setState = LoginState.loginError;
-        setError = "İnternet bağlantısı yok!";
-        SystemNavigator.pop();
-      } catch (e) {
-        print("Login CATCH ERROR $e");
-        setState = LoginState.loginError;
-        setError = e.toString();
+        FirebaseService().addUserToCollection(_currentUser!.displayName!,
+            _currentUser!.email!, _currentUser!.uid);
       }
-    } else {
-      print("CURRENTUserViewModel else  $_currentUser");
-      setState = LoginState.loggedIn;
-      navigation.navigateToPageClear(path: NavigationConstants.homeView);
+    } on FirebaseAuthException catch (error) {
+      print("Login FIREBASE CATCH ERROR ${error.message}");
+      setState = LoginState.loginError;
+      setError = "İnternet bağlantısı yok!";
+      SystemNavigator.pop();
+    } catch (e) {
+      print("Login CATCH ERROR $e");
+      setState = LoginState.loginError;
+      setError = e.toString();
     }
   }
 

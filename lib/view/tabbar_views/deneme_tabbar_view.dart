@@ -6,6 +6,7 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
+import 'package:flutter_deneme_takip/view/navigation_drawer.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
@@ -61,6 +62,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
           }
         });
         return Scaffold(
+          drawer: const NavDrawer(),
           appBar: buildAppbar(denemeProv, loginProv),
           body: TabBarView(
             controller: tabController,
@@ -80,8 +82,8 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
   AppBar buildAppbar(
       DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) {
     return AppBar(
+      iconTheme: const IconThemeData(color: Colors.white),
       actions: <Widget>[
-        buildBackUpButton(context, denemeProv, loginProv),
         buildPopupMenu(Icons.more_vert_sharp, denemeProv),
       ],
       title: Center(
@@ -167,11 +169,15 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
               denemeProv
                   .backUpAllTablesData(context, userId, denemeProv)
                   .then((value) async {
-                var table = await denemeProv.getTablesFromFirebase(
-                    userId, DenemeTables.historyTableName);
-                //print(table!.tableData);
+                Future.delayed(Duration(milliseconds: 200), () async {
+                  final tables = await denemeProv.getTablesFromFirebase(userId);
+                  print(tables);
+                });
               });
             });
+          } else {
+            denemeProv.errorAlert(context, "Uyarı",
+                "Lütfen google girişi yaparak tekrar deneyiniz.", denemeProv);
           }
         },
         style: ElevatedButton.styleFrom(

@@ -4,9 +4,11 @@ import 'package:flutter_deneme_takip/components/sign_button.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
+import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/lesson_view.dart';
+import 'package:flutter_deneme_takip/view/navigation_drawer.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
@@ -63,7 +65,9 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
           }
         });
         return Scaffold(
+            drawer: const NavDrawer(),
             appBar: AppBar(
+                iconTheme: const IconThemeData(color: Colors.white),
                 actions: <Widget>[
                   // buildSignOutButton(context, loginProv),
                   PopupMenuButton(
@@ -87,8 +91,15 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                                     context.dynamicH(0.004)),
                           ),
                         ),
-
-                        // Diğer seçenekler
+                        PopupMenuItem(
+                          value: 'option3',
+                          child: Text(
+                            'Verileri geri yükle',
+                            style: TextStyle(
+                                fontSize: context.dynamicW(0.01) *
+                                    context.dynamicH(0.004)),
+                          ),
+                        ),
                       ];
                     },
                     onSelected: (value) async {
@@ -110,6 +121,9 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                               path: NavigationConstants.loginView);
                         }
                       }
+                      if (value == 'option3') {
+                        restoreData(loginProv, denemeProv, lessonProv);
+                      }
                     },
                   ),
                 ],
@@ -121,7 +135,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                             fontSize: context.dynamicW(0.01) *
                                 context.dynamicH(0.005)),
                         AuthService().fAuth.currentUser != null
-                            ? ' ${AuthService().fAuth.currentUser?.email ?? ""}       '
+                            ? 'Kullanıcı: ${AuthService().fAuth.currentUser?.email ?? ""}       '
                             : "Deneme App")),
                 backgroundColor: const Color(0xff1c0f45),
                 bottom: TabBar(
@@ -145,6 +159,37 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             ));
       }),
     );
+  }
+
+  Future<void> restoreData(DenemeLoginViewModel loginProv,
+      DenemeViewModel denemeProv, LessonViewModel lessonProv) async {
+    if (AuthService().fAuth.currentUser != null ||
+        await loginProv.getIsAnonymous == true) {
+      String? userId = AuthService().fAuth.currentUser?.uid;
+
+      var table = await denemeProv.getTablesFromFirebase(userId!);
+
+      final hTable = table![DenemeTables.historyTableName];
+      final gTable = table[DenemeTables.geographyTable];
+      final cTable = table[DenemeTables.citizenTable];
+
+      List<Map<String, dynamic>>? historyTable =
+          denemeProv.convertFirebaseToSqliteData(hTable!, denemeProv);
+      List<Map<String, dynamic>>? citizenTable =
+          denemeProv.convertFirebaseToSqliteData(gTable!, denemeProv);
+      List<Map<String, dynamic>>? geographyTable =
+          denemeProv.convertFirebaseToSqliteData(cTable!, denemeProv);
+
+      List<dynamic> denemePostData = [
+        historyTable,
+        geographyTable,
+        citizenTable,
+      ];
+
+      denemeProv.sendFirebaseToSqlite(denemePostData);
+    }
+    lessonProv.initLessonData(lessonProv.getLessonName);
+    denemeProv.initData(denemeProv.getLessonName);
   }
 
   List<Widget> tab = LessonList.lessonNameList.map((tabName) {

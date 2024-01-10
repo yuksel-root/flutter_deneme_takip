@@ -65,8 +65,7 @@ class UserLoginView extends StatelessWidget {
         isGreyPng: false,
         onPressFunct: () async {
           if (context.read<DenemeLoginViewModel>().getState ==
-                  LoginState.notLoggedIn ||
-              loginProv.getIsAnonymous == false) {
+              LoginState.notLoggedIn) {
             loginProv.loginWithGoogle(context, loginProv);
           } else if (context.read<DenemeLoginViewModel>().getState ==
               LoginState.loginError) {
@@ -81,11 +80,12 @@ class UserLoginView extends StatelessWidget {
               navigation
                   .navigateToPage(path: NavigationConstants.homeView, data: []);
             }
-            print("CURRENTUserLOGİN  ${AuthService().fAuth.currentUser}");
+            //   print("CURRENTUserLOGİN  ${AuthService().fAuth.currentUser}");
 
             loginProv.errorAlert(
                 context, "Uyarı", loginProv.getState.toString(), loginProv);
           }
+          // print(loginProv.getState);
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xff1c0f45),
