@@ -88,4 +88,10 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    implementation 'com.google.firebase:firebase-analytics'
+
+    apply plugin: 'com.google.gms.google-services'
+}
