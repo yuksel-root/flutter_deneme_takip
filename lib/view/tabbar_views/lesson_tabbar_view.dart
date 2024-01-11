@@ -134,9 +134,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                             color: Colors.white,
                             fontSize: context.dynamicW(0.01) *
                                 context.dynamicH(0.005)),
-                        AuthService().fAuth.currentUser != null
-                            ? 'Kullanıcı: ${AuthService().fAuth.currentUser?.email ?? ""}       '
-                            : "Deneme App")),
+                        "Konularına Göre Yanlış Listesi")),
                 backgroundColor: const Color(0xff1c0f45),
                 bottom: TabBar(
                   labelColor: Colors.green,

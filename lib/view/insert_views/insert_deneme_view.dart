@@ -19,7 +19,7 @@ class InsertDeneme extends StatelessWidget {
 
     return FutureBuilder(
       future:
-          Future.delayed(const Duration(milliseconds: 300), () => denemeData),
+          Future.delayed(const Duration(milliseconds: 150), () => denemeData),
       builder: (context, snapshot) {
         if (context.watch<DenemeViewModel>().getDenemeState ==
             DenemeState.loading) {

@@ -60,7 +60,7 @@ class NavDrawer extends StatelessWidget {
                     onTap: () {
                       denemeProv.showAlert(context,
                           isOneButton: false,
-                          title: "Bilgi",
+                          title: "Uyarı",
                           content: "Şu anki veriler yedeklensin mi? ",
                           yesFunction: () {
                         backUpFunction(context, denemeProv);
@@ -74,10 +74,19 @@ class NavDrawer extends StatelessWidget {
                     leading: const Icon(Icons.upload, color: Colors.grey),
                     title: const Text("Verileri Yükle"),
                     onTap: () {
-                      restoreData(loginProv, denemeProv, lessonProv)
-                          .then((value) {
-                        navigation.navigateToPageClear(
-                            path: NavigationConstants.homeView);
+                      denemeProv.showAlert(context,
+                          isOneButton: false,
+                          title: "Uyarı",
+                          content:
+                              "Şu anki veriler yedeklenen veri ile değiştirilecektir",
+                          yesFunction: () {
+                        restoreData(loginProv, denemeProv, lessonProv)
+                            .then((value) {
+                          Navigator.of(context, rootNavigator: true)
+                              .pushNamed(NavigationConstants.homeView);
+                        });
+                      }, noFunction: () {
+                        Navigator.of(context, rootNavigator: true).pop();
                       });
                     },
                   ),
@@ -85,12 +94,21 @@ class NavDrawer extends StatelessWidget {
                   ListTile(
                     leading: const Icon(Icons.delete, color: Colors.grey),
                     title: const Text("Verileri Temizle"),
-                    onTap: () {
-                      DenemeDbProvider.db.clearDatabase();
-                      lessonProv.initLessonData(lessonProv.getLessonName);
-                      denemeProv.initData(denemeProv.getLessonName);
-                      navigation.navigateToPageClear(
-                          path: NavigationConstants.homeView);
+                    onTap: () async {
+                      denemeProv.showAlert(context,
+                          isOneButton: false,
+                          title: "Uyarı",
+                          content: "Tüm verileri silmek istiyor musunuz?",
+                          yesFunction: () async {
+                        await DenemeDbProvider.db.clearDatabase();
+                        lessonProv.initLessonData(lessonProv.getLessonName);
+                        denemeProv.initData(denemeProv.getLessonName);
+                        navigation.navigateToPageClear(
+                            path: NavigationConstants.homeView);
+                      }, noFunction: () {
+                        Navigator.of(context, rootNavigator: true)
+                            .pushNamed(NavigationConstants.homeView);
+                      });
                     },
                   ),
                   ListTile(
