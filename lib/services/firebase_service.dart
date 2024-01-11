@@ -37,7 +37,6 @@ class FirebaseService {
 
   Future<void> sendMultiplePostsToFirebase(String userId) async {
     try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
       List<DenemePostModel> postModels = [];
       postModels = [
         DenemePostModel(
@@ -70,7 +69,7 @@ class FirebaseService {
         };
       }
       print("DenemePosts successfully added.");
-      await firestore
+      await _firestore!
           .collection('users')
           .doc(userId)
           .set({'denemePosts': combinedData}, SetOptions(merge: true));

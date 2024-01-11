@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
+import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
@@ -20,7 +22,8 @@ class NavDrawer extends StatelessWidget {
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
     final lessonProv = Provider.of<LessonViewModel>(context, listen: false);
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
-
+    final bottomProv =
+        Provider.of<BottomNavigationProvider>(context, listen: false);
     return SizedBox(
       width: context.mediaQuery.size.width / 1.5,
       child: Drawer(
@@ -45,8 +48,9 @@ class NavDrawer extends StatelessWidget {
                     leading: const Icon(Icons.home, color: Colors.green),
                     title: const Text("Anasayfa"),
                     onTap: () {
-                      navigation.navigateToPageClear(
-                          path: NavigationConstants.homeView);
+                      bottomProv.setCurrentIndex = 0;
+                      Navigator.of(context, rootNavigator: true)
+                          .pushNamed(NavigationConstants.homeView);
                     },
                   ),
                   ListTile(
@@ -54,7 +58,16 @@ class NavDrawer extends StatelessWidget {
                         color: Colors.grey),
                     title: const Text("Verileri Yedekle"),
                     onTap: () {
-                      backUpFunction(context, denemeProv);
+                      denemeProv.showAlert(context,
+                          isOneButton: false,
+                          title: "Bilgi",
+                          content: "Şu anki veriler yedeklensin mi? ",
+                          yesFunction: () {
+                        backUpFunction(context, denemeProv);
+                      }, noFunction: () {
+                        Navigator.of(context, rootNavigator: true)
+                            .pushNamed(NavigationConstants.homeView);
+                      });
                     },
                   ),
                   ListTile(
@@ -100,23 +113,32 @@ class NavDrawer extends StatelessWidget {
   }
 
   void backUpFunction(BuildContext context, DenemeViewModel denemeProv) {
-    String? userId = AuthService().fAuth.currentUser?.uid;
+    try {
+      String? userId = AuthService().fAuth.currentUser?.uid;
 
-    if (userId != null) {
-      denemeProv.removeUserPostData(userId).then((value) {
-        denemeProv
-            .backUpAllTablesData(context, userId, denemeProv)
-            .then((value) async {
-          Future.delayed(const Duration(milliseconds: 20), () async {
-            //   final tables = await denemeProv.getTablesFromFirebase(userId);
-            //  print(tables);
-            navigation.navigateToPage(path: NavigationConstants.homeView);
-            denemeProv.errorAlert(
-                context, "Bilgi", "Veriler Başarıyla yedeklendi.", denemeProv);
+      if (userId != null) {
+        denemeProv.removeUserPostData(userId).then((value) {
+          denemeProv
+              .backUpAllTablesData(context, userId, denemeProv)
+              .then((value) async {
+            Future.delayed(const Duration(milliseconds: 10), () async {
+              //   final tables = await denemeProv.getTablesFromFirebase(userId);
+              //  print(tables);
+              Navigator.of(context, rootNavigator: true).pop();
+              denemeProv.errorAlert(context, "Bilgi",
+                  "Veriler başarıyla yedeklendi..", denemeProv);
+            });
           });
         });
-      });
-    } else {
+      } else {
+        denemeProv.errorAlert(context, "Uyarı",
+            "Lütfen google girişi yaparak tekrar deneyiniz.", denemeProv);
+      }
+    } on FirebaseAuthException catch (error) {
+      print(error);
+      denemeProv.errorAlert(context, "Uyarı",
+          "Lütfen google girişi yaparak tekrar deneyiniz.", denemeProv);
+    } catch (e) {
       denemeProv.errorAlert(context, "Uyarı",
           "Lütfen google girişi yaparak tekrar deneyiniz.", denemeProv);
     }

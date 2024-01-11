@@ -112,7 +112,7 @@ class DenemeLoginViewModel extends ChangeNotifier {
     AlertView alert = AlertView(
       title: title,
       content: content,
-      isAlert: true,
+      isOneButton: true,
       noFunction: () => {
         loginProv.setAlert = false,
         Navigator.of(context, rootNavigator: true).pop(),

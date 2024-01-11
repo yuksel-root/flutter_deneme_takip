@@ -3,14 +3,14 @@ import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 
-class FadedForm extends StatefulWidget {
-  const FadedForm({super.key});
+class FadedLoadingForm extends StatefulWidget {
+  const FadedLoadingForm({super.key});
 
   @override
-  FadedFormState createState() => FadedFormState();
+  FadedLoadingFormState createState() => FadedLoadingFormState();
 }
 
-class FadedFormState extends State<FadedForm>
+class FadedLoadingFormState extends State<FadedLoadingForm>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Color?> _fadedColor;
@@ -63,6 +63,7 @@ class FadedFormState extends State<FadedForm>
   Widget build(BuildContext context) {
     final EditDenemeViewModel editProv =
         Provider.of<EditDenemeViewModel>(context, listen: true);
+
     return Scaffold(
       body: Form(
         child: Center(

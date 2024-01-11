@@ -4,13 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
-import 'package:flutter_deneme_takip/models/deneme_post_model.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
-import 'package:flutter_deneme_takip/view/deneme_view.dart';
 
 enum DenemeState {
   empty,
@@ -387,10 +386,10 @@ class DenemeViewModel extends ChangeNotifier {
     AlertView alert = AlertView(
       title: title,
       content: content,
-      isAlert: false,
+      isOneButton: false,
       noFunction: () => {
         denemeProv.setAlert = false,
-        Navigator.of(context).pop(),
+        Navigator.of(context, rootNavigator: true).pop(),
       },
       yesFunction: () async => {
         print("cell ${denemeProv.extractNumber(itemDeneme)}"),
@@ -398,7 +397,7 @@ class DenemeViewModel extends ChangeNotifier {
         denemeProv.deleteItemById(
             denemeProv.getLessonTableName!, itemDeneme, 'denemeId'),
         denemeProv.setAlert = false,
-        Navigator.of(context).pop(),
+        Navigator.of(context, rootNavigator: true).pop(),
         Future.delayed(const Duration(milliseconds: 200), () {
           denemeProv.initData(denemeProv.getLessonName!);
         }),
@@ -457,8 +456,7 @@ class DenemeViewModel extends ChangeNotifier {
     return listDeneme;
   }
 
-  Future<void> sendFirebaseToSqlite(
-      List<dynamic> denemeData) async {
+  Future<void> sendFirebaseToSqlite(List<dynamic> denemeData) async {
     await DenemeDbProvider.db.inserAllDenemeData(denemeData);
   }
 
@@ -493,14 +491,16 @@ class DenemeViewModel extends ChangeNotifier {
     AlertView alert = AlertView(
       title: title,
       content: content,
-      isAlert: true,
+      isOneButton: true,
       noFunction: () => {
         denemeProv.setAlert = false,
-        Navigator.of(context, rootNavigator: true).pop(),
+        Navigator.of(context, rootNavigator: true)
+            .pushNamed(NavigationConstants.homeView),
       },
       yesFunction: () async => {
         denemeProv.setAlert = false,
-        Navigator.of(context, rootNavigator: true).pop(),
+        Navigator.of(context, rootNavigator: true)
+            .pushNamed(NavigationConstants.homeView),
       },
     );
 
@@ -514,6 +514,42 @@ class DenemeViewModel extends ChangeNotifier {
             return alert;
           }).then(
         (value) => denemeProv.setAlert = false,
+      );
+    }
+  }
+
+  Future<void> showAlert(
+    BuildContext context, {
+    required bool isOneButton,
+    required String title,
+    required String content,
+    required Function yesFunction,
+    required Function noFunction,
+  }) async {
+    AlertView alert = AlertView(
+      title: title,
+      content: content,
+      isOneButton: isOneButton,
+      noFunction: () async => {
+        setAlert = false,
+        noFunction(),
+      },
+      yesFunction: () async => {
+        setAlert = false,
+        yesFunction(),
+      },
+    );
+
+    if (getIsAlertOpen == false) {
+      setAlert = true;
+      await showDialog(
+          barrierDismissible: false,
+          barrierColor: const Color(0x66000000),
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          }).then(
+        (value) => setAlert = false,
       );
     }
   }

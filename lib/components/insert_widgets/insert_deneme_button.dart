@@ -19,7 +19,8 @@ class InsertDenemeButton extends StatelessWidget {
                 fontSize: context.dynamicH(0.00571) * context.dynamicW(0.01))),
         onPressed: () async {
           //print(editProv.getFormKey.currentState!.validate());
-          if (editProv.getFormKey.currentState!.validate() &&
+
+          if (editProv.getFormKey.currentState?.validate() != null &&
               editProv.getIsDiffZero == true) {
             editProv.getIsLoading
                 ? editProv.buildLoadingAlert(context)
@@ -31,13 +32,14 @@ class InsertDenemeButton extends StatelessWidget {
             editProv.saveButton(context);
           } else if (editProv.getIsDiffZero == false) {
             Future.delayed(const Duration(milliseconds: 200), () {
-              editProv.valAlert(context, 'HATA', 'En az 1 değer gir!');
+              editProv.errorAlert(context, "HATA", "En az bir değer giriniz");
             });
           } else {
             Future.delayed(
               const Duration(milliseconds: 200),
               () {
-                editProv.valAlert(context, 'HATA', 'Sadece Tam sayı giriniz!');
+                editProv.errorAlert(
+                    context, 'HATA', 'Sadece Tam sayı giriniz!');
               },
             );
           }

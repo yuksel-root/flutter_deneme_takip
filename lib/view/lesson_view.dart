@@ -194,7 +194,7 @@ class LessonView extends StatelessWidget {
                     ),
                     onPressed: () {
                       Future.delayed(const Duration(milliseconds: 200), () {
-                        dialogremoveClickedDeneme(context, item, lessonProv);
+                        removeClickedDeneme(context, item, lessonProv);
                       });
                     },
                     style: IconButton.styleFrom(),
@@ -223,7 +223,7 @@ class LessonView extends StatelessWidget {
     );
   }
 
-  dialogremoveClickedDeneme(BuildContext context, Map<String, dynamic> item,
+  removeClickedDeneme(BuildContext context, Map<String, dynamic> item,
       LessonViewModel lessonProv) {
     lessonProv.removeAlert(
       context,

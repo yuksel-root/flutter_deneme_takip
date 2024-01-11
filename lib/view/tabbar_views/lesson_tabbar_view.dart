@@ -203,10 +203,11 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
     AlertView alert = AlertView(
       title: title,
       content: content,
-      isAlert: false,
+      isOneButton: false,
       noFunction: () => {
         lessonProv.setAlert = false,
-        Navigator.of(context).pop(),
+        Navigator.of(context, rootNavigator: true)
+            .pushNamed(NavigationConstants.homeView)
       },
       yesFunction: () => {
         DenemeDbProvider.db.clearDatabase(),

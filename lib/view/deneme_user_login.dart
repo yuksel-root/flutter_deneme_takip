@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/sign_button.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:provider/provider.dart';
@@ -80,7 +79,6 @@ class UserLoginView extends StatelessWidget {
               navigation
                   .navigateToPage(path: NavigationConstants.homeView, data: []);
             }
-            //   print("CURRENTUserLOGİN  ${AuthService().fAuth.currentUser}");
 
             loginProv.errorAlert(
                 context, "Uyarı", loginProv.getState.toString(), loginProv);

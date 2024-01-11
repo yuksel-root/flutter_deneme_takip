@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/insert_widgets/faded_insert_form.dart';
 import 'package:flutter_deneme_takip/components/insert_widgets/insert_deneme_button.dart';
 import 'package:flutter_deneme_takip/components/insert_widgets/insert_deneme_form.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
+import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +14,25 @@ class InsertDeneme extends StatelessWidget {
   Widget build(BuildContext context) {
     final editDenemeProv =
         Provider.of<EditDenemeViewModel>(context, listen: true);
+    final denemeProv = Provider.of<DenemeViewModel>(context, listen: true);
+    final denemeData = denemeProv.listDeneme ?? []; //fake data for loading
 
+    return FutureBuilder(
+      future:
+          Future.delayed(const Duration(milliseconds: 300), () => denemeData),
+      builder: (context, snapshot) {
+        if (context.watch<DenemeViewModel>().getDenemeState ==
+            DenemeState.loading) {
+          return const FadedLoadingForm();
+        } else {
+          return buildScaffold(editDenemeProv, context);
+        }
+      },
+    );
+  }
+
+  Scaffold buildScaffold(
+      EditDenemeViewModel editDenemeProv, BuildContext context) {
     return Scaffold(
         body: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

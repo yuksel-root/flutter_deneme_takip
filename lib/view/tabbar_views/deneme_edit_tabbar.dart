@@ -1,9 +1,11 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/insert_widgets/faded_insert_form.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/insert_views/insert_deneme_view.dart';
+import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +42,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
   Widget build(BuildContext context) {
     final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
     final editDenemeProv = Provider.of<EditDenemeViewModel>(context);
+    final denemeProv = Provider.of<DenemeViewModel>(context);
 
     return DefaultTabController(
       length: LessonList.lessonNameList.length,
@@ -57,6 +60,9 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
 
             editDenemeProv.setFalseCountsIntegers =
                 List.filled(editDenemeProv.getFalseCountsIntegers!.length, 0);
+
+            denemeProv.initData(
+                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
 
             editDenemeProv.setFalseControllers =
                 editDenemeProv.getFalseCountsIntegers!.length;
@@ -77,6 +83,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
             bottom: TabBar(
                 indicatorColor: Colors.greenAccent,
                 isScrollable: true,
+                dragStartBehavior: DragStartBehavior.start,
                 tabAlignment: TabAlignment.start,
                 unselectedLabelStyle: TextStyle(
                     fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
@@ -88,38 +95,11 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                   Tab(text: "Vatandaşlık"),
                 ]),
           ),
-          body: TabBarView(
+          body: const TabBarView(
             children: [
-              FutureBuilder(
-                future: Future.delayed(const Duration(milliseconds: 200)),
-                builder: (context, snapshot) {
-                  if (tabController.indexIsChanging) {
-                    return const FadedForm();
-                  } else {
-                    return const InsertDeneme();
-                  }
-                },
-              ),
-              FutureBuilder(
-                future: Future.delayed(const Duration(milliseconds: 200)),
-                builder: (context, snapshot) {
-                  if (tabController.indexIsChanging) {
-                    return const FadedForm();
-                  } else {
-                    return const InsertDeneme();
-                  }
-                },
-              ),
-              FutureBuilder(
-                future: Future.delayed(const Duration(milliseconds: 200)),
-                builder: (context, snapshot) {
-                  if (tabController.indexIsChanging) {
-                    return const FadedForm();
-                  } else {
-                    return const InsertDeneme();
-                  }
-                },
-              ),
+              InsertDeneme(),
+              InsertDeneme(),
+              InsertDeneme(),
             ],
           ),
         );

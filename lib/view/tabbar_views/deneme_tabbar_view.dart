@@ -1,8 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/sign_button.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
@@ -144,6 +145,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
           denemeProv.setIsTotal = false;
         } else {
           denemeProv.setIsTotal = true;
+
           denemeProv.setSelectedGroupSize = groupSizes[index];
           //denemeProv.initTable(denemeProv.getLessonName); later fix
         }
@@ -169,7 +171,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
               denemeProv
                   .backUpAllTablesData(context, userId, denemeProv)
                   .then((value) async {
-                Future.delayed(Duration(milliseconds: 200), () async {
+                Future.delayed(const Duration(milliseconds: 200), () async {
                   final tables = await denemeProv.getTablesFromFirebase(userId);
                   print(tables);
                 });

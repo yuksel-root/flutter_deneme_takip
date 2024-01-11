@@ -159,16 +159,16 @@ class LessonViewModel extends ChangeNotifier {
     AlertView alert = AlertView(
       title: title,
       content: content,
-      isAlert: false,
+      isOneButton: false,
       noFunction: () => {
         lessonProv.setAlert = false,
-        Navigator.of(context).pop(),
+        Navigator.of(context, rootNavigator: true).pop(),
       },
       yesFunction: () async => {
         lessonProv.deleteItemById(
             lessonProv.getLessonTableName!, itemDeneme, 'denemeId'),
         lessonProv.setAlert = false,
-        Navigator.of(context).pop(),
+        Navigator.of(context, rootNavigator: true).pop(),
         Future.delayed(const Duration(milliseconds: 200), () {
           lessonProv.initLessonData(lessonProv.getLessonName!);
         }),
@@ -185,6 +185,42 @@ class LessonViewModel extends ChangeNotifier {
             return alert;
           }).then(
         (value) => lessonProv.setAlert = false,
+      );
+    }
+  }
+
+  Future<void> showAlert(
+    BuildContext context, {
+    required bool isOneButton,
+    required String title,
+    required String content,
+    required Function yesFunction,
+    required Function noFunction,
+  }) async {
+    AlertView alert = AlertView(
+      title: title,
+      content: content,
+      isOneButton: isOneButton,
+      noFunction: () async => {
+        setAlert = false,
+        noFunction(),
+      },
+      yesFunction: () async => {
+        setAlert = false,
+        yesFunction(),
+      },
+    );
+
+    if (getIsAlertOpen == false) {
+      setAlert = true;
+      await showDialog(
+          barrierDismissible: false,
+          barrierColor: const Color(0x66000000),
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          }).then(
+        (value) => setAlert = false,
       );
     }
   }

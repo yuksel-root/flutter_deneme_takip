@@ -89,7 +89,7 @@ class EditDenemeViewModel extends ChangeNotifier {
 
   set setLoading(bool newBool) {
     _isLoading = newBool;
-    //  notifyListeners();
+    //notifyListeners();
   }
 
   bool get getIsLoading {
@@ -156,16 +156,15 @@ class EditDenemeViewModel extends ChangeNotifier {
     int latestId = await DenemeDbProvider.db
             .getFindLastId(LessonList.tableNames[_lessonName]!, "denemeId") ??
         0;
-
     int k = 1;
 
     //printFunct("falseCounters", _falseCountsIntegers);
     //printFunct("subjectSavedList", _subjectSavedList);
-    final int lastDenemeId = getFindDenemeId(existingIds, latestId);
 
+    _lastDenemeId = getFindDenemeId(existingIds, latestId);
     for (int i = 0; i < _falseCountsIntegers.length; i++) {
       DenemeModel denemeModel = DenemeModel(
-          denemeId: lastDenemeId,
+          denemeId: _lastDenemeId,
           subjectId: (_lastSubjectId ?? 0) + k,
           falseCount: _falseCountsIntegers[i],
           denemeDate: _date,
@@ -253,12 +252,12 @@ class EditDenemeViewModel extends ChangeNotifier {
         });
   }
 
-  Future<void> valAlert(
+  Future<void> errorAlert(
       BuildContext context, String title, String content) async {
     AlertView alert = AlertView(
       title: title,
       content: content,
-      isAlert: true,
+      isOneButton: true,
       noFunction: () =>
           {setAlert = false, Navigator.of(context, rootNavigator: true).pop()},
       yesFunction: () =>

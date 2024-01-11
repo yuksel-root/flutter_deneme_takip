@@ -5,16 +5,16 @@ import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 class AlertView extends StatelessWidget {
   final String title;
   final String content;
-  final Function noFunction;
+  final Function? noFunction;
   final Function yesFunction;
-  final bool isAlert;
+  final bool isOneButton;
   const AlertView(
       {super.key,
       required this.title,
       required this.content,
       required this.yesFunction,
-      required this.noFunction,
-      required this.isAlert});
+      this.noFunction,
+      required this.isOneButton});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class AlertView extends StatelessWidget {
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
           actions: <Widget>[
-            isAlert
+            isOneButton
                 ? Center(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -63,7 +63,7 @@ class AlertView extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        noFunction();
+                        yesFunction();
                       },
                     ),
                   )
@@ -114,7 +114,7 @@ class AlertView extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            noFunction();
+                            noFunction!() ?? () {};
                           },
                         ),
                       ],

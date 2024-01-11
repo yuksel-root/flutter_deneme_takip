@@ -212,17 +212,19 @@ class DenemeView extends StatelessWidget {
                   ),
                 ),
                 child: InkWell(
-                  onLongPress: () {
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      denemeProv.removeAlert(
-                        context,
-                        'UYARI',
-                        '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                        denemeProv,
-                        cell,
-                      );
-                    });
-                  },
+                  onLongPress: denemeProv.getIsTotal != true
+                      ? () {
+                          Future.delayed(const Duration(milliseconds: 100), () {
+                            denemeProv.removeAlert(
+                              context,
+                              'UYARI',
+                              '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                              denemeProv,
+                              cell,
+                            );
+                          });
+                        }
+                      : () {},
                   child: Center(
                     child: Padding(
                       padding:
