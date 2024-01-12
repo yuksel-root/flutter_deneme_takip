@@ -4,7 +4,6 @@ import 'package:flutter_deneme_takip/components/sign_button.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/lesson_view.dart';
@@ -122,6 +121,12 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                         }
                       }
                       if (value == 'option3') {
+                        await DenemeDbProvider.db.clearDatabase();
+                        lessonProv.initLessonData(lessonProv.getLessonName);
+                        denemeProv.initData(denemeProv.getLessonName);
+                        navigation.navigateToPageClear(
+                            path: NavigationConstants.homeView);
+
                         restoreData(loginProv, denemeProv, lessonProv);
                       }
                     },
@@ -165,24 +170,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         await loginProv.getIsAnonymous == true) {
       String? userId = AuthService().fAuth.currentUser?.uid;
 
-      var table = await denemeProv.getTablesFromFirebase(userId!);
-
-      final hTable = table![DenemeTables.historyTableName];
-      final gTable = table[DenemeTables.geographyTable];
-      final cTable = table[DenemeTables.citizenTable];
-
-      List<Map<String, dynamic>>? historyTable =
-          denemeProv.convertFirebaseToSqliteData(hTable!, denemeProv);
-      List<Map<String, dynamic>>? citizenTable =
-          denemeProv.convertFirebaseToSqliteData(gTable!, denemeProv);
-      List<Map<String, dynamic>>? geographyTable =
-          denemeProv.convertFirebaseToSqliteData(cTable!, denemeProv);
-
-      List<dynamic> denemePostData = [
-        historyTable,
-        geographyTable,
-        citizenTable,
-      ];
+      final denemePostData = await denemeProv.getTablesFromFirebase(userId!);
 
       denemeProv.sendFirebaseToSqlite(denemePostData);
     }

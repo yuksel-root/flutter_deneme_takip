@@ -1,10 +1,12 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
+import 'package:flutter_deneme_takip/models/deneme.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
@@ -47,8 +49,9 @@ class NavDrawer extends StatelessWidget {
                   ListTile(
                     leading: const Icon(Icons.home, color: Colors.green),
                     title: const Text("Anasayfa"),
-                    onTap: () {
+                    onTap: () async {
                       bottomProv.setCurrentIndex = 0;
+
                       Navigator.of(context, rootNavigator: true)
                           .pushNamed(NavigationConstants.homeView);
                     },
@@ -79,11 +82,20 @@ class NavDrawer extends StatelessWidget {
                           title: "Uyarı",
                           content:
                               "Şu anki veriler yedeklenen veri ile değiştirilecektir",
-                          yesFunction: () {
+                          yesFunction: () async {
+                        await DenemeDbProvider.db.clearDatabase();
+
+                        lessonProv.initLessonData(lessonProv.getLessonName);
+                        denemeProv.initData(denemeProv.getLessonName);
+                        navigation.navigateToPageClear(
+                            path: NavigationConstants.homeView);
+
                         restoreData(loginProv, denemeProv, lessonProv)
                             .then((value) {
-                          Navigator.of(context, rootNavigator: true)
-                              .pushNamed(NavigationConstants.homeView);
+                          lessonProv.initLessonData(lessonProv.getLessonName);
+                          denemeProv.initData(denemeProv.getLessonName);
+                          navigation.navigateToPageClear(
+                              path: NavigationConstants.homeView);
                         });
                       }, noFunction: () {
                         Navigator.of(context, rootNavigator: true).pop();
@@ -115,9 +127,23 @@ class NavDrawer extends StatelessWidget {
                     leading: const Icon(Icons.logout, color: Colors.grey),
                     title: const Text("Çıkış"),
                     onTap: () {
-                      AuthService().signOut().then((value) {
-                        navigation.navigateToPageClear(
-                            path: NavigationConstants.loginView);
+                      denemeProv.showAlert(context,
+                          isOneButton: false,
+                          title: "Uyarı",
+                          content:
+                              "Mevcut hesaptan çıkış yapmak ister misiniz?",
+                          yesFunction: () async {
+                        if (AuthService().fAuth.currentUser != null ||
+                            await loginProv.getIsAnonymous == true) {
+                          AuthService().signOut();
+                          loginProv.setAnonymousLogin = false;
+                          loginProv.setState = LoginState.notLoggedIn;
+                          navigation.navigateToPageClear(
+                              path: NavigationConstants.loginView);
+                        } else {}
+                      }, noFunction: () {
+                        Navigator.of(context, rootNavigator: true)
+                            .pushNamed(NavigationConstants.homeView);
                       });
                     },
                   ),
@@ -168,28 +194,9 @@ class NavDrawer extends StatelessWidget {
         await loginProv.getIsAnonymous == true) {
       String? userId = AuthService().fAuth.currentUser?.uid;
 
-      var table = await denemeProv.getTablesFromFirebase(userId!);
-
-      final hTable = table![DenemeTables.historyTableName];
-      final gTable = table[DenemeTables.geographyTable];
-      final cTable = table[DenemeTables.citizenTable];
-
-      List<Map<String, dynamic>>? historyTable =
-          denemeProv.convertFirebaseToSqliteData(hTable!, denemeProv);
-      List<Map<String, dynamic>>? citizenTable =
-          denemeProv.convertFirebaseToSqliteData(gTable!, denemeProv);
-      List<Map<String, dynamic>>? geographyTable =
-          denemeProv.convertFirebaseToSqliteData(cTable!, denemeProv);
-
-      List<dynamic> denemePostData = [
-        historyTable,
-        geographyTable,
-        citizenTable,
-      ];
+      final denemePostData = await denemeProv.getTablesFromFirebase(userId!);
 
       denemeProv.sendFirebaseToSqlite(denemePostData);
     }
-    lessonProv.initLessonData(lessonProv.getLessonName);
-    denemeProv.initData(denemeProv.getLessonName);
   }
 }

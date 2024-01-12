@@ -9,7 +9,7 @@ class DenemeDbProvider {
   DenemeDbProvider._();
   static final DenemeDbProvider db = DenemeDbProvider._();
 
-  static Database? _database;
+  Database? _database;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -31,49 +31,72 @@ class DenemeDbProvider {
         },
         version: 1,
         onOpen: (Database db) async {
-          //await DenemeTables.reCreateTable(db);
+          // await DenemeTables.reCreateTable(db);
         });
     return db;
   }
 
   Future<void> insertDeneme(DenemeModel deneme, String lessonTable) async {
     final db = await database;
-
     db.insert(lessonTable, deneme.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<void> inserAllDenemeData(List<dynamic> denemePost) async {
+  List<Map<String, dynamic>>? convertFirebaseToSqliteData(
+      List<dynamic> firebaseTableData) {
+    List<Map<String, dynamic>>? listDeneme = [];
+
+    listDeneme.addAll(firebaseTableData.map((e) => e));
+
+    return listDeneme;
+  }
+
+  Future<void> inserAllDenemeData(
+      Map<String, List<dynamic>>? denemePost) async {
     final db = await database;
 
-    List<String> lessonTables = [
+    final hTable = denemePost![DenemeTables.historyTableName];
+    final gTable = denemePost[DenemeTables.geographyTable];
+    final cTable = denemePost[DenemeTables.citizenTable];
+
+    List<Map<String, dynamic>>? historyTable =
+        convertFirebaseToSqliteData(hTable!);
+    List<Map<String, dynamic>>? citizenTable =
+        convertFirebaseToSqliteData(gTable!);
+    List<Map<String, dynamic>>? geographyTable =
+        convertFirebaseToSqliteData(cTable!);
+
+    List<dynamic> denemePostData = [
+      historyTable,
+      geographyTable,
+      citizenTable,
+    ];
+    List<dynamic> lessonNames = [
       DenemeTables.historyTableName,
       DenemeTables.geographyTable,
       DenemeTables.citizenTable,
     ];
-    int i = 0;
-    for (var tableData in denemePost) {
-      if (tableData != null) {
-        String tableName = lessonTables[i];
-        print(tableName);
-        Batch batch = db.batch();
 
-        for (var item in tableData) {
-          DenemeModel denemeData = DenemeModel(
-            denemeId: item['denemeId'],
-            subjectId: item['subjectId'],
-            falseCount: item['falseCount'],
-            subjectName: item['subjectName'],
-            denemeDate: item['denemeDate'],
-          );
+    for (int j = 0; j < denemePostData.length; j++) {
+      final tableData = denemePostData[j];
+      String tableName = lessonNames[j];
 
-          batch.insert(tableName, denemeData.toMap(),
-              conflictAlgorithm: ConflictAlgorithm.replace);
-        }
+      Batch batch = db.batch();
 
-        await batch.commit();
+      for (var item in tableData) {
+        DenemeModel denemeData = DenemeModel(
+          denemeId: item['denemeId'],
+          subjectId: item['subjectId'],
+          falseCount: item['falseCount'],
+          subjectName: item['subjectName'],
+          denemeDate: item['denemeDate'],
+        );
+
+        batch.insert(tableName, denemeData.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
       }
-      i++;
+
+      await batch.commit();
     }
   }
 

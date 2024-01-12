@@ -447,16 +447,8 @@ class DenemeViewModel extends ChangeNotifier {
     return null;
   }
 
-  List<Map<String, dynamic>>? convertFirebaseToSqliteData(
-      List<dynamic> firebaseTableData, DenemeViewModel denemeProv) {
-    List<Map<String, dynamic>>? listDeneme = [];
-
-    listDeneme.addAll(firebaseTableData.map((e) => e));
-
-    return listDeneme;
-  }
-
-  Future<void> sendFirebaseToSqlite(List<dynamic> denemeData) async {
+  Future<void> sendFirebaseToSqlite(
+      Map<String, List<dynamic>>? denemeData) async {
     await DenemeDbProvider.db.inserAllDenemeData(denemeData);
   }
 
