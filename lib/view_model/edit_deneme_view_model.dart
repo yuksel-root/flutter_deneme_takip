@@ -9,9 +9,17 @@ import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 
+enum EditDenemeState {
+  empty,
+  loading,
+  completed,
+  error,
+}
+
 class EditDenemeViewModel extends ChangeNotifier {
   late NavigationService _navigation;
   final DateTime _now = DateTime.now();
+  late EditDenemeState _state;
 
   late bool _isDiffZero;
   late bool _isLoading;
@@ -36,6 +44,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     _subjectSavedList.clear();
 
     _navigation = NavigationService.instance;
+    _state = EditDenemeState.loading;
     _date =
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(_now).toString();
 
@@ -55,6 +64,12 @@ class EditDenemeViewModel extends ChangeNotifier {
     _subjectSavedList = List.of(findList(_lessonName!));
     _falseCountControllers = List.generate(_falseCountsIntegers.length,
         (index) => TextEditingController(text: '0'));
+  }
+
+  EditDenemeState get getState => _state;
+  set setState(EditDenemeState state) {
+    _state = state;
+    notifyListeners();
   }
 
   List<String> findList(String lessonName) {

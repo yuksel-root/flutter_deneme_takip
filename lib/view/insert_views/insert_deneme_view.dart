@@ -15,11 +15,10 @@ class InsertDeneme extends StatelessWidget {
     final editDenemeProv =
         Provider.of<EditDenemeViewModel>(context, listen: true);
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: true);
-    final denemeData = denemeProv.listDeneme ?? []; //fake data for loading
+    final fakeData = denemeProv.fakeData ?? []; //fake data for loading
 
     return FutureBuilder(
-      future:
-          Future.delayed(const Duration(milliseconds: 150), () => denemeData),
+      future: Future.delayed(Duration.zero, () => fakeData),
       builder: (context, snapshot) {
         if (context.watch<DenemeViewModel>().getDenemeState ==
             DenemeState.loading) {

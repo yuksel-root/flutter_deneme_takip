@@ -36,6 +36,7 @@ class DenemeViewModel extends ChangeNotifier {
   late String? _lessonTableName;
   late bool _isAlertOpen;
   late List<Map<String, dynamic>>? listDeneme;
+  late List<Map<String, dynamic>>? fakeData;
   late List<dynamic> rowData;
   late List<dynamic> columnData;
   late List<Map<String, dynamic>> denemelerData;
@@ -51,12 +52,17 @@ class DenemeViewModel extends ChangeNotifier {
     _firebaseState = FirebaseState.empty;
 
     listDeneme = [];
+    fakeData = [];
     _lessonTableName =
         LessonList.tableNames[_lessonName] ?? LessonList.tableNames['Tarih'];
-    initData(_lessonName);
+
+    initDenemeData(_lessonName!);
+    initFakeData(_lessonName!);
+
     _initPng = LessonList.lessonPngList[_lessonName] ??
         LessonList.lessonPngList['Tarih'];
     columnData = List.of(findList(_lessonName ?? 'Tarih'));
+
     rowData = [];
     denemelerData = [];
     _listFalseCounts = [];
@@ -254,17 +260,29 @@ class DenemeViewModel extends ChangeNotifier {
     return LessonList.lessonListMap[lessonName] ?? [];
   }
 
-  void initData(String? lessonName) async {
+  void initDenemeData(String? lessonName) async {
     setDenemestate = DenemeState.loading;
     _lessonTableName =
         LessonList.tableNames[lessonName] ?? LessonList.tableNames['Tarih'];
-    //print("deneme less init table $_lessonTableName");
+
+    await DenemeDbProvider.db.getLessonDeneme(
+        LessonList.tableNames[lessonName]!); //fixed the update data
+    await DenemeDbProvider.db.getLessonDeneme(
+        LessonList.tableNames[lessonName]!); //fixed the update data
 
     listDeneme = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
 
-    Future.delayed(const Duration(milliseconds: 200), () {
-      setDenemestate = DenemeState.completed;
-    });
+    setDenemestate = DenemeState.completed;
+  }
+
+  void initFakeData(String? lessonName) async {
+    setDenemestate = DenemeState.loading;
+    _lessonTableName =
+        LessonList.tableNames[lessonName] ?? LessonList.tableNames['Tarih'];
+
+    fakeData = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
+
+    setDenemestate = DenemeState.completed;
   }
 
   bool compareLists(List<dynamic> list1, List<dynamic> list2) {
@@ -399,7 +417,7 @@ class DenemeViewModel extends ChangeNotifier {
         denemeProv.setAlert = false,
         Navigator.of(context, rootNavigator: true).pop(),
         Future.delayed(const Duration(milliseconds: 200), () {
-          denemeProv.initData(denemeProv.getLessonName!);
+          denemeProv.initDenemeData(denemeProv.getLessonName);
         }),
       },
     );

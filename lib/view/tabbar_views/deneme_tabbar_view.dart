@@ -54,7 +54,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
             denemeProv.setLessonName =
                 LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
 
-            denemeProv.initData(
+            denemeProv.initDenemeData(
                 LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
             //  print(denemeProv.listDeneme);
 
@@ -171,9 +171,8 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
               denemeProv
                   .backUpAllTablesData(context, userId, denemeProv)
                   .then((value) async {
-                Future.delayed(const Duration(milliseconds: 200), () async {
-                  final tables = await denemeProv.getTablesFromFirebase(userId);
-                  print(tables);
+                Future.delayed(const Duration(milliseconds: 100), () async {
+                  await denemeProv.getTablesFromFirebase(userId);
                 });
               });
             });

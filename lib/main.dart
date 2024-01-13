@@ -26,12 +26,12 @@ Future<void> main() async {
   );
 }
 
-void checkGooglePlayServices() async {
+Future<void> checkGooglePlayServices() async {
   final availability = await GoogleApiAvailability.instance
       .checkGooglePlayServicesAvailability();
 
   if (availability == GooglePlayServicesAvailability.success) {
-    print('------------Google Play Services mevcut-----------');
+    print('------------Google Play Services başarılı -----------');
   } else {
     print(
         '----------Google Play Services mevcut değil veya uygun değil---------');
@@ -42,7 +42,7 @@ Future<void> _init() async {
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
+  await checkGooglePlayServices();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
     SystemUiOverlay.bottom,
   ]);
@@ -73,7 +73,6 @@ class MainApp extends StatelessWidget {
                   builder:
                       (BuildContext context, AsyncSnapshot<bool?> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      print(snapshot.error);
                       return const CircularProgressIndicator();
                     } else if (AuthService().fAuth.currentUser != null ||
                         snapshot.data != false &&

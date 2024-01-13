@@ -57,10 +57,10 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             tabbarNavProv.setLessonCurrentIndex = tabController.index;
 
             lessonProv.setLessonName =
-                LessonList.lessonNameList[tabController.index];
+                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
 
-            lessonProv
-                .initLessonData(LessonList.lessonNameList[tabController.index]);
+            lessonProv.initLessonData(
+                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
           }
         });
         return Scaffold(
@@ -123,7 +123,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                       if (value == 'option3') {
                         await DenemeDbProvider.db.clearDatabase();
                         lessonProv.initLessonData(lessonProv.getLessonName);
-                        denemeProv.initData(denemeProv.getLessonName);
+                        denemeProv.initDenemeData(denemeProv.getLessonName!);
                         navigation.navigateToPageClear(
                             path: NavigationConstants.homeView);
 
@@ -175,7 +175,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
       denemeProv.sendFirebaseToSqlite(denemePostData);
     }
     lessonProv.initLessonData(lessonProv.getLessonName);
-    denemeProv.initData(denemeProv.getLessonName);
+    denemeProv.initDenemeData(denemeProv.getLessonName!);
   }
 
   List<Widget> tab = LessonList.lessonNameList.map((tabName) {
@@ -203,7 +203,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         Future.delayed(const Duration(milliseconds: 200), () {
           lessonProv.initLessonData(lessonProv.getLessonName);
 
-          denemeProv.initData(denemeProv.getLessonName);
+          denemeProv.initDenemeData(denemeProv.getLessonName);
         }),
       },
     );

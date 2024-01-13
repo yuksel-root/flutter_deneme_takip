@@ -54,49 +54,52 @@ class DenemeDbProvider {
   Future<void> inserAllDenemeData(
       Map<String, List<dynamic>>? denemePost) async {
     final db = await database;
+    if (denemePost != null) {
+      final hTable = denemePost[DenemeTables.historyTableName];
+      final gTable = denemePost[DenemeTables.geographyTable];
+      final cTable = denemePost[DenemeTables.citizenTable];
 
-    final hTable = denemePost![DenemeTables.historyTableName];
-    final gTable = denemePost[DenemeTables.geographyTable];
-    final cTable = denemePost[DenemeTables.citizenTable];
+      List<Map<String, dynamic>>? historyTable =
+          convertFirebaseToSqliteData(hTable!);
 
-    List<Map<String, dynamic>>? historyTable =
-        convertFirebaseToSqliteData(hTable!);
-    List<Map<String, dynamic>>? citizenTable =
-        convertFirebaseToSqliteData(gTable!);
-    List<Map<String, dynamic>>? geographyTable =
-        convertFirebaseToSqliteData(cTable!);
+      List<Map<String, dynamic>>? geographyTable =
+          convertFirebaseToSqliteData(gTable!);
 
-    List<dynamic> denemePostData = [
-      historyTable,
-      geographyTable,
-      citizenTable,
-    ];
-    List<dynamic> lessonNames = [
-      DenemeTables.historyTableName,
-      DenemeTables.geographyTable,
-      DenemeTables.citizenTable,
-    ];
+      List<Map<String, dynamic>>? citizenTable =
+          convertFirebaseToSqliteData(cTable!);
 
-    for (int j = 0; j < denemePostData.length; j++) {
-      final tableData = denemePostData[j];
-      String tableName = lessonNames[j];
+      List<dynamic> denemePostData = [
+        historyTable,
+        geographyTable,
+        citizenTable,
+      ];
+      List<dynamic> lessonNames = [
+        DenemeTables.historyTableName,
+        DenemeTables.geographyTable,
+        DenemeTables.citizenTable,
+      ];
 
-      Batch batch = db.batch();
+      for (int j = 0; j < denemePostData.length; j++) {
+        final tableData = denemePostData[j];
+        String tableName = lessonNames[j];
 
-      for (var item in tableData) {
-        DenemeModel denemeData = DenemeModel(
-          denemeId: item['denemeId'],
-          subjectId: item['subjectId'],
-          falseCount: item['falseCount'],
-          subjectName: item['subjectName'],
-          denemeDate: item['denemeDate'],
-        );
+        Batch batch = db.batch();
 
-        batch.insert(tableName, denemeData.toMap(),
-            conflictAlgorithm: ConflictAlgorithm.replace);
+        for (var item in tableData) {
+          DenemeModel denemeData = DenemeModel(
+            denemeId: item['denemeId'],
+            subjectId: item['subjectId'],
+            falseCount: item['falseCount'],
+            subjectName: item['subjectName'],
+            denemeDate: item['denemeDate'],
+          );
+
+          batch.insert(tableName, denemeData.toMap(),
+              conflictAlgorithm: ConflictAlgorithm.replace);
+        }
+
+        await batch.commit();
       }
-
-      await batch.commit();
     }
   }
 
@@ -127,7 +130,7 @@ class DenemeDbProvider {
     if (res.isEmpty) {
       return [];
     } else {
-      var denemeMap = res.toList();
+      final denemeMap = res.toList();
 
       return denemeMap.isNotEmpty ? denemeMap : [];
     }

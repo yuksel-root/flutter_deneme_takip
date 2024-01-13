@@ -21,7 +21,7 @@ class FadedLoadingFormState extends State<FadedLoadingForm>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 0),
     );
 
     _fadedGradient = LinearGradientTween(

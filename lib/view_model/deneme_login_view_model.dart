@@ -71,7 +71,7 @@ class DenemeLoginViewModel extends ChangeNotifier {
   Future<void> loginWithGoogle(
       BuildContext context, DenemeLoginViewModel loginProv) async {
     _currentUser = AuthService().fAuth.currentUser;
-    print("newUser $_currentUser");
+
     setState = LoginState.notLoggedIn;
     _currentUser = await AuthService().signInWithGoogle();
     setState = LoginState.authenticating;

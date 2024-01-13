@@ -42,16 +42,17 @@ class LessonViewModel extends ChangeNotifier {
 
   void initLessonData(String? lessonName) async {
     state = LessonState.loading;
-
     _lessonTableName =
         LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
-    // print("lesson table $_lessonTableName");
+
+    await DenemeDbProvider.db
+        .getLessonDeneme(_lessonTableName!); //fixed the update data
+    await DenemeDbProvider.db
+        .getLessonDeneme(_lessonTableName!); //fixed the update data
 
     listDeneme = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
 
-    Future.delayed(const Duration(milliseconds: 200), () {
-      state = LessonState.completed;
-    });
+    state = LessonState.completed;
   }
 
   Map<String, List<Map<String, dynamic>>> groupBySubjects(

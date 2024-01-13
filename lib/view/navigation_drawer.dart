@@ -6,6 +6,7 @@ import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
+import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
@@ -26,6 +27,9 @@ class NavDrawer extends StatelessWidget {
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
     final bottomProv =
         Provider.of<BottomNavigationProvider>(context, listen: false);
+    final tabbarProv =
+        Provider.of<TabbarNavigationProvider>(context, listen: false);
+
     return SizedBox(
       width: context.mediaQuery.size.width / 1.5,
       child: Drawer(
@@ -68,8 +72,7 @@ class NavDrawer extends StatelessWidget {
                           yesFunction: () {
                         backUpFunction(context, denemeProv);
                       }, noFunction: () {
-                        Navigator.of(context, rootNavigator: true)
-                            .pushNamed(NavigationConstants.homeView);
+                        Navigator.of(context, rootNavigator: true).pop();
                       });
                     },
                   ),
@@ -84,16 +87,14 @@ class NavDrawer extends StatelessWidget {
                               "Şu anki veriler yedeklenen veri ile değiştirilecektir",
                           yesFunction: () async {
                         await DenemeDbProvider.db.clearDatabase();
-
-                        lessonProv.initLessonData(lessonProv.getLessonName);
-                        denemeProv.initData(denemeProv.getLessonName);
-                        navigation.navigateToPageClear(
-                            path: NavigationConstants.homeView);
-
                         restoreData(loginProv, denemeProv, lessonProv)
                             .then((value) {
+                          print("L ${lessonProv.getLessonName}");
+                          print("D ${denemeProv.getLessonName}");
+
                           lessonProv.initLessonData(lessonProv.getLessonName);
-                          denemeProv.initData(denemeProv.getLessonName);
+                          denemeProv.initDenemeData(denemeProv.getLessonName);
+
                           navigation.navigateToPageClear(
                               path: NavigationConstants.homeView);
                         });
@@ -114,12 +115,11 @@ class NavDrawer extends StatelessWidget {
                           yesFunction: () async {
                         await DenemeDbProvider.db.clearDatabase();
                         lessonProv.initLessonData(lessonProv.getLessonName);
-                        denemeProv.initData(denemeProv.getLessonName);
+                        denemeProv.initDenemeData(denemeProv.getLessonName);
                         navigation.navigateToPageClear(
                             path: NavigationConstants.homeView);
                       }, noFunction: () {
-                        Navigator.of(context, rootNavigator: true)
-                            .pushNamed(NavigationConstants.homeView);
+                        Navigator.of(context, rootNavigator: true).pop();
                       });
                     },
                   ),
@@ -142,8 +142,7 @@ class NavDrawer extends StatelessWidget {
                               path: NavigationConstants.loginView);
                         } else {}
                       }, noFunction: () {
-                        Navigator.of(context, rootNavigator: true)
-                            .pushNamed(NavigationConstants.homeView);
+                        Navigator.of(context, rootNavigator: true).pop();
                       });
                     },
                   ),
@@ -194,7 +193,8 @@ class NavDrawer extends StatelessWidget {
         await loginProv.getIsAnonymous == true) {
       String? userId = AuthService().fAuth.currentUser?.uid;
 
-      final denemePostData = await denemeProv.getTablesFromFirebase(userId!);
+      final denemePostData =
+          await denemeProv.getTablesFromFirebase(userId!) ?? {};
 
       denemeProv.sendFirebaseToSqlite(denemePostData);
     }
