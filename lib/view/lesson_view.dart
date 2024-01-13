@@ -193,7 +193,7 @@ class LessonView extends StatelessWidget {
                       color: Color.fromARGB(255, 54, 31, 129),
                     ),
                     onPressed: () {
-                      Future.delayed(const Duration(milliseconds: 200), () {
+                      Future.delayed(const Duration(milliseconds: 100), () {
                         removeClickedDeneme(context, item, lessonProv);
                       });
                     },

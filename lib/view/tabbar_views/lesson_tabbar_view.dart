@@ -81,24 +81,6 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                                     context.dynamicH(0.004)),
                           ),
                         ),
-                        PopupMenuItem(
-                          value: 'option2',
-                          child: Text(
-                            'Google Çıkış',
-                            style: TextStyle(
-                                fontSize: context.dynamicW(0.01) *
-                                    context.dynamicH(0.004)),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'option3',
-                          child: Text(
-                            'Verileri geri yükle',
-                            style: TextStyle(
-                                fontSize: context.dynamicW(0.01) *
-                                    context.dynamicH(0.004)),
-                          ),
-                        ),
                       ];
                     },
                     onSelected: (value) async {
@@ -110,25 +92,8 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                             lessonProv,
                             denemeProv);
                       }
-                      if (value == 'option2') {
-                        if (AuthService().fAuth.currentUser != null ||
-                            await loginProv.getIsAnonymous == true) {
-                          AuthService().signOut();
-                          loginProv.setAnonymousLogin = false;
-                          loginProv.setState = LoginState.notLoggedIn;
-                          navigation.navigateToPageClear(
-                              path: NavigationConstants.loginView);
-                        }
-                      }
-                      if (value == 'option3') {
-                        await DenemeDbProvider.db.clearDatabase();
-                        lessonProv.initLessonData(lessonProv.getLessonName);
-                        denemeProv.initDenemeData(denemeProv.getLessonName!);
-                        navigation.navigateToPageClear(
-                            path: NavigationConstants.homeView);
-
-                        restoreData(loginProv, denemeProv, lessonProv);
-                      }
+                      if (value == 'option2') {}
+                      if (value == 'option3') {}
                     },
                   ),
                 ],
@@ -164,20 +129,6 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
     );
   }
 
-  Future<void> restoreData(DenemeLoginViewModel loginProv,
-      DenemeViewModel denemeProv, LessonViewModel lessonProv) async {
-    if (AuthService().fAuth.currentUser != null ||
-        await loginProv.getIsAnonymous == true) {
-      String? userId = AuthService().fAuth.currentUser?.uid;
-
-      final denemePostData = await denemeProv.getTablesFromFirebase(userId!);
-
-      denemeProv.sendFirebaseToSqlite(denemePostData);
-    }
-    lessonProv.initLessonData(lessonProv.getLessonName);
-    denemeProv.initDenemeData(denemeProv.getLessonName!);
-  }
-
   List<Widget> tab = LessonList.lessonNameList.map((tabName) {
     return Tab(
       text: tabName,
@@ -200,7 +151,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []),
         lessonProv.setAlert = false,
-        Future.delayed(const Duration(milliseconds: 200), () {
+        Future.delayed(const Duration(milliseconds: 100), () {
           lessonProv.initLessonData(lessonProv.getLessonName);
 
           denemeProv.initDenemeData(denemeProv.getLessonName);

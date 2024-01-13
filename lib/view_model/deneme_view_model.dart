@@ -416,7 +416,7 @@ class DenemeViewModel extends ChangeNotifier {
             denemeProv.getLessonTableName!, itemDeneme, 'denemeId'),
         denemeProv.setAlert = false,
         Navigator.of(context, rootNavigator: true).pop(),
-        Future.delayed(const Duration(milliseconds: 200), () {
+        Future.delayed(const Duration(milliseconds: 100), () {
           denemeProv.initDenemeData(denemeProv.getLessonName);
         }),
       },
@@ -441,7 +441,7 @@ class DenemeViewModel extends ChangeNotifier {
     try {
       setFirebaseState = FirebaseState.start;
       FirebaseService().sendMultiplePostsToFirebase(userId);
-      Future.delayed(const Duration(milliseconds: 200), () {
+      Future.delayed(const Duration(milliseconds: 100), () {
         setFirebaseState = FirebaseState.completed;
       });
     } on FirebaseAuthException catch (error) {

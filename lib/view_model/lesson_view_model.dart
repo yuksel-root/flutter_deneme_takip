@@ -55,6 +55,12 @@ class LessonViewModel extends ChangeNotifier {
     state = LessonState.completed;
   }
 
+  void updateLessonData(List<Map<String, dynamic>>? data) {
+    state = LessonState.loading;
+    listDeneme = data;
+    state = LessonState.completed;
+  }
+
   Map<String, List<Map<String, dynamic>>> groupBySubjects(
       List<Map<String, dynamic>> data) {
     Map<String, List<Map<String, dynamic>>> groupedData = {};
@@ -170,7 +176,7 @@ class LessonViewModel extends ChangeNotifier {
             lessonProv.getLessonTableName!, itemDeneme, 'denemeId'),
         lessonProv.setAlert = false,
         Navigator.of(context, rootNavigator: true).pop(),
-        Future.delayed(const Duration(milliseconds: 200), () {
+        Future.delayed(const Duration(milliseconds: 100), () {
           lessonProv.initLessonData(lessonProv.getLessonName!);
         }),
       },

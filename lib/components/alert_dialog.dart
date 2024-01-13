@@ -77,7 +77,7 @@ class AlertView extends StatelessWidget {
                             shape: const StadiumBorder(),
                             foregroundColor: Colors.white,
                             animationDuration:
-                                const Duration(milliseconds: 200),
+                                const Duration(milliseconds: 100),
                             alignment: Alignment.center,
                           ),
                           child: FittedBox(
@@ -100,7 +100,7 @@ class AlertView extends StatelessWidget {
                             shape: const StadiumBorder(),
                             foregroundColor: Colors.white,
                             animationDuration:
-                                const Duration(milliseconds: 200),
+                                const Duration(milliseconds: 100),
                             alignment: Alignment.center,
                           ),
                           child: FittedBox(

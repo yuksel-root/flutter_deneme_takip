@@ -117,6 +117,23 @@ class DenemeDbProvider {
     }
   }
 
+  Future<void> groupBySubName() async {
+    final db = await database;
+    List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT subjectName, SUM(falseCount) AS totalFalseCount FROM historyTable GROUP BY subjectName',
+    );
+    print(result);
+  }
+
+  Future<List<Map<String, dynamic>>> getAllDataOrderByDate(
+      String lessonTable, String orderBy) async {
+    final db = await database;
+    return await db.query(
+      lessonTable,
+      orderBy: orderBy,
+    );
+  }
+
   Future<int> removeTableItem(String lessonTable, int id, String idName) async {
     final db = await database;
     int delete =

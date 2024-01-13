@@ -159,9 +159,11 @@ class EditDenemeViewModel extends ChangeNotifier {
 
   Future<void> saveButton(BuildContext context) async {
     DateTime now = DateTime.now();
+    DateTime manualDate = DateTime(2024, 4, 14, 20, 23, 23);
 
-    _date =
-        DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(now).toString();
+    _date = DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR')
+        .format(now)
+        .toString();
 
     _subjectSavedList = getSubjectList;
     _lastSubjectId = await DenemeDbProvider.db

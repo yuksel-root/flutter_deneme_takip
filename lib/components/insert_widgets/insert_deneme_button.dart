@@ -31,12 +31,12 @@ class InsertDenemeButton extends StatelessWidget {
             });
             editProv.saveButton(context);
           } else if (editProv.getIsDiffZero == false) {
-            Future.delayed(const Duration(milliseconds: 200), () {
+            Future.delayed(const Duration(milliseconds: 100), () {
               editProv.errorAlert(context, "HATA", "En az bir değer giriniz");
             });
           } else {
             Future.delayed(
-              const Duration(milliseconds: 200),
+              const Duration(milliseconds: 100),
               () {
                 editProv.errorAlert(
                     context, 'HATA', 'Sadece Tam sayı giriniz!');

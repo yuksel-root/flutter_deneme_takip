@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/gradient_widget.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
@@ -44,50 +45,55 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
     final editProv = Provider.of<EditDenemeViewModel>(context);
     return Scaffold(
       body: currentScreen[provider.getCurrentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xff1c0f45),
-        unselectedItemColor: Colors.white,
-        selectedItemColor: Colors.greenAccent,
-        selectedFontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
-        unselectedFontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
-        currentIndex: provider.getCurrentIndex,
-        onTap: (index) {
-          provider.setCurrentIndex = index;
-          denemeProv.setLessonName =
-              LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
-          denemeProv.initDenemeData(
-              LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
+      bottomNavigationBar: GradientWidget(
+        blendModes: BlendMode.lighten,
+        gradient:
+            const LinearGradient(colors: [Colors.green, Colors.purpleAccent]),
+        widget: BottomNavigationBar(
+          backgroundColor: const Color(0xff1c0f45),
+          unselectedItemColor: Colors.white,
+          selectedItemColor: Colors.greenAccent,
+          selectedFontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+          unselectedFontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
+          currentIndex: provider.getCurrentIndex,
+          onTap: (index) {
+            provider.setCurrentIndex = index;
+            denemeProv.setLessonName =
+                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
+            denemeProv.initDenemeData(
+                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
 
-          lessonProv.setLessonName =
-              LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
-          lessonProv.initLessonData(
-              LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
+            lessonProv.setLessonName =
+                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
+            lessonProv.initLessonData(
+                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
 
-          editProv.setFalseControllers =
-              editProv.getFalseCountsIntegers!.length;
+            editProv.setFalseControllers =
+                editProv.getFalseCountsIntegers!.length;
 
-          editProv.setLoading = true;
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              FontAwesomeIcons.house,
+            editProv.setLoading = true;
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(
+                FontAwesomeIcons.house,
+              ),
+              label: "Dersler",
             ),
-            label: "Dersler",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              FontAwesomeIcons.house,
+            BottomNavigationBarItem(
+              icon: Icon(
+                FontAwesomeIcons.house,
+              ),
+              label: "Denemeler",
             ),
-            label: "Denemeler",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              FontAwesomeIcons.house,
+            BottomNavigationBarItem(
+              icon: Icon(
+                FontAwesomeIcons.house,
+              ),
+              label: "DenemeGir",
             ),
-            label: "DenemeGir",
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
