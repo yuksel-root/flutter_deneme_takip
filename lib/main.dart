@@ -68,7 +68,7 @@ class MainApp extends StatelessWidget {
         navigatorKey: NavigationService.instance.navigatorKey,
         home: Scaffold(
           body: Center(
-              child: FutureBuilder<bool?>(
+              child: FutureBuilder<bool?>(  
                   future: checkIfAnonymous(loginProv),
                   builder:
                       (BuildContext context, AsyncSnapshot<bool?> snapshot) {
@@ -80,7 +80,7 @@ class MainApp extends StatelessWidget {
                             snapshot.error == null) {
                       return const BottomTabbarView();
                     } else {
-                      return const UserLoginView();
+                      return const BottomTabbarView();
                     }
                   })),
         ));

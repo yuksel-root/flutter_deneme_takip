@@ -9,6 +9,7 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
+import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
 
 enum DenemeState {
@@ -434,6 +435,10 @@ class DenemeViewModel extends ChangeNotifier {
         (value) => denemeProv.setAlert = false,
       );
     }
+  }
+
+  Future<void> deleteUserInFirebase(String userId) async {
+    FirebaseService().deleteUserFromCollection(userId);
   }
 
   Future<void> backUpAllTablesData(

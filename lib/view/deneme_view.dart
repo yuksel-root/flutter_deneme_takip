@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/gradient_widget.dart';
-import 'package:flutter_deneme_takip/components/utils.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
@@ -84,45 +83,6 @@ class DenemeView extends StatelessWidget {
         ),
       ),
     ]));
-  }
-
-  Widget buildEmptyTable(BuildContext context, DenemeViewModel denemeProv) {
-    return Center(
-        child: Column(children: <Widget>[
-      Column(
-        children: [
-          SizedBox(
-            child: Table(
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              defaultColumnWidth: FixedColumnWidth(context.dynamicW(0.20)),
-              border: TableBorder.all(
-                  color: Colors.black, style: BorderStyle.solid, width: 1),
-              children: [
-                getColumns(context, denemeProv),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 800,
-            width: 660,
-            child: Text(
-              "${xd()} Veri yok xd",
-              style: TextStyle(
-                fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
-              ),
-            ),
-          )
-        ],
-      ),
-    ]));
-  }
-
-  String xd() {
-    List<String> a = [];
-    for (int i = 0; i < 8; i++) {
-      a.add("\n");
-    }
-    return a.join();
   }
 
   TableRow getColumns(BuildContext context, DenemeViewModel denemeProv) {
@@ -217,7 +177,7 @@ class DenemeView extends StatelessWidget {
                           Future.delayed(const Duration(milliseconds: 100), () {
                             denemeProv.removeAlert(
                               context,
-                              'UYARI',
+                              'UYARIb',
                               '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
                               denemeProv,
                               cell,
@@ -269,45 +229,31 @@ class DenemeView extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: InkWell(
-                  onLongPress: () {
-                    Future.delayed(const Duration(milliseconds: 100), () {
-                      denemeProv.removeAlert(
-                        context,
-                        'UYARI',
-                        '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                        denemeProv,
-                        cell,
-                      );
-                    });
-                  },
-                  child: Center(
-                    child: Padding(
-                      padding:
-                          EdgeInsets.only(bottom: context.dynamicH(0.00714)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Center(
-                              child: Text(
-                                cell.toString(),
-                                textAlign: TextAlign.center,
-                                style: i != 0
-                                    ? TextStyle(
-                                        color: Colors.white,
-                                        fontSize: context.dynamicW(0.01) *
-                                            context.dynamicH(0.005))
-                                    : TextStyle(
-                                        color: Colors.white,
-                                        fontSize: context.dynamicW(0.01) *
-                                            context.dynamicH(0.005)),
-                              ),
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: context.dynamicH(0.00714)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Center(
+                            child: Text(
+                              cell.toString(),
+                              textAlign: TextAlign.center,
+                              style: i != 0
+                                  ? TextStyle(
+                                      color: Colors.white,
+                                      fontSize: context.dynamicW(0.01) *
+                                          context.dynamicH(0.005))
+                                  : TextStyle(
+                                      color: Colors.white,
+                                      fontSize: context.dynamicW(0.01) *
+                                          context.dynamicH(0.005)),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -334,7 +280,7 @@ class DenemeView extends StatelessWidget {
                     Future.delayed(const Duration(milliseconds: 100), () {
                       denemeProv.removeAlert(
                         context,
-                        'UYARI',
+                        'UYARIa',
                         '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
                         denemeProv,
                         cell,
@@ -385,45 +331,31 @@ class DenemeView extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: InkWell(
-                  onLongPress: () {
-                    Future.delayed(const Duration(milliseconds: 100), () {
-                      denemeProv.removeAlert(
-                        context,
-                        'UYARI',
-                        '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                        denemeProv,
-                        cell,
-                      );
-                    });
-                  },
-                  child: Center(
-                    child: Padding(
-                      padding:
-                          EdgeInsets.only(bottom: context.dynamicH(0.00714)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Center(
-                              child: Text(
-                                cell.toString(),
-                                textAlign: TextAlign.center,
-                                style: i != 0
-                                    ? TextStyle(
-                                        color: Colors.white,
-                                        fontSize: context.dynamicW(0.01) *
-                                            context.dynamicH(0.005))
-                                    : TextStyle(
-                                        color: Colors.white,
-                                        fontSize: context.dynamicW(0.01) *
-                                            context.dynamicH(0.005)),
-                              ),
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: context.dynamicH(0.00714)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Center(
+                            child: Text(
+                              cell.toString(),
+                              textAlign: TextAlign.center,
+                              style: i != 0
+                                  ? TextStyle(
+                                      color: Colors.white,
+                                      fontSize: context.dynamicW(0.01) *
+                                          context.dynamicH(0.005))
+                                  : TextStyle(
+                                      color: Colors.white,
+                                      fontSize: context.dynamicW(0.01) *
+                                          context.dynamicH(0.005)),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -436,6 +368,18 @@ class DenemeView extends StatelessWidget {
 
     return rowXdata.map((row) {
       k++;
+      List<Widget> cells = List.generate(
+        row['row'].length,
+        (i) {
+          dynamic cell = row['row'][i];
+          if (((k % 2) == 0)) {
+            return getRowCell(context, i, cell, denemeProv);
+          } else {
+            return getRowCell2(context, i, cell, denemeProv);
+          }
+        },
+      );
+
       return TableRow(
         decoration: BoxDecoration(
           border: Border.all(
@@ -444,11 +388,7 @@ class DenemeView extends StatelessWidget {
             width: 0.5,
           ),
         ),
-        children: Utils.modelBuilder(row['row'], (i, cell) {
-          return ((k % 2) == 0)
-              ? getRowCell(context, i, cell, denemeProv)
-              : getRowCell2(context, i, cell, denemeProv);
-        }),
+        children: cells,
       );
     }).toList();
   }

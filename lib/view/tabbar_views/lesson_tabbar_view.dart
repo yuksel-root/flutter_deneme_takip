@@ -183,7 +183,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             AuthService().signOut();
             loginProv.setAnonymousLogin = false;
             loginProv.setState = LoginState.notLoggedIn;
-            navigation.navigateToPageClear(path: NavigationConstants.loginView);
+            navigation.navigateToPageClear(path: NavigationConstants.homeView);
           } else {}
         },
         style: ElevatedButton.styleFrom(

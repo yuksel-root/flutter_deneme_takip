@@ -103,4 +103,21 @@ class FirebaseService {
       print('Add User exception in FirebaseS $e');
     }
   }
+
+  Future<void> deleteUserFromCollection(String userId) async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      var userDoc = await firestore.collection('users').doc(userId).get();
+
+      if (userDoc.exists) {
+        await firestore.collection('users').doc(userId).delete();
+        print('User successfully deleted.');
+      } else {
+        print('User not found. Unable to delete.');
+      }
+    } catch (e) {
+      print('Delete User exception in Firebase: $e');
+    }
+  }
 }

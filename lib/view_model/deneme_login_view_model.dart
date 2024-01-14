@@ -103,7 +103,7 @@ class DenemeLoginViewModel extends ChangeNotifier {
     } else {
       setState = LoginState.notLoggedIn;
       setAnonymousLogin = false;
-      navigation.navigateToPageClear(path: NavigationConstants.loginView);
+      navigation.navigateToPageClear(path: NavigationConstants.homeView);
     }
   }
 

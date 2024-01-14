@@ -72,7 +72,7 @@ Widget drawerCardMenu(
       leading: GradientWidget(
           blendModes: BlendMode.srcIn,
           gradient:
-              const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
+                const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
           widget: Icon(icon, color: iconColor)),
       title: GradientWidget(
           blendModes: BlendMode.srcIn,
@@ -181,7 +181,33 @@ Expanded buildListTiles(
                 loginProv.setAnonymousLogin = false;
                 loginProv.setState = LoginState.notLoggedIn;
                 navigation.navigateToPageClear(
-                    path: NavigationConstants.loginView);
+                    path: NavigationConstants.homeView);
+              } else {}
+            }, noFunction: () {
+              Navigator.of(context, rootNavigator: true).pop();
+            });
+          },
+        ),
+        const Divider(),
+        drawerCardMenu(
+          title: "Kullanıcı hesabını sil",
+          icon: Icons.delete,
+          iconColor: Colors.grey,
+          onTap: () {
+            denemeProv.showAlert(context,
+                isOneButton: false,
+                title: "Uyarı",
+                content: "Mevcut kullanıcı hesabı silinecektir ?",
+                yesFunction: () async {
+              if (AuthService().fAuth.currentUser != null ||
+                  await loginProv.getIsAnonymous == true) {
+                denemeProv
+                    .deleteUserInFirebase(AuthService().fAuth.currentUser!.uid);
+                loginProv.setAnonymousLogin = false;
+                loginProv.setState = LoginState.notLoggedIn;
+
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed(NavigationConstants.homeView);
               } else {}
             }, noFunction: () {
               Navigator.of(context, rootNavigator: true).pop();
