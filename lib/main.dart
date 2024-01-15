@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_print
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_deneme_takip/core/notifier/provider_list.dart';
 import 'package:flutter_deneme_takip/firebase_options.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
-import 'package:flutter_deneme_takip/view/deneme_user_login.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:google_api_availability/google_api_availability.dart';
 import 'package:provider/provider.dart';
@@ -68,7 +66,7 @@ class MainApp extends StatelessWidget {
         navigatorKey: NavigationService.instance.navigatorKey,
         home: Scaffold(
           body: Center(
-              child: FutureBuilder<bool?>(  
+              child: FutureBuilder<bool?>(
                   future: checkIfAnonymous(loginProv),
                   builder:
                       (BuildContext context, AsyncSnapshot<bool?> snapshot) {

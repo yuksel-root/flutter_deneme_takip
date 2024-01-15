@@ -45,7 +45,6 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         Provider.of<TabbarNavigationProvider>(context, listen: true);
     final lessonProv = Provider.of<LessonViewModel>(context, listen: false);
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
-    final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
 
     return DefaultTabController(
       length: LessonList.lessonNameList.length,

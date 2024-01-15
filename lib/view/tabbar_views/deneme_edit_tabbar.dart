@@ -4,6 +4,7 @@ import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/insert_views/insert_deneme_view.dart';
+import 'package:flutter_deneme_takip/view/navigation_drawer.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
@@ -68,14 +69,34 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
           }
         });
         return Scaffold(
+          drawer: const NavDrawer(),
           appBar: AppBar(
+            actions: <Widget>[
+              PopupMenuButton(
+                itemBuilder: (BuildContext context) {
+                  return <PopupMenuEntry>[
+                    PopupMenuItem(
+                      value: 'option1',
+                      child: Text(
+                        'Veriyi Temizle',
+                        style: TextStyle(
+                            fontSize: context.dynamicW(0.01) *
+                                context.dynamicH(0.004)),
+                      ),
+                    ),
+                  ];
+                },
+                onSelected: (value) async {},
+              ),
+            ],
+            iconTheme: const IconThemeData(color: Colors.white),
             title: Center(
                 child: Text(
                     style: TextStyle(
                         color: Colors.white,
                         fontSize:
                             context.dynamicW(0.01) * context.dynamicH(0.005)),
-                    'Deneme App')),
+                    'Deneme Verisi Ekle')),
             backgroundColor: const Color(0xff1c0f45),
             bottom: TabBar(
                 indicatorColor: Colors.greenAccent,

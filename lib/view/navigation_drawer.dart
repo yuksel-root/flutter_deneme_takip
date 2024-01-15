@@ -7,7 +7,6 @@ import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
-
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
@@ -37,11 +36,13 @@ class NavDrawer extends StatelessWidget {
         backgroundColor: Colors.transparent,
         child: Column(
           children: [
-            Expanded(flex: 10, child: buildListTileHeader(currentUser)),
             Expanded(
-                flex: 30,
-                child: buildListTiles(
-                    bottomProv, context, denemeProv, loginProv, lessonProv)),
+                flex: 10,
+                child: buildListTileHeader(context, loginProv, currentUser)),
+            Expanded(
+                flex: 35,
+                child: buildListTiles(currentUser, bottomProv, context,
+                    denemeProv, loginProv, lessonProv)),
           ],
         ),
       ),
@@ -49,173 +50,358 @@ class NavDrawer extends StatelessWidget {
   }
 }
 
-GradientWidget buildListTileHeader(User? currentUser) {
-  return GradientWidget(
-    blendModes: BlendMode.hue,
-    gradient: const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
-    widget: UserAccountsDrawerHeader(
-        accountName: Text(currentUser?.displayName ?? "Offline kullanıcı"),
-        accountEmail: Text(currentUser?.email ??
-            "Lütfen Yedekleme için google ile giriş yapınız."),
-        currentAccountPicture:
-            ClipOval(child: Image.network(currentUser?.photoURL ?? "null"))),
+Column buildListTileHeader(
+    BuildContext context, DenemeLoginViewModel loginProv, User? currentUser) {
+  return Column(
+    children: [
+      GradientWidget(
+        blendModes: BlendMode.hue,
+        gradient:
+            const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
+        widget: UserAccountsDrawerHeader(
+          accountName: Text(currentUser?.displayName ?? "Offline kullanıcı"),
+          accountEmail: Text(currentUser?.email ??
+              "Lütfen Yedekleme için google ile giriş yapınız."),
+          currentAccountPicture: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                  child: ClipOval(
+                      child: currentUser != null
+                          ? Image.network(currentUser.photoURL ?? "null")
+                          : FlutterLogo(size: context.dynamicW(0.4)))),
+            ],
+          ),
+        ),
+      ),
+    ],
   );
 }
 
 Widget drawerCardMenu(
     {required String title,
     required IconData icon,
-    required Color iconColor,
+    required Gradient textGradient,
+    required Gradient cardGradient,
+    required Gradient iconGradient,
     required Function onTap}) {
   return Card(
-    child: ListTile(
-      leading: GradientWidget(
-          blendModes: BlendMode.srcIn,
-          gradient:
-                const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
-          widget: Icon(icon, color: iconColor)),
-      title: GradientWidget(
-          blendModes: BlendMode.srcIn,
-          gradient:
-              const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
-          widget: Text(title)),
-      onTap: () => onTap(),
+    elevation: 80,
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        gradient: cardGradient,
+      ),
+      child: ListTile(
+        leading: GradientWidget(
+            blendModes: BlendMode.srcIn,
+            gradient: iconGradient,
+            widget: Icon(icon)),
+        title: GradientWidget(
+            blendModes: BlendMode.srcIn,
+            gradient: textGradient,
+            widget: Text(title)),
+        onTap: () => onTap(),
+      ),
     ),
   );
 }
 
-Expanded buildListTiles(
+Column buildListTiles(
+    User? currentUser,
     BottomNavigationProvider bottomProv,
     BuildContext context,
     DenemeViewModel denemeProv,
     DenemeLoginViewModel loginProv,
     LessonViewModel lessonProv) {
-  return Expanded(
-    flex: 30,
-    child: Column(
-      children: [
-        drawerCardMenu(
-          title: "Anasayfa",
-          icon: Icons.home,
-          iconColor: Colors.green,
-          onTap: () async {
-            bottomProv.setCurrentIndex = 0;
+  return Column(
+    children: [
+      currentUser == null
+          ? drawerCardMenu(
+              iconGradient:
+                  const LinearGradient(colors: [Colors.white, Colors.white]),
+              cardGradient: const LinearGradient(
+                  colors: [Colors.blue, Colors.purpleAccent]),
+              textGradient:
+                  const LinearGradient(colors: [Colors.white, Colors.white]),
+              title: "Giriş Yap",
+              icon: Icons.account_circle_rounded,
+              onTap: () async {
+                if (context.read<DenemeLoginViewModel>().getState ==
+                    LoginState.notLoggedIn) {
+                  loginProv.loginWithGoogle(context, loginProv);
+                } else if (context.read<DenemeLoginViewModel>().getState ==
+                    LoginState.loginError) {
+                  loginProv.errorAlert(
+                      context, "Uyarı", loginProv.getError, loginProv);
+                  loginProv.setState = LoginState.notLoggedIn;
+                } else {
+                  if (context.read<DenemeLoginViewModel>().getState ==
+                      LoginState.loggedIn) {
+                    loginProv.errorAlert(
+                        context, "Uyarı", loginProv.getError, loginProv);
+                    navigation.navigateToPage(
+                        path: NavigationConstants.homeView, data: []);
+                  }
 
-            Navigator.of(context, rootNavigator: true)
-                .pushNamed(NavigationConstants.homeView);
-          },
-        ),
-        drawerCardMenu(
-          title: "Verileri Yedekle",
-          icon: Icons.replay_circle_filled,
-          iconColor: Colors.grey,
-          onTap: () {
-            denemeProv.showAlert(context,
-                isOneButton: false,
-                title: "Uyarı",
-                content: "Şu anki veriler yedeklensin mi? ", yesFunction: () {
-              backUpFunction(context, denemeProv);
-            }, noFunction: () {
-              Navigator.of(context, rootNavigator: true).pop();
-            });
-          },
-        ),
-        drawerCardMenu(
-          title: "Verileri Yükle",
-          icon: Icons.upload,
-          iconColor: Colors.grey,
-          onTap: () {
-            denemeProv.showAlert(context,
-                isOneButton: false,
-                title: "Uyarı",
-                content:
-                    "Şu anki veriler yedeklenen veri ile değiştirilecektir",
-                yesFunction: () async {
-              await DenemeDbProvider.db.clearDatabase();
-              restoreData(loginProv, denemeProv, lessonProv).then((value) {
-                lessonProv.initLessonData(lessonProv.getLessonName);
-                denemeProv.initDenemeData(denemeProv.getLessonName);
-
-                navigation.navigateToPageClear(
-                    path: NavigationConstants.homeView);
-              });
-            }, noFunction: () {
-              Navigator.of(context, rootNavigator: true).pop();
-            });
-          },
-        ),
-        const Divider(),
-        drawerCardMenu(
-          title: "Verileri Temizle",
-          icon: Icons.delete,
-          iconColor: Colors.grey,
-          onTap: () {
-            denemeProv.showAlert(context,
-                isOneButton: false,
-                title: "Uyarı",
-                content: "Tüm verileri silmek istiyor musunuz?",
-                yesFunction: () async {
-              await DenemeDbProvider.db.clearDatabase();
-              lessonProv.initLessonData(lessonProv.getLessonName);
-              denemeProv.initDenemeData(denemeProv.getLessonName);
-              navigation.navigateToPageClear(
-                  path: NavigationConstants.homeView);
-            }, noFunction: () {
-              Navigator.of(context, rootNavigator: true).pop();
-            });
-          },
-        ),
-        drawerCardMenu(
-          title: "Çıkış",
-          icon: Icons.logout,
-          iconColor: Colors.grey,
-          onTap: () {
-            denemeProv.showAlert(context,
-                isOneButton: false,
-                title: "Uyarı",
-                content: "Mevcut hesaptan çıkış yapmak ister misiniz?",
-                yesFunction: () async {
-              if (AuthService().fAuth.currentUser != null ||
-                  await loginProv.getIsAnonymous == true) {
-                AuthService().signOut();
-                loginProv.setAnonymousLogin = false;
-                loginProv.setState = LoginState.notLoggedIn;
-                navigation.navigateToPageClear(
-                    path: NavigationConstants.homeView);
-              } else {}
-            }, noFunction: () {
-              Navigator.of(context, rootNavigator: true).pop();
-            });
-          },
-        ),
-        const Divider(),
-        drawerCardMenu(
-          title: "Kullanıcı hesabını sil",
-          icon: Icons.delete,
-          iconColor: Colors.grey,
-          onTap: () {
-            denemeProv.showAlert(context,
-                isOneButton: false,
-                title: "Uyarı",
-                content: "Mevcut kullanıcı hesabı silinecektir ?",
-                yesFunction: () async {
-              if (AuthService().fAuth.currentUser != null ||
-                  await loginProv.getIsAnonymous == true) {
-                denemeProv
-                    .deleteUserInFirebase(AuthService().fAuth.currentUser!.uid);
-                loginProv.setAnonymousLogin = false;
-                loginProv.setState = LoginState.notLoggedIn;
-
+                  loginProv.errorAlert(context, "Uyarı",
+                      loginProv.getState.toString(), loginProv);
+                }
+                // print(loginProv.getState);
                 Navigator.of(context, rootNavigator: true)
                     .pushNamed(NavigationConstants.homeView);
-              } else {}
-            }, noFunction: () {
-              Navigator.of(context, rootNavigator: true).pop();
+              },
+            )
+          : const SizedBox(),
+      drawerCardMenu(
+        iconGradient:
+            const LinearGradient(colors: [Colors.white, Colors.white]),
+        cardGradient:
+            const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
+        textGradient:
+            const LinearGradient(colors: [Colors.white, Colors.white]),
+        title: "Dersler",
+        icon: Icons.library_books,
+        onTap: () async {
+          bottomProv.setCurrentIndex = 0;
+
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed(NavigationConstants.homeView);
+        },
+      ),
+      drawerCardMenu(
+        iconGradient:
+            const LinearGradient(colors: [Colors.white, Colors.white]),
+        cardGradient:
+            const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
+        textGradient:
+            const LinearGradient(colors: [Colors.white, Colors.white]),
+        title: "Denemeler",
+        icon: Icons.group_work_rounded,
+        onTap: () async {
+          bottomProv.setCurrentIndex = 1;
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed(NavigationConstants.homeView);
+        },
+      ),
+      drawerCardMenu(
+        iconGradient:
+            const LinearGradient(colors: [Colors.white, Colors.white]),
+        cardGradient:
+            const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
+        textGradient:
+            const LinearGradient(colors: [Colors.white, Colors.white]),
+        title: "Yeni Deneme Ekle",
+        icon: Icons.assured_workload,
+        onTap: () async {
+          bottomProv.setCurrentIndex = 2;
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed(NavigationConstants.homeView);
+        },
+      ),
+      drawerCardMenu(
+        iconGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.grey.shade300.withOpacity(0.7),
+                  Colors.grey.shade200.withOpacity(0.66)
+                ],
+              ),
+        cardGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.black.withOpacity(0.55)
+                ],
+              ),
+        textGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.grey.shade300.withOpacity(0.9),
+                  Colors.grey.shade200.withOpacity(0.99),
+                ],
+              ),
+        title: "Verileri Yedekle",
+        icon: Icons.replay_circle_filled,
+        onTap: () {
+          denemeProv.showAlert(context,
+              isOneButton: false,
+              title: "Uyarı",
+              content: "Şu anki veriler yedeklensin mi? ", yesFunction: () {
+            backUpFunction(context, denemeProv);
+          }, noFunction: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          });
+        },
+      ),
+      drawerCardMenu(
+        iconGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.grey.shade300.withOpacity(0.7),
+                  Colors.grey.shade200.withOpacity(0.66)
+                ],
+              ),
+        cardGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.black.withOpacity(0.55)
+                ],
+              ),
+        textGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.grey.shade300.withOpacity(0.9),
+                  Colors.grey.shade200.withOpacity(0.99),
+                ],
+              ),
+        title: "Verileri Yükle",
+        icon: Icons.upload,
+        onTap: () {
+          denemeProv.showAlert(context,
+              isOneButton: false,
+              title: "Uyarı",
+              content: "Şu anki veriler yedeklenen veri ile değiştirilecektir",
+              yesFunction: () async {
+            await DenemeDbProvider.db.clearDatabase();
+            restoreData(loginProv, denemeProv, lessonProv).then((value) {
+              lessonProv.initLessonData(lessonProv.getLessonName);
+              denemeProv.initDenemeData(denemeProv.getLessonName);
+
+              navigation.navigateToPageClear(
+                  path: NavigationConstants.homeView);
             });
-          },
-        ),
-      ],
-    ),
+          }, noFunction: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          });
+        },
+      ),
+      drawerCardMenu(
+        iconGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.grey.shade300.withOpacity(0.7),
+                  Colors.grey.shade200.withOpacity(0.66)
+                ],
+              ),
+        cardGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.black.withOpacity(0.55)
+                ],
+              ),
+        textGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.grey.shade300.withOpacity(0.9),
+                  Colors.grey.shade200.withOpacity(0.99),
+                ],
+              ),
+        title: "Çıkış",
+        icon: Icons.logout,
+        onTap: () {
+          denemeProv.showAlert(context,
+              isOneButton: false,
+              title: "Uyarı",
+              content: "Mevcut hesaptan çıkış yapmak ister misiniz?",
+              yesFunction: () async {
+            if (AuthService().fAuth.currentUser != null ||
+                await loginProv.getIsAnonymous == true) {
+              AuthService().signOut();
+              loginProv.setAnonymousLogin = false;
+              loginProv.setState = LoginState.notLoggedIn;
+              navigation.navigateToPageClear(
+                  path: NavigationConstants.homeView);
+            } else {}
+          }, noFunction: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          });
+        },
+      ),
+      const Divider(),
+      drawerCardMenu(
+        iconGradient: const LinearGradient(colors: [Colors.red, Colors.red]),
+        cardGradient:
+            const LinearGradient(colors: [Colors.white, Colors.white]),
+        textGradient: const LinearGradient(colors: [Colors.red, Colors.red]),
+        title: "Tüm Verileri Yok Et",
+        icon: Icons.delete,
+        onTap: () {
+          denemeProv.showAlert(context,
+              isOneButton: false,
+              title: "Uyarı",
+              content: "Tüm verileri silmek istiyor musunuz?",
+              yesFunction: () async {
+            await DenemeDbProvider.db.clearDatabase();
+            lessonProv.initLessonData(lessonProv.getLessonName);
+            denemeProv.initDenemeData(denemeProv.getLessonName);
+            navigation.navigateToPageClear(path: NavigationConstants.homeView);
+          }, noFunction: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          });
+        },
+      ),
+      drawerCardMenu(
+        iconGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.grey.shade300.withOpacity(0.7),
+                  Colors.grey.shade200.withOpacity(0.66)
+                ],
+              ),
+        cardGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.black.withOpacity(0.55)
+                ],
+              ),
+        textGradient: currentUser != null
+            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            : LinearGradient(
+                colors: [
+                  Colors.grey.shade300.withOpacity(0.9),
+                  Colors.grey.shade200.withOpacity(0.99),
+                ],
+              ),
+        title: "Kullanıcı Hesabını Sil",
+        icon: Icons.remove_circle,
+        onTap: () {
+          denemeProv.showAlert(context,
+              isOneButton: false,
+              title: "Uyarı",
+              content: "Mevcut kullanıcı hesabı silinecektir ?",
+              yesFunction: () async {
+            if (AuthService().fAuth.currentUser != null ||
+                await loginProv.getIsAnonymous == true) {
+              denemeProv
+                  .deleteUserInFirebase(AuthService().fAuth.currentUser!.uid);
+              loginProv.setAnonymousLogin = false;
+              loginProv.setState = LoginState.notLoggedIn;
+
+              Navigator.of(context, rootNavigator: true)
+                  .pushNamed(NavigationConstants.homeView);
+            } else {}
+          }, noFunction: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          });
+        },
+      ),
+    ],
   );
 }
 
