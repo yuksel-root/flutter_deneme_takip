@@ -32,7 +32,7 @@ class InsertDenemeTextField extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.black,
                           fontSize:
-                              context.dynamicW(0.01) * context.dynamicH(0.005)),
+                              context.dynamicW(0.01) * context.dynamicH(0.004)),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Lütfen boş bırakmayın';

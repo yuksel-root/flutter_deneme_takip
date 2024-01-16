@@ -4,6 +4,7 @@ import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
+import 'package:flutter_deneme_takip/view/tabbar_views/deneme_edit_tabbar.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
@@ -157,7 +158,8 @@ class EditDenemeViewModel extends ChangeNotifier {
     return lastId;
   }
 
-  Future<void> saveButton(BuildContext context) async {
+  Future<void> saveButton(BuildContext context,
+      {required bool isUpdate, int? updateId}) async {
     DateTime now = DateTime.now();
     // DateTime manualDate = DateTime(2024, 4, 14, 20, 23, 23);
 
@@ -174,20 +176,32 @@ class EditDenemeViewModel extends ChangeNotifier {
         0;
     int k = 1;
 
-    //printFunct("falseCounters", _falseCountsIntegers);
+    printFunct("falseCounters", _falseCountsIntegers);
+
     //printFunct("subjectSavedList", _subjectSavedList);
 
     _lastDenemeId = getFindDenemeId(existingIds, latestId);
+
     for (int i = 0; i < _falseCountsIntegers.length; i++) {
-      DenemeModel denemeModel = DenemeModel(
+      DenemeModel newDenemeModel = DenemeModel(
           denemeId: _lastDenemeId,
-          subjectId: (_lastSubjectId ?? 0) + k,
+          subjectId: k,
+          falseCount: _falseCountsIntegers[i],
+          denemeDate: _date,
+          subjectName: _subjectSavedList[i]);
+      DenemeModel updateDenemeModel = DenemeModel(
+          denemeId: updateId,
+          subjectId: k,
           falseCount: _falseCountsIntegers[i],
           denemeDate: _date,
           subjectName: _subjectSavedList[i]);
 
-      saveDeneme(denemeModel);
-      Future.delayed(const Duration(milliseconds: 200), () async {
+      if (isUpdate) {
+        await updateDeneme(updateDenemeModel);
+      } else {
+        await saveDeneme(newDenemeModel);
+      }
+      Future.delayed(const Duration(milliseconds: 100), () async {
         setLoading = false;
         _navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []);
@@ -199,9 +213,21 @@ class EditDenemeViewModel extends ChangeNotifier {
     }
   }
 
-  void saveDeneme(DenemeModel deneme) {
+  Future<void> updateDeneme(DenemeModel deneme) async {
     try {
-      DenemeDbProvider.db
+      print("update");
+
+      await DenemeDbProvider.db
+          .updateDeneme(deneme, LessonList.tableNames[_lessonName]!);
+    } catch (e) {
+      printFunct("updateDeneme error", e);
+    }
+    notifyListeners();
+  }
+
+  Future<void> saveDeneme(DenemeModel deneme) async {
+    try {
+      await DenemeDbProvider.db
           .insertDeneme(deneme, LessonList.tableNames[_lessonName]!);
     } catch (e) {
       printFunct("saveDeneme error", e);
@@ -268,19 +294,25 @@ class EditDenemeViewModel extends ChangeNotifier {
         });
   }
 
-  Future<void> errorAlert(
-      BuildContext context, String title, String content) async {
+  Future<void> errorAlert(BuildContext context, String title, String content,
+      EditDenemeViewModel editProv) async {
     AlertView alert = AlertView(
       title: title,
       content: content,
       isOneButton: true,
-      noFunction: () =>
-          {setAlert = false, Navigator.of(context, rootNavigator: true).pop()},
-      yesFunction: () =>
-          {setAlert = false, Navigator.of(context, rootNavigator: true).pop()},
+      noFunction: () => {
+        editProv.setAlert = false,
+        Navigator.of(context, rootNavigator: true)
+            .pushNamed(NavigationConstants.homeView)
+      },
+      yesFunction: () => {
+        editProv.setAlert = false,
+        Navigator.of(context, rootNavigator: true)
+            .pushNamed(NavigationConstants.homeView)
+      },
     );
-    if (getIsAlertOpen == false) {
-      setAlert = true;
+    if (editProv.getIsAlertOpen == false) {
+      editProv.setAlert = true;
       await showDialog(
           barrierDismissible: false,
           barrierColor: const Color(0x66000000),
@@ -288,14 +320,14 @@ class EditDenemeViewModel extends ChangeNotifier {
           builder: (BuildContext context) {
             return alert;
           }).then(
-        (value) => setAlert = false,
+        (value) => editProv.setAlert = false,
       );
     }
   }
 
   Future<void> getAllData(String dataTable) async {
     print("-------------$dataTable------------\n");
-    print(await DenemeDbProvider.db.getLessonDeneme(dataTable));
+    print(await DenemeDbProvider.db.getAllDataByTable(dataTable));
     print("-------------$dataTable------------\n");
   }
 

@@ -11,7 +11,7 @@ class DenemeDbProvider {
 
   Database? _database;
 
-  Future<Database> get database async {
+  Future<Database> get getDatabase async {
     if (_database != null) return _database!;
 
     _database = await openDb();
@@ -37,9 +37,22 @@ class DenemeDbProvider {
   }
 
   Future<void> insertDeneme(DenemeModel deneme, String lessonTable) async {
-    final db = await database;
+    final db = await getDatabase;
     db.insert(lessonTable, deneme.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> updateDeneme(DenemeModel deneme, String lessonTable) async {
+    final db = await getDatabase;
+    print("denemeId ${deneme.denemeId}");
+    print("deneöeFAlses ${deneme.falseCount}");
+    print("lesson $lessonTable");
+    db.update(
+      lessonTable,
+      deneme.toMap(),
+      where: 'denemeId = ?',
+      whereArgs: [deneme.denemeId],
+    );
   }
 
   List<Map<String, dynamic>>? convertFirebaseToSqliteData(
@@ -53,7 +66,7 @@ class DenemeDbProvider {
 
   Future<void> inserAllDenemeData(
       Map<String, List<dynamic>>? denemePost) async {
-    final db = await database;
+    final db = await getDatabase;
     if (denemePost != null) {
       final hTable = denemePost[DenemeTables.historyTableName];
       final gTable = denemePost[DenemeTables.geographyTable];
@@ -105,7 +118,7 @@ class DenemeDbProvider {
 
   Future<List<Map<String, dynamic>>> getDenemelerByDenemeId(
       String lessonTable, int denemeId) async {
-    final db = await database;
+    final db = await getDatabase;
     final res = await db
         .rawQuery('SELECT * FROM $lessonTable WHERE denemeId = ?', [denemeId]);
     if (res.isEmpty) {
@@ -118,7 +131,7 @@ class DenemeDbProvider {
   }
 
   Future<void> groupBySubName() async {
-    final db = await database;
+    final db = await getDatabase;
     List<Map<String, dynamic>> result = await db.rawQuery(
       'SELECT subjectName, SUM(falseCount) AS totalFalseCount FROM historyTable GROUP BY subjectName',
     );
@@ -127,23 +140,31 @@ class DenemeDbProvider {
 
   Future<List<Map<String, dynamic>>> getAllDataOrderByDate(
       String lessonTable, String orderBy) async {
-    final db = await database;
-    return await db.query(
+    final db = await getDatabase;
+    var res = await db.query(
       lessonTable,
       orderBy: orderBy,
     );
+    if (res.isEmpty) {
+      return [];
+    } else {
+      final denemeMap = res.toList();
+
+      return denemeMap.isNotEmpty ? denemeMap : [];
+    }
   }
 
   Future<int> removeTableItem(String lessonTable, int id, String idName) async {
-    final db = await database;
+    final db = await getDatabase;
     int delete =
         await db.rawDelete('DELETE FROM $lessonTable WHERE $idName = ?', [id]);
     return delete;
   }
 
-  Future<List<Map<String, dynamic>>> getLessonDeneme(String tableName) async {
-    final db = await database;
-    var res = await db.query(tableName);
+  Future<List<Map<String, dynamic>>> getAllDataByTable(String tableName) async {
+    final db = await getDatabase;
+    final res = await db.query(tableName); //Burası  null geliyo delay olmayınca
+
     if (res.isEmpty) {
       return [];
     } else {
@@ -154,7 +175,7 @@ class DenemeDbProvider {
   }
 
   Future<int?> getFindLastId(String tableName, String idName) async {
-    final db = await database;
+    final db = await getDatabase;
     final result =
         await db.rawQuery('SELECT MAX($idName) as last_id FROM $tableName');
     int? lastId = result.first['last_id'] as int?;
@@ -163,7 +184,7 @@ class DenemeDbProvider {
   }
 
   Future<List<int>> getAllDenemeIds(String tableName) async {
-    final db = await database;
+    final db = await getDatabase;
     final List<Map<String, dynamic>> maps =
         await db.query(tableName, columns: ['denemeId']);
 
@@ -173,7 +194,7 @@ class DenemeDbProvider {
   }
 
   Future<void> clearDatabase() async {
-    final db = await database;
+    final db = await getDatabase;
     await db.rawQuery("DELETE FROM ${DenemeTables.historyTableName}");
     await db.rawQuery("DELETE FROM ${DenemeTables.mathTableName}");
     await db.rawQuery("DELETE FROM ${DenemeTables.geographyTable}");
@@ -182,7 +203,7 @@ class DenemeDbProvider {
   }
 
   Future<void> clearDatabeByTableName(String tableName) async {
-    final db = await database;
+    final db = await getDatabase;
     await db.rawQuery("DELETE FROM $tableName");
   }
 }
