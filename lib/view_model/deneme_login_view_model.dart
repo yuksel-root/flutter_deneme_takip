@@ -68,20 +68,32 @@ class DenemeLoginViewModel extends ChangeNotifier {
     _error = newError;
   }
 
+  Stream<User?> get userChanges => AuthService().fAuth.authStateChanges();
+  set setUser(User? newUser) {
+    try {
+      _currentUser = newUser;
+    } on FirebaseAuthException catch (e) {
+      _currentUser = null;
+      print(e);
+    }
+  }
+
+  User? get getCurrentUser {
+    return _currentUser;
+  }
+
   Future<void> loginWithGoogle(
       BuildContext context, DenemeLoginViewModel loginProv) async {
-    _currentUser = AuthService().fAuth.currentUser;
-
     setState = LoginState.notLoggedIn;
-    _currentUser = await AuthService().signInWithGoogle();
+    setUser = await AuthService().signInWithGoogle();
     setState = LoginState.authenticating;
     try {
-      if (_currentUser != null) {
+      if (getCurrentUser != null) {
         setState = LoginState.loggedIn;
         navigation.navigateToPageClear(path: NavigationConstants.homeView);
 
-        FirebaseService().addUserToCollection(_currentUser!.displayName!,
-            _currentUser!.email!, _currentUser!.uid);
+        FirebaseService().addUserToCollection(getCurrentUser!.displayName!,
+            getCurrentUser!.email!, getCurrentUser!.uid);
       }
     } on FirebaseAuthException catch (error) {
       print("Login FIREBASE CATCH ERROR ${error.message}");

@@ -25,11 +25,11 @@ class LessonViewModel extends ChangeNotifier {
   LessonViewModel() {
     _navigation = NavigationService.instance;
     _isAlertOpen = false;
-    _lessonName = 'Tarih';
+    _lessonName = 'Coğrafya';
     _state = LessonState.empty;
     listDeneme = [];
-    _lessonTableName = LessonList.tableNames[_lessonName] ??
-        LessonList.tableNames[_lessonName];
+    _lessonTableName =
+        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
 
     initLessonData(_lessonName);
   }
@@ -42,15 +42,11 @@ class LessonViewModel extends ChangeNotifier {
 
   void initLessonData(String? lessonName) async {
     state = LessonState.loading;
+
     _lessonTableName =
         LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
 
-    await DenemeDbProvider.db
-        .getLessonDeneme(_lessonTableName!); //fixed the update data
-    await DenemeDbProvider.db
-        .getLessonDeneme(_lessonTableName!); //fixed the update data
-
-    listDeneme = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
+    listDeneme = await DenemeDbProvider.db.getAllDataByTable(_lessonTableName!);
 
     state = LessonState.completed;
   }
@@ -150,7 +146,7 @@ class LessonViewModel extends ChangeNotifier {
       _lessonTableName ?? DenemeTables.historyTableName;
 
   set setLessonTableName(String? newTable) {
-    _lessonName = _lessonTableName =
+    _lessonTableName =
         LessonList.tableNames[newTable] ?? DenemeTables.historyTableName;
     notifyListeners();
   }

@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/gradient_widget.dart';
@@ -19,13 +20,13 @@ class NavDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = AuthService().fAuth.currentUser;
-
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
     final lessonProv = Provider.of<LessonViewModel>(context, listen: false);
-    final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
+    final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: true);
     final bottomProv =
         Provider.of<BottomNavigationProvider>(context, listen: false);
+
+    print(loginProv.getCurrentUser);
 
     return Container(
       decoration: const BoxDecoration(
@@ -38,11 +39,12 @@ class NavDrawer extends StatelessWidget {
           children: [
             Expanded(
                 flex: 10,
-                child: buildListTileHeader(context, loginProv, currentUser)),
+                child: buildListTileHeader(
+                    context, loginProv, loginProv.getCurrentUser)),
             Expanded(
                 flex: 35,
-                child: buildListTiles(currentUser, bottomProv, context,
-                    denemeProv, loginProv, lessonProv)),
+                child: buildListTiles(loginProv.getCurrentUser, bottomProv,
+                    context, denemeProv, loginProv, lessonProv)),
           ],
         ),
       ),
@@ -128,29 +130,33 @@ Column buildListTiles(
               title: "Giriş Yap",
               icon: Icons.account_circle_rounded,
               onTap: () async {
-                if (context.read<DenemeLoginViewModel>().getState ==
-                    LoginState.notLoggedIn) {
-                  loginProv.loginWithGoogle(context, loginProv);
-                } else if (context.read<DenemeLoginViewModel>().getState ==
-                    LoginState.loginError) {
-                  loginProv.errorAlert(
-                      context, "Uyarı", loginProv.getError, loginProv);
-                  loginProv.setState = LoginState.notLoggedIn;
-                } else {
+                navigation.navigateToPage(
+                    path: NavigationConstants.homeView, data: []);
+                Future.delayed(Duration(milliseconds: 100), () {
                   if (context.read<DenemeLoginViewModel>().getState ==
-                      LoginState.loggedIn) {
+                      LoginState.notLoggedIn) {
+                    loginProv.loginWithGoogle(context, loginProv);
+                  } else if (context.read<DenemeLoginViewModel>().getState ==
+                      LoginState.loginError) {
                     loginProv.errorAlert(
                         context, "Uyarı", loginProv.getError, loginProv);
-                    navigation.navigateToPage(
-                        path: NavigationConstants.homeView, data: []);
-                  }
+                    loginProv.setState = LoginState.notLoggedIn;
+                  } else {
+                    if (context.read<DenemeLoginViewModel>().getState ==
+                        LoginState.loggedIn) {
+                      loginProv.errorAlert(
+                          context, "Uyarı", loginProv.getError, loginProv);
+                      navigation.navigateToPage(
+                          path: NavigationConstants.homeView, data: []);
+                    }
 
-                  loginProv.errorAlert(context, "Uyarı",
-                      loginProv.getState.toString(), loginProv);
-                }
-                // print(loginProv.getState);
-                Navigator.of(context, rootNavigator: true)
-                    .pushNamed(NavigationConstants.homeView);
+                    loginProv.errorAlert(context, "Uyarı",
+                        loginProv.getState.toString(), loginProv);
+                  }
+                  // print(loginProv.getState);
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamed(NavigationConstants.homeView);
+                });
               },
             )
           : const SizedBox(),
@@ -202,7 +208,7 @@ Column buildListTiles(
       ),
       drawerCardMenu(
         iconGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            ? const LinearGradient(colors: [Colors.white, Colors.white])
             : LinearGradient(
                 colors: [
                   Colors.grey.shade300.withOpacity(0.7),
@@ -218,7 +224,7 @@ Column buildListTiles(
                 ],
               ),
         textGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            ? const LinearGradient(colors: [Colors.white, Colors.white])
             : LinearGradient(
                 colors: [
                   Colors.grey.shade300.withOpacity(0.9),
@@ -228,19 +234,21 @@ Column buildListTiles(
         title: "Verileri Yedekle",
         icon: Icons.replay_circle_filled,
         onTap: () {
-          denemeProv.showAlert(context,
-              isOneButton: false,
-              title: "Uyarı",
-              content: "Şu anki veriler yedeklensin mi? ", yesFunction: () {
-            backUpFunction(context, denemeProv);
-          }, noFunction: () {
-            Navigator.of(context, rootNavigator: true).pop();
-          });
+          currentUser != null
+              ? denemeProv.showAlert(context,
+                  isOneButton: false,
+                  title: "Uyarı",
+                  content: "Şu anki veriler yedeklensin mi? ", yesFunction: () {
+                  backUpFunction(context, denemeProv);
+                }, noFunction: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                })
+              : currentUserNullAlert(context, denemeProv);
         },
       ),
       drawerCardMenu(
         iconGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            ? const LinearGradient(colors: [Colors.white, Colors.white])
             : LinearGradient(
                 colors: [
                   Colors.grey.shade300.withOpacity(0.7),
@@ -256,7 +264,7 @@ Column buildListTiles(
                 ],
               ),
         textGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            ? const LinearGradient(colors: [Colors.white, Colors.white])
             : LinearGradient(
                 colors: [
                   Colors.grey.shade300.withOpacity(0.9),
@@ -266,70 +274,78 @@ Column buildListTiles(
         title: "Verileri Yükle",
         icon: Icons.upload,
         onTap: () {
-          denemeProv.showAlert(context,
-              isOneButton: false,
-              title: "Uyarı",
-              content: "Şu anki veriler yedeklenen veri ile değiştirilecektir",
-              yesFunction: () async {
-            await DenemeDbProvider.db.clearDatabase();
-            restoreData(loginProv, denemeProv, lessonProv).then((value) {
-              lessonProv.initLessonData(lessonProv.getLessonName);
-              denemeProv.initDenemeData(denemeProv.getLessonName);
+          currentUser != null
+              ? denemeProv.showAlert(context,
+                  isOneButton: false,
+                  title: "Uyarı",
+                  content:
+                      "Şu anki veriler yedeklenen veri ile değiştirilecektir",
+                  yesFunction: () async {
+                  await DenemeDbProvider.db.clearDatabase();
+                  await restoreData(loginProv, denemeProv, lessonProv)
+                      .then((value) {
+                    lessonProv.initLessonData(lessonProv.getLessonName);
+                    denemeProv.initDenemeData(denemeProv.getLessonName);
 
-              navigation.navigateToPageClear(
-                  path: NavigationConstants.homeView);
-            });
-          }, noFunction: () {
-            Navigator.of(context, rootNavigator: true).pop();
-          });
+                    navigation.navigateToPageClear(
+                        path: NavigationConstants.homeView);
+                  });
+                }, noFunction: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                })
+              : currentUserNullAlert(context, denemeProv);
         },
       ),
-      drawerCardMenu(
-        iconGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
-            : LinearGradient(
-                colors: [
-                  Colors.grey.shade300.withOpacity(0.7),
-                  Colors.grey.shade200.withOpacity(0.66)
-                ],
-              ),
-        cardGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
-            : LinearGradient(
-                colors: [
-                  Colors.black.withOpacity(0.6),
-                  Colors.black.withOpacity(0.55)
-                ],
-              ),
-        textGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
-            : LinearGradient(
-                colors: [
-                  Colors.grey.shade300.withOpacity(0.9),
-                  Colors.grey.shade200.withOpacity(0.99),
-                ],
-              ),
-        title: "Çıkış",
-        icon: Icons.logout,
-        onTap: () {
-          denemeProv.showAlert(context,
-              isOneButton: false,
-              title: "Uyarı",
-              content: "Mevcut hesaptan çıkış yapmak ister misiniz?",
-              yesFunction: () async {
-            if (AuthService().fAuth.currentUser != null ||
-                await loginProv.getIsAnonymous == true) {
-              AuthService().signOut();
-              loginProv.setAnonymousLogin = false;
-              loginProv.setState = LoginState.notLoggedIn;
-              navigation.navigateToPageClear(
-                  path: NavigationConstants.homeView);
-            } else {}
-          }, noFunction: () {
-            Navigator.of(context, rootNavigator: true).pop();
-          });
-        },
-      ),
+      currentUser != null
+          ? drawerCardMenu(
+              iconGradient:
+                  const LinearGradient(colors: [Colors.white, Colors.white]),
+              cardGradient: const LinearGradient(
+                  colors: [Colors.blue, Colors.purpleAccent]),
+              textGradient:
+                  const LinearGradient(colors: [Colors.white, Colors.white]),
+              title: "Çıkış",
+              icon: Icons.logout,
+              onTap: () {
+                denemeProv.showAlert(context,
+                    isOneButton: false,
+                    title: "Uyarı",
+                    content: "Mevcut hesaptan çıkış yapmak ister misiniz?",
+                    yesFunction: () async {
+                  if (AuthService().fAuth.currentUser != null ||
+                      await loginProv.getIsAnonymous == true) {
+                    AuthService().signOut();
+                    loginProv.setAnonymousLogin = false;
+                    loginProv.setState = LoginState.notLoggedIn;
+                    navigation.navigateToPageClear(
+                        path: NavigationConstants.homeView);
+                  } else {}
+                }, noFunction: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                });
+              },
+            )
+          : drawerCardMenu(
+              title: "Uygulamadan Çıkış",
+              icon: Icons.exit_to_app,
+              textGradient:
+                  const LinearGradient(colors: [Colors.white, Colors.white]),
+              cardGradient: const LinearGradient(
+                  colors: [Colors.blue, Colors.purpleAccent]),
+              iconGradient:
+                  const LinearGradient(colors: [Colors.white, Colors.white]),
+              onTap: () {
+                denemeProv.showAlert(context,
+                    isOneButton: false,
+                    title: "Uyarı",
+                    content: "Uygulamadan Çıkmak istiyor musunuz?",
+                    yesFunction: () {
+                  exit(0);
+                }, noFunction: () {
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamed(NavigationConstants.homeView);
+                });
+              }),
       const Divider(),
       drawerCardMenu(
         iconGradient: const LinearGradient(colors: [Colors.red, Colors.red]),
@@ -355,7 +371,7 @@ Column buildListTiles(
       ),
       drawerCardMenu(
         iconGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            ? const LinearGradient(colors: [Colors.white, Colors.white])
             : LinearGradient(
                 colors: [
                   Colors.grey.shade300.withOpacity(0.7),
@@ -371,7 +387,7 @@ Column buildListTiles(
                 ],
               ),
         textGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            ? const LinearGradient(colors: [Colors.white, Colors.white])
             : LinearGradient(
                 colors: [
                   Colors.grey.shade300.withOpacity(0.9),
@@ -381,28 +397,46 @@ Column buildListTiles(
         title: "Kullanıcı Hesabını Sil",
         icon: Icons.remove_circle,
         onTap: () {
-          denemeProv.showAlert(context,
-              isOneButton: false,
-              title: "Uyarı",
-              content: "Mevcut kullanıcı hesabı silinecektir ?",
-              yesFunction: () async {
-            if (AuthService().fAuth.currentUser != null ||
-                await loginProv.getIsAnonymous == true) {
-              denemeProv
-                  .deleteUserInFirebase(AuthService().fAuth.currentUser!.uid);
-              loginProv.setAnonymousLogin = false;
-              loginProv.setState = LoginState.notLoggedIn;
+          currentUser != null
+              ? denemeProv.showAlert(context,
+                  isOneButton: false,
+                  title: "Uyarı",
+                  content: "Mevcut kullanıcı hesabı silinecektir ?",
+                  yesFunction: () async {
+                  denemeProv
+                      .deleteUserInFirebase(
+                          AuthService().fAuth.currentUser!.uid)
+                      .then((value) {
+                    Future.delayed(const Duration(milliseconds: 200), () {
+                      AuthService().signOut();
+                      loginProv.setAnonymousLogin = false;
+                      loginProv.setState = LoginState.notLoggedIn;
+                    });
+                  });
 
-              Navigator.of(context, rootNavigator: true)
-                  .pushNamed(NavigationConstants.homeView);
-            } else {}
-          }, noFunction: () {
-            Navigator.of(context, rootNavigator: true).pop();
-          });
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamed(NavigationConstants.homeView);
+                }, noFunction: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                })
+              : currentUserNullAlert(context, denemeProv);
         },
       ),
     ],
   );
+}
+
+void currentUserNullAlert(BuildContext context, DenemeViewModel denemeProv) {
+  denemeProv.showAlert(context,
+      isOneButton: true,
+      title: "Uyarı",
+      content: "Bu özellik için Lütfen giriş yapınız!", yesFunction: () {
+    Navigator.of(context, rootNavigator: true)
+        .pushNamed(NavigationConstants.homeView);
+  }, noFunction: () {
+    Navigator.of(context, rootNavigator: true)
+        .pushNamed(NavigationConstants.homeView);
+  });
 }
 
 void backUpFunction(BuildContext context, DenemeViewModel denemeProv) {
@@ -439,13 +473,12 @@ void backUpFunction(BuildContext context, DenemeViewModel denemeProv) {
 
 Future<void> restoreData(DenemeLoginViewModel loginProv,
     DenemeViewModel denemeProv, LessonViewModel lessonProv) async {
-  if (AuthService().fAuth.currentUser != null ||
-      await loginProv.getIsAnonymous == true) {
+  if (AuthService().fAuth.currentUser != null) {
     String? userId = AuthService().fAuth.currentUser?.uid;
 
     final denemePostData =
         await denemeProv.getTablesFromFirebase(userId!) ?? {};
 
-    denemeProv.sendFirebaseToSqlite(denemePostData);
+    await denemeProv.sendFirebaseToSqlite(denemePostData);
   }
 }

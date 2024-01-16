@@ -1,8 +1,10 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/gradient_widget.dart';
+import 'package:flutter_deneme_takip/components/text_dialog_widget.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -12,12 +14,14 @@ class DenemeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final denemeProv = Provider.of<DenemeViewModel>(context);
+    final editProv = Provider.of<EditDenemeViewModel>(context);
     final denemeData = context.read<DenemeViewModel>().listDeneme ?? [];
 
-    return buildFutureView(denemeProv, denemeData);
+    return buildFutureView(denemeProv, denemeData, editProv);
   }
 
-  FutureBuilder buildFutureView(DenemeViewModel denemeProv, denemeData) {
+  FutureBuilder buildFutureView(
+      DenemeViewModel denemeProv, denemeData, EditDenemeViewModel editProv) {
     return FutureBuilder(
         future: Future.delayed(Duration.zero, () => denemeData),
         builder: (BuildContext context, _) {
@@ -26,7 +30,7 @@ class DenemeView extends StatelessWidget {
             return Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
-                child: buildDataTable(context, denemeProv));
+                child: buildDataTable(context, denemeProv, editProv));
           } else if (context.watch<DenemeViewModel>().listDeneme!.isEmpty) {
             return Center(
                 child: Text(
@@ -56,7 +60,8 @@ class DenemeView extends StatelessWidget {
                         scrollDirection: Axis.vertical,
                         child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            child: buildDataTable(context, denemeProv)),
+                            child:
+                                buildDataTable(context, denemeProv, editProv)),
                       ),
                     ),
                   ],
@@ -67,7 +72,8 @@ class DenemeView extends StatelessWidget {
         });
   }
 
-  Widget buildDataTable(BuildContext context, DenemeViewModel denemeProv) {
+  Widget buildDataTable(BuildContext context, DenemeViewModel denemeProv,
+      EditDenemeViewModel editProv) {
     return Center(
         child: Column(children: <Widget>[
       SizedBox(
@@ -78,7 +84,7 @@ class DenemeView extends StatelessWidget {
               color: Colors.black, style: BorderStyle.solid, width: 1),
           children: [
             getColumns(context, denemeProv),
-            ...getRows(context, denemeProv),
+            ...getRows(context, denemeProv, editProv),
           ],
         ),
       ),
@@ -156,8 +162,8 @@ class DenemeView extends StatelessWidget {
     ));
   }
 
-  Widget getRowCell(
-      BuildContext context, int i, dynamic cell, DenemeViewModel denemeProv) {
+  Widget getRowCell(BuildContext context, int i, dynamic cell,
+      DenemeViewModel denemeProv, EditDenemeViewModel editProv, int rowIndex) {
     return TableCell(
         child: i == 0
             ? Container(
@@ -194,7 +200,7 @@ class DenemeView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Center(
-                            child: Center(
+                            child: InkWell(
                               child: Text(
                                 cell.toString(),
                                 textAlign: TextAlign.center,
@@ -229,15 +235,26 @@ class DenemeView extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: context.dynamicH(0.00714)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Center(
+                child: InkWell(
+                  onDoubleTap: () async {
+                    denemeProv.setAlert = false;
+                    print(rowIndex + 1);
+                    await showTextDialog(context,
+                        title: 'Yanlış Sayısını Değiştir',
+                        value: cell.toString(),
+                        index: i,
+                        rowIndex: (rowIndex + 1),
+                        alert: denemeProv.getIsAlertOpen);
+                  },
+                  child: Center(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.only(bottom: context.dynamicH(0.00714)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
                             child: Text(
                               cell.toString(),
                               textAlign: TextAlign.center,
@@ -252,16 +269,16 @@ class DenemeView extends StatelessWidget {
                                           context.dynamicH(0.005)),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ));
   }
 
-  Widget getRowCell2(
-      BuildContext context, int i, dynamic cell, DenemeViewModel denemeProv) {
+  Widget getRowCell2(BuildContext context, int i, dynamic cell,
+      DenemeViewModel denemeProv, int rowIndex) {
     return TableCell(
         child: i == 0
             ? Container(
@@ -296,20 +313,18 @@ class DenemeView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Center(
-                            child: Center(
-                              child: Text(
-                                cell.toString(),
-                                textAlign: TextAlign.center,
-                                style: i != 0
-                                    ? TextStyle(
-                                        color: Colors.black,
-                                        fontSize: context.dynamicW(0.01) *
-                                            context.dynamicH(0.005))
-                                    : TextStyle(
-                                        color: Colors.white,
-                                        fontSize: context.dynamicW(0.01) *
-                                            context.dynamicH(0.005)),
-                              ),
+                            child: Text(
+                              cell.toString(),
+                              textAlign: TextAlign.center,
+                              style: i != 0
+                                  ? TextStyle(
+                                      color: Colors.black,
+                                      fontSize: context.dynamicW(0.01) *
+                                          context.dynamicH(0.005))
+                                  : TextStyle(
+                                      color: Colors.white,
+                                      fontSize: context.dynamicW(0.01) *
+                                          context.dynamicH(0.005)),
                             ),
                           ),
                         ],
@@ -331,15 +346,29 @@ class DenemeView extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: context.dynamicH(0.00714)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Center(
+                child: InkWell(
+                  onDoubleTap: () async {
+                    denemeProv.setAlert = false;
+                    print(rowIndex + 1);
+                    await showTextDialog(context,
+                            title: 'Yanlış Sayısı Değiştir',
+                            value: cell.toString(),
+                            index: i,
+                            rowIndex: (rowIndex + 1),
+                            alert: denemeProv.getIsAlertOpen)
+                        .then((value) {
+                      denemeProv.initDenemeData(denemeProv.getLessonName);
+                    });
+                  },
+                  child: Center(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.only(bottom: context.dynamicH(0.00714)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
                             child: Text(
                               cell.toString(),
                               textAlign: TextAlign.center,
@@ -354,15 +383,16 @@ class DenemeView extends StatelessWidget {
                                           context.dynamicH(0.005)),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ));
   }
 
-  List<TableRow> getRows(BuildContext context, DenemeViewModel denemeProv) {
+  List<TableRow> getRows(BuildContext context, DenemeViewModel denemeProv,
+      EditDenemeViewModel editProv) {
     int k = -1;
     List<Map<String, dynamic>> rowXdata = List.from(denemeProv.rowData);
 
@@ -373,9 +403,9 @@ class DenemeView extends StatelessWidget {
         (i) {
           dynamic cell = row['row'][i];
           if (((k % 2) == 0)) {
-            return getRowCell(context, i, cell, denemeProv);
+            return getRowCell(context, i, cell, denemeProv, editProv, k);
           } else {
-            return getRowCell2(context, i, cell, denemeProv);
+            return getRowCell2(context, i, cell, denemeProv, k);
           }
         },
       );

@@ -9,6 +9,7 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
+import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
 
 enum DenemeState {
@@ -263,14 +264,9 @@ class DenemeViewModel extends ChangeNotifier {
   void initDenemeData(String? lessonName) async {
     setDenemestate = DenemeState.loading;
     _lessonTableName =
-        LessonList.tableNames[lessonName] ?? LessonList.tableNames['Tarih'];
+        LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
 
-    await DenemeDbProvider.db.getLessonDeneme(
-        LessonList.tableNames[lessonName]!); //fixed the update data
-    await DenemeDbProvider.db.getLessonDeneme(
-        LessonList.tableNames[lessonName]!); //fixed the update data
-
-    listDeneme = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
+    listDeneme = await DenemeDbProvider.db.getAllDataByTable(_lessonTableName!);
 
     setDenemestate = DenemeState.completed;
   }
@@ -278,9 +274,9 @@ class DenemeViewModel extends ChangeNotifier {
   void initFakeData(String? lessonName) async {
     setDenemestate = DenemeState.loading;
     _lessonTableName =
-        LessonList.tableNames[lessonName] ?? LessonList.tableNames['Tarih'];
+        LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
 
-    fakeData = await DenemeDbProvider.db.getLessonDeneme(_lessonTableName!);
+    fakeData = await DenemeDbProvider.db.getAllDataByTable(_lessonTableName!);
 
     setDenemestate = DenemeState.completed;
   }
@@ -326,7 +322,7 @@ class DenemeViewModel extends ChangeNotifier {
 
   Future<void> getAllData(String dataTable) async {
     print("-------------$dataTable------------\n");
-    print(await DenemeDbProvider.db.getLessonDeneme(dataTable));
+    print(await DenemeDbProvider.db.getAllDataByTable(dataTable));
     print("-------------$dataTable------------\n");
   }
 

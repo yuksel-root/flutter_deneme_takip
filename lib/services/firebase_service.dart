@@ -43,19 +43,19 @@ class FirebaseService {
           userId: userId,
           tableName: DenemeTables.historyTableName,
           tableData: await DenemeDbProvider.db
-              .getLessonDeneme(DenemeTables.historyTableName),
+              .getAllDataByTable(DenemeTables.historyTableName),
         ),
         DenemePostModel(
           userId: userId,
           tableName: DenemeTables.geographyTable,
           tableData: await DenemeDbProvider.db
-              .getLessonDeneme(DenemeTables.geographyTable),
+              .getAllDataByTable(DenemeTables.geographyTable),
         ),
         DenemePostModel(
           userId: userId,
           tableName: DenemeTables.citizenTable,
           tableData: await DenemeDbProvider.db
-              .getLessonDeneme(DenemeTables.citizenTable),
+              .getAllDataByTable(DenemeTables.citizenTable),
         ),
       ];
 
