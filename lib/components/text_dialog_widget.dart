@@ -24,7 +24,6 @@ Future<T?> showTextDialog<T>(
             ),
           )
         : Future.delayed(Duration.zero, () {
-            print("a");
             return null;
           });
 
@@ -65,98 +64,122 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
         Provider.of<EditDenemeViewModel>(context, listen: true);
     final DenemeViewModel denemeProv =
         Provider.of<DenemeViewModel>(context, listen: false);
-    return AlertDialog(
-      title: Text(widget.title),
-      content: Form(
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        key: _formKey,
-        child: TextFormField(
-          controller: controller,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-          ),
-          textAlign: TextAlign.center,
-          autofocus: false,
-          keyboardType: TextInputType.number,
-          textInputAction: TextInputAction.next,
-          onChanged: (value) {
-            if (int.parse(value) != 0) {
-              editProv.setIsDiffZero = true;
-            } else {
-              editProv.setIsDiffZero = false;
-            }
-          },
-          style: TextStyle(
-              color: Colors.black,
-              fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Lütfen boş bırakmayın';
-            }
-
-            final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
-            if (!isNumeric) {
-              Future.delayed(
-                const Duration(milliseconds: 200),
-                () {
-                  editProv.getFormKey.currentState!.reset();
+    return Column(
+      children: [
+        Expanded(
+          child: AlertDialog(
+            title: Text(widget.title),
+            content: Form(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              key: _formKey,
+              child: TextFormField(
+                controller: controller,
+                maxLines: 1,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+                textAlign: TextAlign.center,
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.next,
+                onChanged: (value) async {
+                  final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
+                  try {
+                    if (isNumeric) {
+                      editProv.setIsDiffZero = true;
+                    } else if (int.parse(value) > 99) {
+                      editProv.setIsNumberBig = true;
+                    } else {
+                      editProv.setIsDiffZero = false;
+                      editProv.setIsNumberBig = false;
+                    }
+                  } catch (e) {
+                    print(e);
+                  }
                 },
-              );
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Lütfen boş bırakmayın';
+                  }
 
-              return 'Sadece Sayı giriniz!';
-            }
+                  final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
+                  if (!isNumeric) {
+                    Future.delayed(
+                      const Duration(milliseconds: 200),
+                      () {
+                        _formKey.currentState!.reset();
+                      },
+                    );
+                  } else if (int.parse(value) > 99) {
+                    controller.clear();
+                    return '99 dan büyük olamaz!';
+                  } else {
+                    return null;
+                  }
 
-            return null;
-          },
+                  return "Sadece Sayı Giriniz";
+                },
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                child: const Text('Onayla'),
+                onPressed: () {
+                  denemeProv.setAlert = false;
+                  saveData(context, editProv, denemeProv).then((value) {
+                    denemeProv.initDenemeData(denemeProv.getLessonName);
+                  });
+                },
+              )
+            ],
+          ),
         ),
-      ),
-      actions: [
-        ElevatedButton(
-          child: const Text('Onayla'),
-          onPressed: () {
-            denemeProv.setAlert = false;
-            saveData(context, editProv, denemeProv);
-          },
-        )
       ],
     );
   }
 
   Future<void> saveData(BuildContext context, EditDenemeViewModel editProv,
       DenemeViewModel denemeProv) async {
-    if (_formKey.currentState?.validate() != null &&
-        editProv.getIsDiffZero == true) {
+    if (_formKey.currentState?.validate() != false &&
+        editProv.getIsDiffZero &&
+        editProv.getIsNumberBig == false) {
       editProv.getIsLoading
           ? editProv.buildLoadingAlert(context)
           : const SizedBox();
-      editProv.getFalseCountsIntegers![widget.index] =
-          int.parse(controller.text);
-      Future.delayed(const Duration(milliseconds: 200), () {
+
+      await Future.delayed(const Duration(milliseconds: 50), () {
         editProv.setLoading = false;
       });
-      await editProv.saveButton(context,
-          isUpdate: true, updateId: widget.rowIndex);
+      await editProv.saveButton(
+        isUpdate: true,
+        updatingDenemeId: widget.rowIndex,
+        cellId: widget.index,
+        updateVal: controller.text,
+      );
     } else if (editProv.getIsDiffZero == false) {
-      Future.delayed(const Duration(milliseconds: 100), () {
+      await Future.delayed(const Duration(milliseconds: 50), () {
         denemeProv.errorAlert(
-            context, "HATA", "En az bir değer giriniz", denemeProv);
+            context, "HATA", "En az bir sayı giriniz", denemeProv);
+      });
+    } else if (editProv.getIsNumberBig == true) {
+      await Future.delayed(const Duration(milliseconds: 50), () {
+        denemeProv.errorAlert(
+            context, "HATA", "Yanlış sayısı 99'dan büyük olamaz", denemeProv);
       });
     } else {
-      Future.delayed(
-        const Duration(milliseconds: 100),
+      await Future.delayed(
+        const Duration(milliseconds: 50),
         () {
           denemeProv.errorAlert(
               context, 'HATA', 'Sadece Tam sayı giriniz!', denemeProv);
         },
       );
     }
-    Future.delayed(
-      const Duration(milliseconds: 200),
-      () {
-        editProv.setLoading = true;
-        _formKey.currentState!.reset();
-        editProv.setFalseControllers = editProv.getFalseCountsIntegers!.length;
-      },
-    );
+
+    editProv.setLoading = true;
+    _formKey.currentState!.reset();
   }
 }

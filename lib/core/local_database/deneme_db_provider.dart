@@ -44,14 +44,12 @@ class DenemeDbProvider {
 
   Future<void> updateDeneme(DenemeModel deneme, String lessonTable) async {
     final db = await getDatabase;
-    print("denemeId ${deneme.denemeId}");
-    print("deneöeFAlses ${deneme.falseCount}");
-    print("lesson $lessonTable");
+
     db.update(
       lessonTable,
       deneme.toMap(),
-      where: 'denemeId = ?',
-      whereArgs: [deneme.denemeId],
+      where: 'denemeId = ? AND subjectId = ?',
+      whereArgs: [deneme.denemeId, deneme.subjectId],
     );
   }
 

@@ -4,7 +4,7 @@ import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
-import 'package:flutter_deneme_takip/view/tabbar_views/deneme_edit_tabbar.dart';
+
 import 'package:intl/intl.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
@@ -23,11 +23,11 @@ class EditDenemeViewModel extends ChangeNotifier {
   late EditDenemeState _state;
 
   late bool _isDiffZero;
+  late bool _isNumberBig;
   late bool _isLoading;
   late bool _isAlertOpen;
 
   late String? _lessonName;
-  late int? _lastSubjectId;
   late int? _lastDenemeId;
   late String _date;
 
@@ -51,6 +51,7 @@ class EditDenemeViewModel extends ChangeNotifier {
 
     _isLoading = true;
     _isDiffZero = false;
+    _isNumberBig = false;
     _isAlertOpen = false;
 
     _lessonName = 'Tarih';
@@ -58,7 +59,6 @@ class EditDenemeViewModel extends ChangeNotifier {
     _falseInputCount = _subjectList!.length;
     _formKey = formKey0;
 
-    _lastSubjectId = 0;
     _lastDenemeId = 0;
 
     _falseCountsIntegers = List.generate(_falseInputCount!, (index) => 0);
@@ -101,6 +101,15 @@ class EditDenemeViewModel extends ChangeNotifier {
 
   bool get getIsDiffZero {
     return _isDiffZero;
+  }
+
+  set setIsNumberBig(bool newBool) {
+    _isNumberBig = newBool;
+    notifyListeners();
+  }
+
+  bool get getIsNumberBig {
+    return _isNumberBig;
   }
 
   set setLoading(bool newBool) {
@@ -158,8 +167,11 @@ class EditDenemeViewModel extends ChangeNotifier {
     return lastId;
   }
 
-  Future<void> saveButton(BuildContext context,
-      {required bool isUpdate, int? updateId}) async {
+  Future<void> saveButton(
+      {required bool isUpdate,
+      int? updatingDenemeId,
+      int? cellId,
+      String? updateVal}) async {
     DateTime now = DateTime.now();
     // DateTime manualDate = DateTime(2024, 4, 14, 20, 23, 23);
 
@@ -167,56 +179,51 @@ class EditDenemeViewModel extends ChangeNotifier {
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(now).toString();
 
     _subjectSavedList = getSubjectList;
-    _lastSubjectId = await DenemeDbProvider.db
-        .getFindLastId(LessonList.tableNames[_lessonName]!, "subjectId");
     List<int> existingIds = await DenemeDbProvider.db
         .getAllDenemeIds(LessonList.tableNames[_lessonName]!);
     int latestId = await DenemeDbProvider.db
             .getFindLastId(LessonList.tableNames[_lessonName]!, "denemeId") ??
         0;
-    int k = 1;
 
-    printFunct("falseCounters", _falseCountsIntegers);
-
+    //printFunct("falseCounters", _falseCountsIntegers);
     //printFunct("subjectSavedList", _subjectSavedList);
 
     _lastDenemeId = getFindDenemeId(existingIds, latestId);
+    if (isUpdate == false) {
+      for (int i = 0; i < _falseCountsIntegers.length; i++) {
+        DenemeModel newDenemeModel = DenemeModel(
+            denemeId: _lastDenemeId,
+            subjectId: (i + 1),
+            falseCount: _falseCountsIntegers[i],
+            denemeDate: _date,
+            subjectName: _subjectSavedList[i]);
 
-    for (int i = 0; i < _falseCountsIntegers.length; i++) {
-      DenemeModel newDenemeModel = DenemeModel(
-          denemeId: _lastDenemeId,
-          subjectId: k,
-          falseCount: _falseCountsIntegers[i],
-          denemeDate: _date,
-          subjectName: _subjectSavedList[i]);
-      DenemeModel updateDenemeModel = DenemeModel(
-          denemeId: updateId,
-          subjectId: k,
-          falseCount: _falseCountsIntegers[i],
-          denemeDate: _date,
-          subjectName: _subjectSavedList[i]);
-
-      if (isUpdate) {
-        await updateDeneme(updateDenemeModel);
-      } else {
         await saveDeneme(newDenemeModel);
+
+        Future.delayed(const Duration(milliseconds: 50), () async {
+          setLoading = false;
+          _navigation.navigateToPageClear(
+              path: NavigationConstants.homeView, data: []);
+        });
       }
-      Future.delayed(const Duration(milliseconds: 100), () async {
+    } else {
+      DenemeModel updateDenemeModel = DenemeModel(
+        denemeId: updatingDenemeId,
+        subjectId: cellId! + 1,
+        falseCount: int.parse(updateVal!),
+        denemeDate: _date,
+      );
+      await updateDeneme(updateDenemeModel);
+      Future.delayed(const Duration(milliseconds: 50), () async {
         setLoading = false;
         _navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []);
       });
-
-      //print(bottomProv.getCurrentIndex);
-
-      k++;
     }
   }
 
   Future<void> updateDeneme(DenemeModel deneme) async {
     try {
-      print("update");
-
       await DenemeDbProvider.db
           .updateDeneme(deneme, LessonList.tableNames[_lessonName]!);
     } catch (e) {

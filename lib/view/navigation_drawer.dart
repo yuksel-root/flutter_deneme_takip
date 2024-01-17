@@ -26,8 +26,6 @@ class NavDrawer extends StatelessWidget {
     final bottomProv =
         Provider.of<BottomNavigationProvider>(context, listen: false);
 
-    print(loginProv.getCurrentUser);
-
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(colors: [Colors.green, Colors.yellow]),
@@ -132,7 +130,7 @@ Column buildListTiles(
               onTap: () async {
                 navigation.navigateToPage(
                     path: NavigationConstants.homeView, data: []);
-                Future.delayed(Duration(milliseconds: 100), () {
+                await Future.delayed(const Duration(milliseconds: 50), () {
                   if (context.read<DenemeLoginViewModel>().getState ==
                       LoginState.notLoggedIn) {
                     loginProv.loginWithGoogle(context, loginProv);
@@ -396,7 +394,7 @@ Column buildListTiles(
               ),
         title: "Kullanıcı Hesabını Sil",
         icon: Icons.remove_circle,
-        onTap: () {
+        onTap: () async {
           currentUser != null
               ? denemeProv.showAlert(context,
                   isOneButton: false,
@@ -406,9 +404,10 @@ Column buildListTiles(
                   denemeProv
                       .deleteUserInFirebase(
                           AuthService().fAuth.currentUser!.uid)
-                      .then((value) {
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      AuthService().signOut();
+                      .then((value) async {
+                    await Future.delayed(const Duration(milliseconds: 100),
+                        () async {
+                      await AuthService().signOut();
                       loginProv.setAnonymousLogin = false;
                       loginProv.setState = LoginState.notLoggedIn;
                     });
@@ -448,7 +447,7 @@ void backUpFunction(BuildContext context, DenemeViewModel denemeProv) {
         denemeProv
             .backUpAllTablesData(context, userId, denemeProv)
             .then((value) async {
-          Future.delayed(const Duration(milliseconds: 10), () async {
+          await Future.delayed(const Duration(milliseconds: 50), () async {
             //   final tables = await denemeProv.getTablesFromFirebase(userId);
             //  print(tables);
             Navigator.of(context, rootNavigator: true).pop();

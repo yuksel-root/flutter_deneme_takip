@@ -18,41 +18,33 @@ class InsertDenemeButton extends StatelessWidget {
                 color: Colors.white,
                 fontSize: context.dynamicH(0.00571) * context.dynamicW(0.01))),
         onPressed: () async {
-          //print(editProv.getFormKey.currentState!.validate());
-
-          if (editProv.getFormKey.currentState?.validate() != null &&
+          if (editProv.getFormKey.currentState?.validate() == true &&
               editProv.getIsDiffZero == true) {
             editProv.getIsLoading
                 ? editProv.buildLoadingAlert(context)
                 : const SizedBox();
 
-            Future.delayed(const Duration(milliseconds: 200), () {
+            await Future.delayed(const Duration(milliseconds: 50), () {
               editProv.setLoading = false;
             });
-            editProv.saveButton(context,isUpdate: false);
+            editProv.saveButton(isUpdate: false);
           } else if (editProv.getIsDiffZero == false) {
-            Future.delayed(const Duration(milliseconds: 100), () {
+            Future.delayed(const Duration(milliseconds: 50), () {
               editProv.errorAlert(
                   context, "HATA", "En az bir değer giriniz", editProv);
             });
           } else {
-            Future.delayed(
-              const Duration(milliseconds: 100),
+            await Future.delayed(
+              const Duration(milliseconds: 50),
               () {
                 editProv.errorAlert(
                     context, 'HATA', 'Sadece Tam sayı giriniz!', editProv);
               },
             );
           }
-          Future.delayed(
-            const Duration(milliseconds: 200),
-            () {
-              editProv.setLoading = true;
-              editProv.getFormKey.currentState!.reset();
-              editProv.setFalseControllers =
-                  editProv.getFalseCountsIntegers!.length;
-            },
-          );
+
+          editProv.setLoading = true;
+          editProv.getFormKey.currentState!.reset();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).primaryColor,

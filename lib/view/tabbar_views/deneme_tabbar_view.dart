@@ -167,11 +167,12 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
           String? userId = AuthService().fAuth.currentUser?.uid;
 
           if (userId != null) {
-            denemeProv.removeUserPostData(userId).then((value) {
-              denemeProv
+            denemeProv.removeUserPostData(userId).then((value) async {
+              await denemeProv
                   .backUpAllTablesData(context, userId, denemeProv)
                   .then((value) async {
-                Future.delayed(const Duration(milliseconds: 100), () async {
+                await Future.delayed(const Duration(milliseconds: 50),
+                    () async {
                   await denemeProv.getTablesFromFirebase(userId);
                 });
               });

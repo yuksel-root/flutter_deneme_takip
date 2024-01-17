@@ -81,7 +81,7 @@ class _TextFieldCellState extends State<TextFieldCell> {
       Future.delayed(const Duration(milliseconds: 200), () {
         editProv.setLoading = false;
       });
-      await editProv.saveButton(context, isUpdate: true);
+      await editProv.saveButton(isUpdate: true);
     } else if (editProv.getIsDiffZero == false) {
       Future.delayed(const Duration(milliseconds: 100), () {
         //  denemeProv.errorAlert(

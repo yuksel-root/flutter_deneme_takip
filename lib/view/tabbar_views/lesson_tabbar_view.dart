@@ -145,12 +145,12 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         Navigator.of(context, rootNavigator: true)
             .pushNamed(NavigationConstants.homeView)
       },
-      yesFunction: () => {
+      yesFunction: () async => {
         DenemeDbProvider.db.clearDatabase(),
         navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []),
         lessonProv.setAlert = false,
-        Future.delayed(const Duration(milliseconds: 100), () {
+        await Future.delayed(const Duration(milliseconds: 50), () {
           lessonProv.initLessonData(lessonProv.getLessonName);
 
           denemeProv.initDenemeData(denemeProv.getLessonName);

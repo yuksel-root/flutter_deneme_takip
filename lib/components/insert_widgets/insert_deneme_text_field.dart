@@ -45,11 +45,14 @@ class InsertDenemeTextField extends StatelessWidget {
                               editProv.getFormKey.currentState!.reset();
                             },
                           );
-
-                          return 'Sadece Sayı giriniz!';
+                        } else if (int.parse(value) > 99) {
+                          editProv.getFalseControllers[i].clear();
+                          return "Yanlış sayısı 99'dan büyük olamaz!";
+                        } else {
+                          return null;
                         }
 
-                        return null;
+                        return "Sadece Sayı Giriniz";
                       },
                       onChanged: (value) {
                         if (int.parse(value) != 0) {

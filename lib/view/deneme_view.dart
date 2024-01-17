@@ -23,7 +23,9 @@ class DenemeView extends StatelessWidget {
   FutureBuilder buildFutureView(
       DenemeViewModel denemeProv, denemeData, EditDenemeViewModel editProv) {
     return FutureBuilder(
-        future: Future.delayed(Duration.zero, () => denemeData),
+        future: Future.delayed(Duration.zero, () async {
+          return denemeData;
+        }),
         builder: (BuildContext context, _) {
           if (context.watch<DenemeViewModel>().getDenemeState ==
               DenemeState.loading) {
@@ -179,11 +181,12 @@ class DenemeView extends StatelessWidget {
                 ),
                 child: InkWell(
                   onLongPress: denemeProv.getIsTotal != true
-                      ? () {
-                          Future.delayed(const Duration(milliseconds: 100), () {
+                      ? () async {
+                          await Future.delayed(const Duration(milliseconds: 50),
+                              () {
                             denemeProv.removeAlert(
                               context,
-                              'UYARIb',
+                              'UYARI',
                               '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
                               denemeProv,
                               cell,
@@ -293,11 +296,11 @@ class DenemeView extends StatelessWidget {
                   ),
                 ),
                 child: InkWell(
-                  onLongPress: () {
-                    Future.delayed(const Duration(milliseconds: 100), () {
+                  onLongPress: () async {
+                    await Future.delayed(const Duration(milliseconds: 50), () {
                       denemeProv.removeAlert(
                         context,
-                        'UYARIa',
+                        'UYARI',
                         '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
                         denemeProv,
                         cell,
@@ -349,7 +352,7 @@ class DenemeView extends StatelessWidget {
                 child: InkWell(
                   onDoubleTap: () async {
                     denemeProv.setAlert = false;
-                    print(rowIndex + 1);
+
                     await showTextDialog(context,
                             title: 'Yanlış Sayısı Değiştir',
                             value: cell.toString(),

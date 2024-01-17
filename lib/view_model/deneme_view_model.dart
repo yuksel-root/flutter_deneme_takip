@@ -412,7 +412,7 @@ class DenemeViewModel extends ChangeNotifier {
             denemeProv.getLessonTableName!, itemDeneme, 'denemeId'),
         denemeProv.setAlert = false,
         Navigator.of(context, rootNavigator: true).pop(),
-        Future.delayed(const Duration(milliseconds: 100), () {
+        Future.delayed(const Duration(milliseconds: 50), () {
           denemeProv.initDenemeData(denemeProv.getLessonName);
         }),
       },
