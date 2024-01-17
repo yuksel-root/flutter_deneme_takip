@@ -69,12 +69,14 @@ class DenemeLoginViewModel extends ChangeNotifier {
   }
 
   Stream<User?> get userChanges => AuthService().fAuth.authStateChanges();
+
   set setUser(User? newUser) {
     try {
       _currentUser = newUser;
     } on FirebaseAuthException catch (e) {
-      _currentUser = null;
       print(e);
+      print("USER CATCH");
+      _currentUser = null;
     }
   }
 

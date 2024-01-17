@@ -25,6 +25,8 @@ class NavDrawer extends StatelessWidget {
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: true);
     final bottomProv =
         Provider.of<BottomNavigationProvider>(context, listen: false);
+    final currentUser = loginProv.getCurrentUser;
+    //print(currentUser);
 
     return Container(
       decoration: const BoxDecoration(
@@ -37,12 +39,11 @@ class NavDrawer extends StatelessWidget {
           children: [
             Expanded(
                 flex: 10,
-                child: buildListTileHeader(
-                    context, loginProv, loginProv.getCurrentUser)),
+                child: buildListTileHeader(context, loginProv, currentUser)),
             Expanded(
                 flex: 35,
-                child: buildListTiles(loginProv.getCurrentUser, bottomProv,
-                    context, denemeProv, loginProv, lessonProv)),
+                child: buildListTiles(currentUser, bottomProv, context,
+                    denemeProv, loginProv, lessonProv)),
           ],
         ),
       ),
@@ -102,7 +103,9 @@ Widget drawerCardMenu(
             blendModes: BlendMode.srcIn,
             gradient: textGradient,
             widget: Text(title)),
-        onTap: () => onTap(),
+        onTap: () {
+          onTap();
+        },
       ),
     ),
   );

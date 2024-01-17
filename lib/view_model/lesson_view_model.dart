@@ -25,7 +25,7 @@ class LessonViewModel extends ChangeNotifier {
   LessonViewModel() {
     _navigation = NavigationService.instance;
     _isAlertOpen = false;
-    _lessonName = 'Coğrafya';
+    _lessonName = 'Tarih';
     _state = LessonState.empty;
     listDeneme = [];
     _lessonTableName =

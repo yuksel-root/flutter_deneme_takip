@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_print
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,30 +59,33 @@ class MainApp extends StatelessWidget {
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
 
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            appBarTheme:
-                const AppBarTheme(backgroundColor: Colors.transparent)),
-        onGenerateRoute: NavigationRoute.instance.generateRoute,
-        navigatorKey: NavigationService.instance.navigatorKey,
-        home: Scaffold(
-          body: Center(
-              child: FutureBuilder<bool?>(
-                  future: checkIfAnonymous(loginProv),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<bool?> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (AuthService().fAuth.currentUser != null ||
-                        snapshot.data != false &&
-                            snapshot.hasData &&
-                            snapshot.error == null) {
-                      return const BottomTabbarView();
-                    } else {
-                      return const BottomTabbarView();
-                    }
-                  })),
-        ));
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent)),
+      onGenerateRoute: NavigationRoute.instance.generateRoute,
+      navigatorKey: NavigationService.instance.navigatorKey,
+      home: Scaffold(
+        body: Center(
+          child: StreamBuilder<User?>(
+            stream: AuthService().fAuth.authStateChanges(),
+            builder: (BuildContext context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.active) {
+                User? user = snapshot.data;
+
+                if (user == null) {
+                  loginProv.setUser = null;
+                  return const BottomTabbarView();
+                } else {
+                  loginProv.setUser = AuthService().fAuth.currentUser;
+                  return const BottomTabbarView();
+                }
+              }
+              return const BottomTabbarView();
+            },
+          ),
+        ),
+      ),
+    );
   }
 
   Future<bool?> checkIfAnonymous(DenemeLoginViewModel loginProv) async {

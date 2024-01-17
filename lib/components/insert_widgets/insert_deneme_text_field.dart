@@ -46,7 +46,11 @@ class InsertDenemeTextField extends StatelessWidget {
                             },
                           );
                         } else if (int.parse(value) > 99) {
-                          editProv.getFalseControllers[i].clear();
+                          try {
+                            editProv.getFalseControllers[i].clear();
+                          } catch (e) {
+                            print(e);
+                          }
                           return "Yanlış sayısı 99'dan büyük olamaz!";
                         } else {
                           return null;
@@ -57,6 +61,8 @@ class InsertDenemeTextField extends StatelessWidget {
                       onChanged: (value) {
                         if (int.parse(value) != 0) {
                           editProv.setIsDiffZero = true;
+                        } else if (int.parse(value) > 99) {
+                          editProv.getFalseControllers[i].clear();
                         } else {
                           editProv.setIsDiffZero = false;
                         }

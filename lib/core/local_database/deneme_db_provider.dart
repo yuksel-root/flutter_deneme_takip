@@ -161,7 +161,7 @@ class DenemeDbProvider {
 
   Future<List<Map<String, dynamic>>> getAllDataByTable(String tableName) async {
     final db = await getDatabase;
-    final res = await db.query(tableName); //Burası  null geliyo delay olmayınca
+    final res = await db.query(tableName);
 
     if (res.isEmpty) {
       return [];
