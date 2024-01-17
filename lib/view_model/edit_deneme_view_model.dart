@@ -211,7 +211,7 @@ class EditDenemeViewModel extends ChangeNotifier {
       DenemeModel updateDenemeModel = DenemeModel(
         denemeId: updatingDenemeId,
         subjectId: cellId! + 1,
-        subjectName: _subjectSavedList[cellId + 1],
+        subjectName: _subjectSavedList[cellId],
         falseCount: int.parse(updateVal!),
         denemeDate: _date,
       );

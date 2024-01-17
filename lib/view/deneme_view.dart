@@ -241,7 +241,7 @@ class DenemeView extends StatelessWidget {
                 child: InkWell(
                   onDoubleTap: () async {
                     denemeProv.setAlert = false;
-                    print(rowIndex + 1);
+
                     await showTextDialog(context,
                         title: 'Yanlış Sayısını Değiştir',
                         value: cell.toString(),

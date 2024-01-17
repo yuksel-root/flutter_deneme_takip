@@ -30,7 +30,7 @@ class _TextFieldCellState extends State<TextFieldCell> {
         initialValue: widget.initValue,
         keyboardType: TextInputType.number,
         textInputAction: TextInputAction.next,
-        decoration: InputDecoration(),
+        decoration: const InputDecoration(),
         style: TextStyle(
             color: Colors.white,
             fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
