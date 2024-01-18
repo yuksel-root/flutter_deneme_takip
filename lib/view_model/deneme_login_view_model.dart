@@ -68,16 +68,10 @@ class DenemeLoginViewModel extends ChangeNotifier {
     _error = newError;
   }
 
-  Stream<User?> get userChanges => AuthService().fAuth.authStateChanges();
+  set setCurrentUser(User? newUser) {
+    _currentUser = newUser;
 
-  set setUser(User? newUser) {
-    try {
-      _currentUser = newUser;
-    } on FirebaseAuthException catch (e) {
-      print(e);
-      print("USER CATCH");
-      _currentUser = null;
-    }
+    notifyListeners();
   }
 
   User? get getCurrentUser {
@@ -87,7 +81,7 @@ class DenemeLoginViewModel extends ChangeNotifier {
   Future<void> loginWithGoogle(
       BuildContext context, DenemeLoginViewModel loginProv) async {
     setState = LoginState.notLoggedIn;
-    setUser = await AuthService().signInWithGoogle();
+    setCurrentUser = await AuthService().signInWithGoogle();
     setState = LoginState.authenticating;
     try {
       if (getCurrentUser != null) {

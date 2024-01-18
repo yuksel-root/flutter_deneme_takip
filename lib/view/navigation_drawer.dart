@@ -60,7 +60,7 @@ Column buildListTileHeader(
         gradient:
             const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
         widget: UserAccountsDrawerHeader(
-          accountName: Text(currentUser?.displayName ?? "Offline kullanıcı"),
+          accountName: Text(currentUser?.displayName ?? "Çevrimdışı kullanıcı"),
           accountEmail: Text(currentUser?.email ??
               "Lütfen Yedekleme için google ile giriş yapınız."),
           currentAccountPicture: Row(
@@ -283,13 +283,16 @@ Column buildListTiles(
                       "Şu anki veriler yedeklenen veri ile değiştirilecektir",
                   yesFunction: () async {
                   await DenemeDbProvider.db.clearDatabase();
-                  await restoreData(loginProv, denemeProv, lessonProv)
-                      .then((value) {
-                    lessonProv.initLessonData(lessonProv.getLessonName);
-                    denemeProv.initDenemeData(denemeProv.getLessonName);
+                  Future.delayed(Duration.zero, () async {
+                    await restoreData(
+                            context, loginProv, denemeProv, lessonProv)
+                        .then((value) {
+                      lessonProv.initLessonData(lessonProv.getLessonName);
+                      denemeProv.initDenemeData(denemeProv.getLessonName);
 
-                    navigation.navigateToPageClear(
-                        path: NavigationConstants.homeView);
+                      navigation.navigateToPageClear(
+                          path: NavigationConstants.homeView);
+                    });
                   });
                 }, noFunction: () {
                   Navigator.of(context, rootNavigator: true).pop();
@@ -313,14 +316,12 @@ Column buildListTiles(
                     title: "Uyarı",
                     content: "Mevcut hesaptan çıkış yapmak ister misiniz?",
                     yesFunction: () async {
-                  if (AuthService().fAuth.currentUser != null ||
-                      await loginProv.getIsAnonymous == true) {
-                    AuthService().signOut();
-                    loginProv.setAnonymousLogin = false;
-                    loginProv.setState = LoginState.notLoggedIn;
-                    navigation.navigateToPageClear(
-                        path: NavigationConstants.homeView);
-                  } else {}
+                  AuthService().signOut();
+
+                  loginProv.setState = LoginState.notLoggedIn;
+                  loginProv.setCurrentUser = null;
+                  navigation.navigateToPageClear(
+                      path: NavigationConstants.homeView);
                 }, noFunction: () {
                   Navigator.of(context, rootNavigator: true).pop();
                 });
@@ -441,7 +442,8 @@ void currentUserNullAlert(BuildContext context, DenemeViewModel denemeProv) {
   });
 }
 
-void backUpFunction(BuildContext context, DenemeViewModel denemeProv) {
+Future<void> backUpFunction(
+    BuildContext context, DenemeViewModel denemeProv) async {
   try {
     String? userId = AuthService().fAuth.currentUser?.uid;
 
@@ -460,20 +462,19 @@ void backUpFunction(BuildContext context, DenemeViewModel denemeProv) {
         });
       });
     } else {
-      denemeProv.errorAlert(context, "Uyarı",
-          "Lütfen google girişi yaparak tekrar deneyiniz.", denemeProv);
+      Future.delayed(Duration.zero, () {
+        denemeProv.errorAlert(
+            context, "Uyarı", "Lütfen Giriş yapınız", denemeProv);
+      });
     }
   } on FirebaseAuthException catch (error) {
     print(error);
-    denemeProv.errorAlert(context, "Uyarı",
-        "Lütfen google girişi yaparak tekrar deneyiniz.", denemeProv);
   } catch (e) {
-    denemeProv.errorAlert(context, "Uyarı",
-        "Lütfen google girişi yaparak tekrar deneyiniz.", denemeProv);
+    print(e);
   }
 }
 
-Future<void> restoreData(DenemeLoginViewModel loginProv,
+Future<void> restoreData(BuildContext context, DenemeLoginViewModel loginProv,
     DenemeViewModel denemeProv, LessonViewModel lessonProv) async {
   if (AuthService().fAuth.currentUser != null) {
     String? userId = AuthService().fAuth.currentUser?.uid;
@@ -481,6 +482,18 @@ Future<void> restoreData(DenemeLoginViewModel loginProv,
     final denemePostData =
         await denemeProv.getTablesFromFirebase(userId!) ?? {};
 
-    await denemeProv.sendFirebaseToSqlite(denemePostData);
+    if (denemePostData.isEmpty) {
+      Future.delayed(const Duration(milliseconds: 20), () {
+        denemeProv.showAlert(
+            isOneButton: true,
+            context,
+            title: "Uyarı",
+            content: "İnternet olduğundan emin olunuz!", yesFunction: () {
+          navigation.navigateToPageClear(path: NavigationConstants.homeView);
+        }, noFunction: () {});
+      });
+    } else {
+      await denemeProv.sendFirebaseToSqlite(denemePostData);
+    }
   }
 }

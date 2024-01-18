@@ -433,20 +433,11 @@ class DenemeViewModel extends ChangeNotifier {
   Future<void> backUpAllTablesData(
       BuildContext context, String userId, DenemeViewModel denemeProv) async {
     try {
-      setFirebaseState = FirebaseState.start;
       FirebaseService().sendMultiplePostsToFirebase(userId);
-      Future.delayed(const Duration(milliseconds: 100), () {
-        setFirebaseState = FirebaseState.completed;
-      });
     } on FirebaseAuthException catch (error) {
       print("on Catch denemeVM FIREBASE CATCH ERROR ${error.code}");
-
-      setFirebaseState = FirebaseState.catchError;
-      errorAlert(context, "Uyarı", "İnternet bağlantısı yok!", denemeProv);
     } catch (e) {
       print("catch denemeVM  CATCH ERROR ${e.toString()}");
-
-      setFirebaseState = FirebaseState.catchError;
     }
   }
 

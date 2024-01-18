@@ -1,11 +1,9 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/sign_button.dart';
 import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
-import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/deneme_view.dart';
 import 'package:flutter_deneme_takip/view/navigation_drawer.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
@@ -158,37 +156,4 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
       text: tabName,
     );
   }).toList();
-
-  SignButton buildBackUpButton(BuildContext context, DenemeViewModel denemeProv,
-      DenemeLoginViewModel loginProv) {
-    return SignButton(
-        isGreyPng: true,
-        onPressFunct: () async {
-          String? userId = AuthService().fAuth.currentUser?.uid;
-
-          if (userId != null) {
-            denemeProv.removeUserPostData(userId).then((value) async {
-              await denemeProv
-                  .backUpAllTablesData(context, userId, denemeProv)
-                  .then((value) async {
-                await Future.delayed(const Duration(milliseconds: 50),
-                    () async {
-                  await denemeProv.getTablesFromFirebase(userId);
-                });
-              });
-            });
-          } else {
-            denemeProv.errorAlert(context, "Uyarı",
-                "Lütfen google girişi yaparak tekrar deneyiniz.", denemeProv);
-          }
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
-        labelText: "Yedekle",
-        labelStyle: TextStyle(
-          color: Colors.white,
-          fontSize: context.dynamicH(0.00571) * context.dynamicW(0.01),
-        ));
-  }
 }

@@ -29,8 +29,10 @@ class FirebaseService {
       };
 
       return postModels;
-    } catch (e) {
-      print("Fs getTable catch $e");
+    } on FirebaseAuthException catch (error) {
+      {
+        print("Fs getTable catch $error");
+      }
     }
     return null;
   }
@@ -38,24 +40,28 @@ class FirebaseService {
   Future<void> sendMultiplePostsToFirebase(String userId) async {
     try {
       List<DenemePostModel> postModels = [];
+      final hT = await DenemeDbProvider.db
+          .getAllDataByTable(DenemeTables.historyTableName);
+      final gT = await DenemeDbProvider.db
+          .getAllDataByTable(DenemeTables.geographyTable);
+      final cT = await DenemeDbProvider.db
+          .getAllDataByTable(DenemeTables.citizenTable);
+
       postModels = [
         DenemePostModel(
           userId: userId,
           tableName: DenemeTables.historyTableName,
-          tableData: await DenemeDbProvider.db
-              .getAllDataByTable(DenemeTables.historyTableName),
+          tableData: hT,
         ),
         DenemePostModel(
           userId: userId,
           tableName: DenemeTables.geographyTable,
-          tableData: await DenemeDbProvider.db
-              .getAllDataByTable(DenemeTables.geographyTable),
+          tableData: gT,
         ),
         DenemePostModel(
           userId: userId,
           tableName: DenemeTables.citizenTable,
-          tableData: await DenemeDbProvider.db
-              .getAllDataByTable(DenemeTables.citizenTable),
+          tableData: cT,
         ),
       ];
 
@@ -74,10 +80,10 @@ class FirebaseService {
           .doc(userId)
           .set({'denemePosts': combinedData}, SetOptions(merge: true));
     } on FirebaseAuthException catch (error) {
-      return print(
+      print(
           "---------sendTable FS CATCH ERROR------------------ ${error.message}");
     } catch (e) {
-      return print('Cathch fS sendTable $e');
+      print('Cathch fS sendTable $e');
     }
   }
 

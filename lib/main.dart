@@ -41,7 +41,7 @@ Future<void> _init() async {
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await checkGooglePlayServices();
+  // await checkGooglePlayServices();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
     SystemUiOverlay.bottom,
   ]);
@@ -71,12 +71,16 @@ class MainApp extends StatelessWidget {
             builder: (BuildContext context, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
                 User? user = snapshot.data;
-
+                print("İF 0 ADSADSALDMLSAKDAS");
+                print(user);
+                print("İF 0 ADSADSALDMLSAKDAS");
                 if (user == null) {
-                  loginProv.setUser = null;
+                  print("İF 1 NJNADLJASNDLJSADNSDMLASKMDSKLAD");
+                  loginProv.setCurrentUser = null;
                   return const BottomTabbarView();
                 } else {
-                  loginProv.setUser = AuthService().fAuth.currentUser;
+                  print("ELSE SDASDASDACZXCZXCXZCXCZXCZXC");
+                  loginProv.setCurrentUser = AuthService().fAuth.currentUser;
                   return const BottomTabbarView();
                 }
               }
