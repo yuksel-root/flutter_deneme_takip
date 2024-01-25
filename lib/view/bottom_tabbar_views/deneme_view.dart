@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/gradient_widget.dart';
-import 'package:flutter_deneme_takip/components/update_widgets/update_text_dialog.dart';
+import 'package:flutter_deneme_takip/components/utils/gradient_widget.dart';
+import 'package:flutter_deneme_takip/components/text_dialog/update_text_dialog.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';

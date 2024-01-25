@@ -1,6 +1,6 @@
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 
-class LessonList {
+class AppData {
   static const List<String> turkishSubject = <String>[
     "",
     "Sözcükte Anlam",
