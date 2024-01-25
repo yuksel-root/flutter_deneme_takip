@@ -14,21 +14,28 @@ class FirebaseService {
 
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
-  Future<Map<String, List<dynamic>>?> getPostDataByUser(String userId) async {
+  Future<Map<String, List<dynamic>>?>? getPostDataByUser(String userId) async {
     try {
-      final userDoc = await usersCollection.doc(userId).get();
-      Map<String, dynamic>? postData = userDoc.data();
+      final postData =
+          await usersCollection.doc(userId).get().then((querySnapshot) {
+        if (querySnapshot.exists && !querySnapshot.metadata.isFromCache) {
+          return querySnapshot.data();
+        }
+        return null;
+      });
 
-      Map<String, List<dynamic>>? postModels = {
-        DenemeTables.historyTableName: postData?['denemePosts']
-            [DenemeTables.historyTableName]['tableData'],
-        DenemeTables.geographyTable: postData?['denemePosts']
-            [DenemeTables.geographyTable]['tableData'],
-        DenemeTables.citizenTable: postData?['denemePosts']
-            [DenemeTables.citizenTable]['tableData'],
-      };
+      if (postData != null) {
+        Map<String, List<dynamic>>? postModels = {
+          DenemeTables.historyTableName: postData['denemePosts']
+              [DenemeTables.historyTableName]['tableData'],
+          DenemeTables.geographyTable: postData['denemePosts']
+              [DenemeTables.geographyTable]['tableData'],
+          DenemeTables.citizenTable: postData['denemePosts']
+              [DenemeTables.citizenTable]['tableData'],
+        };
 
-      return postModels;
+        return postModels;
+      }
     } on FirebaseAuthException catch (error) {
       {
         print("Fs getTable catch $error");
@@ -37,36 +44,76 @@ class FirebaseService {
     return null;
   }
 
-  Future<void> sendMultiplePostsToFirebase(String userId) async {
+  Future<Map<String, List<dynamic>>?> isFromCache(String userId) async {
+    final usersCollection = FirebaseFirestore.instance.collection('users');
     try {
-      List<DenemePostModel> postModels = [];
-      final hT = await DenemeDbProvider.db
-          .getAllDataByTable(DenemeTables.historyTableName);
-      final gT = await DenemeDbProvider.db
-          .getAllDataByTable(DenemeTables.geographyTable);
-      final cT = await DenemeDbProvider.db
-          .getAllDataByTable(DenemeTables.citizenTable);
+      await usersCollection.doc(userId).get().then((querySnapshot) {
+        if (!querySnapshot.metadata.isFromCache) {
+          return querySnapshot.data();
+        }
+      });
+    } catch (e) {
+      print("AAAAAAAAAAAA $e");
+    }
+    return null;
+  }
 
-      postModels = [
-        DenemePostModel(
-          userId: userId,
-          tableName: DenemeTables.historyTableName,
-          tableData: hT,
-        ),
-        DenemePostModel(
-          userId: userId,
-          tableName: DenemeTables.geographyTable,
-          tableData: gT,
-        ),
-        DenemePostModel(
-          userId: userId,
-          tableName: DenemeTables.citizenTable,
-          tableData: cT,
-        ),
-      ];
+  Future<void> removeUserPostData(String userId) async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      Map<String, dynamic> combinedData = {};
+      DocumentSnapshot userDoc =
+          await firestore.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
+        if (userData.containsKey('denemePosts')) {
+          await firestore.collection('users').doc(userId).update({
+            'denemePosts': FieldValue.delete(),
+          });
+
+          print('Belge başarıyla silindi: ');
+        } else {
+          print('Belirtilen tablo bulunamadı veya zaten silinmiş.');
+        }
+      } else {
+        print('Kullanıcı belgesi bulunamadı.');
+      }
+    } catch (e) {
+      print('Hata oluştu: $e');
+    }
+  }
+
+  Future<void> sendMultiplePostsToFirebase(String userId) async {
+    List<DenemePostModel> postModels = [];
+    final hT = await DenemeDbProvider.db
+        .getAllDataByTable(DenemeTables.historyTableName);
+    final gT = await DenemeDbProvider.db
+        .getAllDataByTable(DenemeTables.geographyTable);
+    final cT =
+        await DenemeDbProvider.db.getAllDataByTable(DenemeTables.citizenTable);
+
+    postModels = [
+      DenemePostModel(
+        userId: userId,
+        tableName: DenemeTables.historyTableName,
+        tableData: hT,
+      ),
+      DenemePostModel(
+        userId: userId,
+        tableName: DenemeTables.geographyTable,
+        tableData: gT,
+      ),
+      DenemePostModel(
+        userId: userId,
+        tableName: DenemeTables.citizenTable,
+        tableData: cT,
+      ),
+    ];
+
+    Map<String, dynamic> combinedData = {};
+
+    try {
       for (var postModel in postModels) {
         combinedData[postModel.tableName] = {
           'userId': postModel.userId,
@@ -74,14 +121,11 @@ class FirebaseService {
           'tableName': postModel.tableName,
         };
       }
-      print("DenemePosts successfully added.");
+
       await _firestore!
           .collection('users')
           .doc(userId)
           .set({'denemePosts': combinedData}, SetOptions(merge: true));
-    } on FirebaseAuthException catch (error) {
-      print(
-          "---------sendTable FS CATCH ERROR------------------ ${error.message}");
     } catch (e) {
       print('Cathch fS sendTable $e');
     }
@@ -92,7 +136,7 @@ class FirebaseService {
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      var userDoc = await firestore.collection('users').doc(userId).get();
+      final userDoc = await firestore.collection('users').doc(userId).get();
 
       if (!userDoc.exists) {
         await firestore.collection('users').doc(userId).set({

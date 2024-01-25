@@ -2,12 +2,11 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/local_storage/local_storage_manager.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 
 enum LoginState {
@@ -70,8 +69,6 @@ class DenemeLoginViewModel extends ChangeNotifier {
 
   set setCurrentUser(User? newUser) {
     _currentUser = newUser;
-
-    notifyListeners();
   }
 
   User? get getCurrentUser {
@@ -86,16 +83,18 @@ class DenemeLoginViewModel extends ChangeNotifier {
     try {
       if (getCurrentUser != null) {
         setState = LoginState.loggedIn;
+
         navigation.navigateToPageClear(path: NavigationConstants.homeView);
 
         FirebaseService().addUserToCollection(getCurrentUser!.displayName!,
             getCurrentUser!.email!, getCurrentUser!.uid);
+      } else {
+        setState = LoginState.loginError;
+        Future.delayed(Duration.zero, () {
+          errorAlert(context, "Uyarı", "İnternet bağlantınızı kontrol ediniz",
+              loginProv);
+        });
       }
-    } on FirebaseAuthException catch (error) {
-      print("Login FIREBASE CATCH ERROR ${error.message}");
-      setState = LoginState.loginError;
-      setError = "İnternet bağlantısı yok!";
-      SystemNavigator.pop();
     } catch (e) {
       print("Login CATCH ERROR $e");
       setState = LoginState.loginError;

@@ -1,11 +1,10 @@
 // ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/alert_dialog.dart';
-import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 
 enum LessonState {
   empty,
@@ -29,7 +28,7 @@ class LessonViewModel extends ChangeNotifier {
     _state = LessonState.empty;
     listDeneme = [];
     _lessonTableName =
-        LessonList.tableNames[_lessonName] ?? DenemeTables.historyTableName;
+        AppData.tableNames[_lessonName] ?? DenemeTables.historyTableName;
 
     initLessonData(_lessonName);
   }
@@ -44,7 +43,7 @@ class LessonViewModel extends ChangeNotifier {
     state = LessonState.loading;
 
     _lessonTableName =
-        LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
+        AppData.tableNames[lessonName] ?? DenemeTables.historyTableName;
 
     listDeneme = await DenemeDbProvider.db.getAllDataByTable(_lessonTableName!);
 
@@ -147,7 +146,7 @@ class LessonViewModel extends ChangeNotifier {
 
   set setLessonTableName(String? newTable) {
     _lessonTableName =
-        LessonList.tableNames[newTable] ?? DenemeTables.historyTableName;
+        AppData.tableNames[newTable] ?? DenemeTables.historyTableName;
     notifyListeners();
   }
 

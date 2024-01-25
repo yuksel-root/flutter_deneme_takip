@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/alert_dialog.dart';
-import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
-import 'package:flutter_deneme_takip/view/lesson_view.dart';
-import 'package:flutter_deneme_takip/view/navigation_drawer.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
+import 'package:flutter_deneme_takip/view/bottom_tabbar_views/lesson_view.dart';
+import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
@@ -44,7 +44,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
 
     return DefaultTabController(
-      length: LessonList.lessonNameList.length,
+      length: AppData.lessonNameList.length,
       initialIndex: tabbarNavProv.getLessonCurrentIndex,
       child: Builder(builder: (BuildContext context) {
         final TabController tabController = DefaultTabController.of(context);
@@ -53,10 +53,10 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             tabbarNavProv.setLessonCurrentIndex = tabController.index;
 
             lessonProv.setLessonName =
-                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
+                AppData.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
 
             lessonProv.initLessonData(
-                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
+                AppData.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
           }
         });
         return Scaffold(
@@ -116,8 +116,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
                   tabs: tab,
                 )),
             body: TabBarView(
-              children:
-                  List.generate(LessonList.lessonNameList.length, (index) {
+              children: List.generate(AppData.lessonNameList.length, (index) {
                 return const LessonView();
               }),
             ));
@@ -125,7 +124,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
     );
   }
 
-  List<Widget> tab = LessonList.lessonNameList.map((tabName) {
+  List<Widget> tab = AppData.lessonNameList.map((tabName) {
     return Tab(
       text: tabName,
     );

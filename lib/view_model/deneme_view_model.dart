@@ -1,15 +1,17 @@
 // ignore_for_file: avoid_print
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/alert_dialog.dart';
-import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
+import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
+import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
+import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 
 enum DenemeState {
   empty,
@@ -54,13 +56,13 @@ class DenemeViewModel extends ChangeNotifier {
     listDeneme = [];
     fakeData = [];
     _lessonTableName =
-        LessonList.tableNames[_lessonName] ?? LessonList.tableNames['Tarih'];
+        AppData.tableNames[_lessonName] ?? AppData.tableNames['Tarih'];
 
     initDenemeData(_lessonName!);
     initFakeData(_lessonName!);
 
-    _initPng = LessonList.lessonPngList[_lessonName] ??
-        LessonList.lessonPngList['Tarih'];
+    _initPng =
+        AppData.lessonPngList[_lessonName] ?? AppData.lessonPngList['Tarih'];
     columnData = List.of(findList(_lessonName ?? 'Tarih'));
 
     rowData = [];
@@ -252,13 +254,13 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   List<String> findList(String lessonName) {
-    return LessonList.lessonListMap[lessonName] ?? [];
+    return AppData.lessonListMap[lessonName] ?? [];
   }
 
   void initDenemeData(String? lessonName) async {
     setDenemestate = DenemeState.loading;
     _lessonTableName =
-        LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
+        AppData.tableNames[lessonName] ?? DenemeTables.historyTableName;
 
     listDeneme = await DenemeDbProvider.db.getAllDataByTable(_lessonTableName!);
 
@@ -268,7 +270,7 @@ class DenemeViewModel extends ChangeNotifier {
   void initFakeData(String? lessonName) async {
     setDenemestate = DenemeState.loading;
     _lessonTableName =
-        LessonList.tableNames[lessonName] ?? DenemeTables.historyTableName;
+        AppData.tableNames[lessonName] ?? DenemeTables.historyTableName;
 
     fakeData = await DenemeDbProvider.db.getAllDataByTable(_lessonTableName!);
 
@@ -385,7 +387,7 @@ class DenemeViewModel extends ChangeNotifier {
 
   set setLessonTableName(String? newTable) {
     _lessonName = _lessonTableName =
-        LessonList.tableNames[newTable] ?? DenemeTables.historyTableName;
+        AppData.tableNames[newTable] ?? DenemeTables.historyTableName;
     notifyListeners();
   }
 
@@ -426,16 +428,49 @@ class DenemeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteUserInFirebase(String userId) async {
-    FirebaseService().deleteUserFromCollection(userId);
+  Future<void> deleteUserInFirebase(BuildContext context, String userId,
+      DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) async {
+    try {
+      final isOnline = await FirebaseService().isFromCache(userId);
+      if (isOnline!.isEmpty) {
+        Future.delayed(Duration.zero, () {
+          navigation.navigateToPage(path: NavigationConstants.homeView);
+          errorAlert(context, "Uyarı",
+              "İnternet bağlantısı olduğuna emin olunuz!", denemeProv);
+        });
+      } else {
+        FirebaseService().deleteUserFromCollection(userId).then((value) async {
+          await Future.delayed(const Duration(milliseconds: 100), () async {
+            await AuthService().signOut();
+            loginProv.setAnonymousLogin = false;
+            loginProv.setState = LoginState.notLoggedIn;
+            loginProv.setCurrentUser = null;
+          });
+        });
+      }
+    } catch (e) {
+      print("Delete USer DMV $e");
+    }
   }
 
   Future<void> backUpAllTablesData(
       BuildContext context, String userId, DenemeViewModel denemeProv) async {
     try {
-      FirebaseService().sendMultiplePostsToFirebase(userId);
-    } on FirebaseAuthException catch (error) {
-      print("on Catch denemeVM FIREBASE CATCH ERROR ${error.code}");
+      final isOnline = await FirebaseService().isFromCache(userId);
+      if (isOnline == null) {
+        Future.delayed(Duration.zero, () {
+          navigation.navigateToPage(path: NavigationConstants.homeView);
+          denemeProv.errorAlert(context, "Uyarı",
+              "İnternet bağlantısı olduğuna emin olunuz!", denemeProv);
+        });
+      } else {
+        await FirebaseService().sendMultiplePostsToFirebase(userId);
+        Future.delayed(Duration.zero, () {
+          navigation.navigateToPage(path: NavigationConstants.homeView);
+          denemeProv.errorAlert(
+              context, "Bilgi", "Veriler başarıyla yedeklendi!", denemeProv);
+        });
+      }
     } catch (e) {
       print("catch denemeVM  CATCH ERROR ${e.toString()}");
     }
@@ -455,29 +490,21 @@ class DenemeViewModel extends ChangeNotifier {
     await DenemeDbProvider.db.inserAllDenemeData(denemeData);
   }
 
-  Future<void> removeUserPostData(String userId) async {
+  Future<void> removeUserPostData(
+      String userId, BuildContext context, DenemeViewModel denemeProv) async {
     try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      DocumentSnapshot userDoc =
-          await firestore.collection('users').doc(userId).get();
-      if (userDoc.exists) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-
-        if (userData.containsKey('denemePosts')) {
-          await firestore.collection('users').doc(userId).update({
-            'denemePosts': FieldValue.delete(),
-          });
-
-          print('Belge başarıyla silindi: ');
-        } else {
-          print('Belirtilen tablo bulunamadı veya zaten silinmiş.');
-        }
+      final isOnline = await FirebaseService().isFromCache(userId);
+      if (isOnline!.isEmpty) {
+        Future.delayed(Duration.zero, () {
+          navigation.navigateToPage(path: NavigationConstants.homeView);
+          denemeProv.errorAlert(context, "Uyarı",
+              "İnternet bağlantısı olduğuna emin olunuz!", denemeProv);
+        });
       } else {
-        print('Kullanıcı belgesi bulunamadı.');
+        await FirebaseService().removeUserPostData(userId);
       }
     } catch (e) {
-      print('Hata oluştu: $e');
+      print("REMOVE USER CATCH DMV $e");
     }
   }
 

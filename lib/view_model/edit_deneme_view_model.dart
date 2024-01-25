@@ -1,14 +1,13 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
-
+import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
-import 'package:flutter_deneme_takip/components/alert_dialog.dart';
 
 enum EditDenemeState {
   empty,
@@ -55,7 +54,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     _isAlertOpen = false;
 
     _lessonName = 'Tarih';
-    _subjectList = LessonList.historySubjects;
+    _subjectList = AppData.historySubjects;
     _falseInputCount = _subjectList!.length;
     _formKey = formKey0;
 
@@ -74,7 +73,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   }
 
   List<String> findList(String lessonName) {
-    return LessonList.lessonListMap[lessonName] ?? [];
+    return AppData.lessonListMap[lessonName] ?? [];
   }
 
   set setLessonName(String newLesson) {
@@ -122,7 +121,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   }
 
   set setSubjectList(List<String>? newSubjects) {
-    _subjectList = newSubjects ?? LessonList.subjectListNames['Tarih'];
+    _subjectList = newSubjects ?? AppData.subjectListNames['Tarih'];
   }
 
   List<String> get getSubjectList {
@@ -180,9 +179,9 @@ class EditDenemeViewModel extends ChangeNotifier {
 
     _subjectSavedList = getSubjectList;
     List<int> existingIds = await DenemeDbProvider.db
-        .getAllDenemeIds(LessonList.tableNames[_lessonName]!);
+        .getAllDenemeIds(AppData.tableNames[_lessonName]!);
     int latestId = await DenemeDbProvider.db
-            .getFindLastId(LessonList.tableNames[_lessonName]!, "denemeId") ??
+            .getFindLastId(AppData.tableNames[_lessonName]!, "denemeId") ??
         0;
 
     //printFunct("falseCounters", _falseCountsIntegers);
@@ -227,7 +226,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   Future<void> updateDeneme(DenemeModel deneme) async {
     try {
       await DenemeDbProvider.db
-          .updateDeneme(deneme, LessonList.tableNames[_lessonName]!);
+          .updateDeneme(deneme, AppData.tableNames[_lessonName]!);
     } catch (e) {
       printFunct("updateDeneme error", e);
     }
@@ -237,7 +236,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   Future<void> saveDeneme(DenemeModel deneme) async {
     try {
       await DenemeDbProvider.db
-          .insertDeneme(deneme, LessonList.tableNames[_lessonName]!);
+          .insertDeneme(deneme, AppData.tableNames[_lessonName]!);
     } catch (e) {
       printFunct("saveDeneme error", e);
     }

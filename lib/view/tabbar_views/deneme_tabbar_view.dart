@@ -1,11 +1,11 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
-import 'package:flutter_deneme_takip/view/deneme_view.dart';
-import 'package:flutter_deneme_takip/view/navigation_drawer.dart';
+import 'package:flutter_deneme_takip/view/bottom_tabbar_views/deneme_view.dart';
+import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +41,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
 
     return DefaultTabController(
-      length: LessonList.lessonNameList.length,
+      length: AppData.lessonNameList.length,
       initialIndex: tabbarNavProv.getCurrentDenemeIndex,
       child: Builder(builder: (BuildContext context) {
         final TabController tabController = DefaultTabController.of(context);
@@ -50,14 +50,14 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
             tabbarNavProv.setCurrentDenemeIndex = tabController.index;
 
             denemeProv.setLessonName =
-                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
+                AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
 
             denemeProv.initDenemeData(
-                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
+                AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
             //  print(denemeProv.listDeneme);
 
-            denemeProv.setInitPng = LessonList.lessonPngList[
-                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]];
+            denemeProv.setInitPng = AppData.lessonPngList[
+                AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]];
           }
         });
         return Scaffold(
@@ -67,7 +67,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
             controller: tabController,
             physics: const NeverScrollableScrollPhysics(),
             children: List.generate(
-              LessonList.lessonNameList.length,
+              AppData.lessonNameList.length,
               (index) {
                 return const DenemeView();
               },
@@ -151,7 +151,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     );
   }
 
-  List<Widget> tab = LessonList.lessonNameList.map((tabName) {
+  List<Widget> tab = AppData.lessonNameList.map((tabName) {
     return Tab(
       text: tabName,
     );

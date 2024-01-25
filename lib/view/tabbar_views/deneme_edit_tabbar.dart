@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/insert_views/insert_deneme_view.dart';
-import 'package:flutter_deneme_takip/view/navigation_drawer.dart';
+import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +26,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
   late List<String>? lessonNameList;
   @override
   void initState() {
-    denemeSubjectList = lessonNameList = LessonList.lessonNameList;
+    denemeSubjectList = lessonNameList = AppData.lessonNameList;
     super.initState();
 
     tabController = TabController(length: lessonNameList!.length, vsync: this);
@@ -45,7 +45,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
     final denemeProv = Provider.of<DenemeViewModel>(context);
 
     return DefaultTabController(
-      length: LessonList.lessonNameList.length,
+      length: AppData.lessonNameList.length,
       initialIndex: tabbarNavProv.getCurrentEditDeneme,
       child: Builder(builder: (BuildContext context) {
         final TabController tabController = DefaultTabController.of(context);
@@ -53,16 +53,16 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
           if (!tabController.indexIsChanging) {
             tabbarNavProv.setCurrentEditDeneme = tabController.index;
             editDenemeProv.setLessonName =
-                LessonList.lessonNameList[tabbarNavProv.getCurrentEditDeneme];
+                AppData.lessonNameList[tabbarNavProv.getCurrentEditDeneme];
 
             editDenemeProv.setSubjectList =
-                LessonList.subjectListNames[editDenemeProv.getLessonName];
+                AppData.subjectListNames[editDenemeProv.getLessonName];
 
             editDenemeProv.setFalseCountsIntegers =
                 List.filled(editDenemeProv.getFalseCountsIntegers!.length, 0);
 
             denemeProv.initDenemeData(
-                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
+                AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
 
             editDenemeProv.setFalseControllers =
                 editDenemeProv.getFalseCountsIntegers!.length;

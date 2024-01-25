@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/gradient_widget.dart';
-import 'package:flutter_deneme_takip/core/constants/lesson_list.dart';
+import 'package:flutter_deneme_takip/components/utils/gradient_widget.dart';
+import 'package:flutter_deneme_takip/core/constants/app_data.dart';
+import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
@@ -47,26 +48,20 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
       body: currentScreen[provider.getCurrentIndex],
       bottomNavigationBar: GradientWidget(
         blendModes: BlendMode.lighten,
-        gradient:
-            const LinearGradient(colors: [Colors.green, Colors.purpleAccent]),
+        gradient: ColorConstants.mainGradient,
         widget: BottomNavigationBar(
-          backgroundColor: const Color(0xff1c0f45),
-          unselectedItemColor: Colors.white,
-          selectedItemColor: Colors.greenAccent,
-          selectedFontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
-          unselectedFontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
           currentIndex: provider.getCurrentIndex,
           onTap: (index) {
             provider.setCurrentIndex = index;
             denemeProv.setLessonName =
-                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
+                AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
             denemeProv.initDenemeData(
-                LessonList.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
+                AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
 
             lessonProv.setLessonName =
-                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
+                AppData.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
             lessonProv.initLessonData(
-                LessonList.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
+                AppData.lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
 
             editProv.setFalseControllers =
                 editProv.getFalseCountsIntegers!.length;

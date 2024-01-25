@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_route.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/provider_list.dart';
@@ -60,8 +61,7 @@ class MainApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent)),
+      theme: AppTheme().currentTheme,
       onGenerateRoute: NavigationRoute.instance.generateRoute,
       navigatorKey: NavigationService.instance.navigatorKey,
       home: Scaffold(
@@ -71,16 +71,12 @@ class MainApp extends StatelessWidget {
             builder: (BuildContext context, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
                 User? user = snapshot.data;
-                print("İF 0 ADSADSALDMLSAKDAS");
-                print(user);
-                print("İF 0 ADSADSALDMLSAKDAS");
+
                 if (user == null) {
-                  print("İF 1 NJNADLJASNDLJSADNSDMLASKMDSKLAD");
                   loginProv.setCurrentUser = null;
                   return const BottomTabbarView();
                 } else {
-                  print("ELSE SDASDASDACZXCZXCXZCXCZXCZXC");
-                  loginProv.setCurrentUser = AuthService().fAuth.currentUser;
+                  loginProv.setCurrentUser = user;
                   return const BottomTabbarView();
                 }
               }

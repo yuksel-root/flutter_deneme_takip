@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/insert_widgets/faded_insert_form.dart';
-import 'package:flutter_deneme_takip/components/insert_widgets/insert_deneme_button.dart';
-import 'package:flutter_deneme_takip/components/insert_widgets/insert_deneme_form.dart';
+import 'package:flutter_deneme_takip/components/button/insert_deneme_button.dart';
+import 'package:flutter_deneme_takip/components/form/faded_insert_form.dart';
+import 'package:flutter_deneme_takip/components/form/insert_deneme_form.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
