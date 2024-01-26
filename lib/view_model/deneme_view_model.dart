@@ -7,7 +7,7 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
-import 'package:flutter_deneme_takip/services/auth_service.dart';
+
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
@@ -431,35 +431,28 @@ class DenemeViewModel extends ChangeNotifier {
   Future<void> deleteUserInFirebase(BuildContext context, String userId,
       DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) async {
     try {
-      final isOnline = await FirebaseService().isFromCache(userId);
-      if (isOnline!.isEmpty) {
-        Future.delayed(Duration.zero, () {
-          navigation.navigateToPage(path: NavigationConstants.homeView);
-          errorAlert(context, "Uyarı",
-              "İnternet bağlantısı olduğuna emin olunuz!", denemeProv);
+      await FirebaseService()
+          .deleteUserFromCollection(userId)
+          .then((value) async {
+        await Future.delayed(const Duration(milliseconds: 100), () async {
+          loginProv.setState = LoginState.notLoggedIn;
+          loginProv.setCurrentUser = null;
         });
-      } else {
-        FirebaseService().deleteUserFromCollection(userId).then((value) async {
-          await Future.delayed(const Duration(milliseconds: 100), () async {
-            await AuthService().signOut();
-            loginProv.setAnonymousLogin = false;
-            loginProv.setState = LoginState.notLoggedIn;
-            loginProv.setCurrentUser = null;
-          });
-        });
-      }
+      });
     } catch (e) {
       print("Delete USer DMV $e");
     }
   }
 
-  Future<void> backUpAllTablesData(
-      BuildContext context, String userId, DenemeViewModel denemeProv) async {
+  Future<void> backUpAllTablesData(BuildContext context, String userId,
+      DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) async {
     try {
-      final isOnline = await FirebaseService().isFromCache(userId);
-      if (isOnline == null) {
+      final denemePostData =
+          await denemeProv.getTablesFromFirebase(userId) ?? {};
+      if (denemePostData.isEmpty) {
         Future.delayed(Duration.zero, () {
           navigation.navigateToPage(path: NavigationConstants.homeView);
+
           denemeProv.errorAlert(context, "Uyarı",
               "İnternet bağlantısı olduğuna emin olunuz!", denemeProv);
         });
@@ -493,8 +486,9 @@ class DenemeViewModel extends ChangeNotifier {
   Future<void> removeUserPostData(
       String userId, BuildContext context, DenemeViewModel denemeProv) async {
     try {
-      final isOnline = await FirebaseService().isFromCache(userId);
-      if (isOnline!.isEmpty) {
+      final denemePostData =
+          await denemeProv.getTablesFromFirebase(userId) ?? {};
+      if (denemePostData.isEmpty) {
         Future.delayed(Duration.zero, () {
           navigation.navigateToPage(path: NavigationConstants.homeView);
           denemeProv.errorAlert(context, "Uyarı",
@@ -516,13 +510,17 @@ class DenemeViewModel extends ChangeNotifier {
       isOneButton: true,
       noFunction: () => {
         denemeProv.setAlert = false,
-        Navigator.of(context, rootNavigator: true)
-            .pushNamed(NavigationConstants.homeView),
+        Future.delayed(Duration.zero, () {
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed(NavigationConstants.homeView);
+        })
       },
       yesFunction: () async => {
         denemeProv.setAlert = false,
-        Navigator.of(context, rootNavigator: true)
-            .pushNamed(NavigationConstants.homeView),
+        Future.delayed(Duration.zero, () {
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed(NavigationConstants.homeView);
+        })
       },
     );
 

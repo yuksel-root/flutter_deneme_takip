@@ -29,6 +29,7 @@ class AppTheme {
                 fontSize: (const MediaQueryData().size.width * 0.01) *
                     (const MediaQueryData().size.height * 0.005)),
             selectedLabelStyle: TextStyle(
+              color: Colors.white,
               fontSize: (const MediaQueryData().size.width * 0.01) *
                   (const MediaQueryData().size.height * 0.005),
             )),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/utils/gradient_widget.dart';
 import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
-import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
@@ -47,10 +46,24 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
     return Scaffold(
       body: currentScreen[provider.getCurrentIndex],
       bottomNavigationBar: GradientWidget(
-        blendModes: BlendMode.lighten,
+        blendModes: BlendMode.color,
         gradient: ColorConstants.mainGradient,
         widget: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
           currentIndex: provider.getCurrentIndex,
+          unselectedItemColor: Colors.white,
+          selectedFontSize: 22,
+          unselectedFontSize: 22,
+          selectedItemColor: Colors.greenAccent,
+          unselectedLabelStyle: TextStyle(
+              color: Colors.white,
+              fontSize: (const MediaQueryData().size.width * 0.01) *
+                  (const MediaQueryData().size.height * 0.005)),
+          selectedLabelStyle: TextStyle(
+            color: Colors.white,
+            fontSize: (const MediaQueryData().size.width * 0.01) *
+                (const MediaQueryData().size.height * 0.005),
+          ),
           onTap: (index) {
             provider.setCurrentIndex = index;
             denemeProv.setLessonName =

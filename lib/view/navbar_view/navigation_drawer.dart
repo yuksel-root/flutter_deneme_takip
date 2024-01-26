@@ -39,7 +39,8 @@ class NavDrawer extends StatelessWidget {
           children: [
             Expanded(
                 flex: 10,
-                child: buildListTileHeader(context, loginProv, currentUser)),
+                child: buildListTileHeader(
+                    context, loginProv, currentUser, denemeProv)),
             Expanded(
                 flex: 35,
                 child: buildListTiles(currentUser, bottomProv, context,
@@ -51,8 +52,8 @@ class NavDrawer extends StatelessWidget {
   }
 }
 
-Column buildListTileHeader(
-    BuildContext context, DenemeLoginViewModel loginProv, User? currentUser) {
+Column buildListTileHeader(BuildContext context, DenemeLoginViewModel loginProv,
+    User? currentUser, DenemeViewModel denemeProv) {
   return Column(
     children: [
       GradientWidget(
@@ -61,7 +62,7 @@ Column buildListTileHeader(
             const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
         widget: UserAccountsDrawerHeader(
           accountName: Text(currentUser?.displayName ?? "Çevrimdışı kullanıcı",
-              style: TextStyle()),
+              style: const TextStyle()),
           accountEmail: Text(currentUser?.email ??
               "Lütfen Yedekleme için google ile giriş yapınız."),
           currentAccountPicture: Row(
@@ -70,15 +71,27 @@ Column buildListTileHeader(
             children: [
               Expanded(
                   child: ClipOval(
-                      child: currentUser != null
-                          ? Image.network(currentUser.photoURL ?? "null")
-                          : FlutterLogo(size: context.dynamicW(0.4)))),
+                child: buildProfileImage(context, denemeProv, currentUser),
+              )),
             ],
           ),
         ),
       ),
     ],
   );
+}
+
+Widget buildProfileImage(
+    BuildContext context, DenemeViewModel denemeProv, User? currentUser) {
+  try {
+    if (currentUser != null) {
+      return Image.network(currentUser.photoURL!);
+    }
+  } catch (e) {
+    print("Error loading image: $e");
+  }
+
+  return FlutterLogo(size: context.dynamicW(0.4));
 }
 
 Widget drawerCardMenu(
@@ -241,7 +254,7 @@ Column buildListTiles(
                   isOneButton: false,
                   title: "Uyarı",
                   content: "Şu anki veriler yedeklensin mi? ", yesFunction: () {
-                  backUpFunction(context, denemeProv, currentUser);
+                  backUpFunction(context, denemeProv, currentUser, loginProv);
                 }, noFunction: () {
                   Navigator.of(context, rootNavigator: true).pop();
                 })
@@ -290,9 +303,6 @@ Column buildListTiles(
                         .then((value) {
                       lessonProv.initLessonData(lessonProv.getLessonName);
                       denemeProv.initDenemeData(denemeProv.getLessonName);
-
-                      navigation.navigateToPageClear(
-                          path: NavigationConstants.homeView);
                     });
                   });
                 }, noFunction: () {
@@ -422,9 +432,11 @@ Column buildListTiles(
                   Future.delayed(Duration.zero, () {
                     Navigator.of(context, rootNavigator: true)
                         .pushNamed(NavigationConstants.homeView);
+                    denemeProv.setAlert = false;
                   });
                 }, noFunction: () {
                   Navigator.of(context, rootNavigator: true).pop();
+                  denemeProv.setAlert = false;
                 })
               : currentUserNullAlert(context, denemeProv);
         },
@@ -446,9 +458,10 @@ void currentUserNullAlert(BuildContext context, DenemeViewModel denemeProv) {
   });
 }
 
-Future<void> backUpFunction(
-    BuildContext context, DenemeViewModel denemeProv, User? currentUser) async {
-   await denemeProv.backUpAllTablesData(context, currentUser!.uid, denemeProv);
+Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
+    User? currentUser, loginProv) async {
+  await denemeProv.backUpAllTablesData(
+      context, currentUser!.uid, denemeProv, loginProv);
 }
 
 Future<void> restoreData(BuildContext context, DenemeLoginViewModel loginProv,
@@ -462,6 +475,8 @@ Future<void> restoreData(BuildContext context, DenemeLoginViewModel loginProv,
 
       if (denemePostData.isEmpty) {
         Future.delayed(Duration.zero, () {
+          navigation.navigateToPage(path: NavigationConstants.homeView);
+
           denemeProv.errorAlert(
               context, "Uyarı", "İnternet olduğundan emin olunuz!", denemeProv);
         });

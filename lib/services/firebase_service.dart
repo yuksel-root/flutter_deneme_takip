@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_print
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/models/deneme_post_model.dart';
@@ -36,24 +34,10 @@ class FirebaseService {
 
         return postModels;
       }
-    } on FirebaseAuthException catch (error) {
+    } catch (error) {
       {
         print("Fs getTable catch $error");
       }
-    }
-    return null;
-  }
-
-  Future<Map<String, List<dynamic>>?> isFromCache(String userId) async {
-    final usersCollection = FirebaseFirestore.instance.collection('users');
-    try {
-      await usersCollection.doc(userId).get().then((querySnapshot) {
-        if (!querySnapshot.metadata.isFromCache) {
-          return querySnapshot.data();
-        }
-      });
-    } catch (e) {
-      print("AAAAAAAAAAAA $e");
     }
     return null;
   }
@@ -134,12 +118,10 @@ class FirebaseService {
   Future<void> addUserToCollection(
       String name, String email, String userId) async {
     try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      final userDoc = await firestore.collection('users').doc(userId).get();
+      final userDoc = await _firestore!.collection('users').doc(userId).get();
 
       if (!userDoc.exists) {
-        await firestore.collection('users').doc(userId).set({
+        await _firestore!.collection('users').doc(userId).set({
           'denemeUser': {
             'name': name,
             'email': email,
@@ -156,12 +138,10 @@ class FirebaseService {
 
   Future<void> deleteUserFromCollection(String userId) async {
     try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      var userDoc = await firestore.collection('users').doc(userId).get();
+      final userDoc = await _firestore!.collection('users').doc(userId).get();
 
       if (userDoc.exists) {
-        await firestore.collection('users').doc(userId).delete();
+        await _firestore!.collection('users').doc(userId).delete();
         print('User successfully deleted.');
       } else {
         print('User not found. Unable to delete.');
