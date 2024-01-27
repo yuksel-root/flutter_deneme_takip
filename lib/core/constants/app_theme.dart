@@ -9,37 +9,53 @@ class AppTheme {
     return _instance!;
   }
 
-  AppTheme._init();
   AppTheme() {
     _themeData = ThemeData.light();
   }
-  late final ThemeData _themeData;
+  AppTheme._init();
+  late ThemeData _themeData;
+  static Size screenSize =
+      WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
+  double width = screenSize.width;
+  double height = screenSize.height;
 
   ThemeData get currentTheme => _themeData.copyWith(
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
+          iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: Colors.transparent,
           systemOverlayStyle: SystemUiOverlayStyle.light,
+          centerTitle: true,
+          titleTextStyle:
+              TextStyle(fontSize: (width * 0.01) * (height * 0.0025)),
+        ),
+        dialogTheme: DialogTheme(
+          backgroundColor: const Color(0xff1c0f45),
+          titleTextStyle: TextStyle(
+            fontSize: (width * 0.01) * (height * 0.0025),
+            fontFamily: "Greycliff CF Bold",
+          ),
+          contentTextStyle: TextStyle(
+            fontSize: (width * 0.01) * (height * 0.002),
+            fontFamily: "Greycliff CF Medium",
+          ),
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            backgroundColor: Colors.transparent,
-            unselectedItemColor: Colors.white,
-            selectedItemColor: Colors.greenAccent,
-            unselectedLabelStyle: TextStyle(
-                color: Colors.white,
-                fontSize: (const MediaQueryData().size.width * 0.01) *
-                    (const MediaQueryData().size.height * 0.005)),
-            selectedLabelStyle: TextStyle(
-              color: Colors.white,
-              fontSize: (const MediaQueryData().size.width * 0.01) *
-                  (const MediaQueryData().size.height * 0.005),
-            )),
+          backgroundColor: Colors.transparent,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.white,
+          unselectedLabelStyle:
+              TextStyle(fontSize: (width * 0.01) * (height * 0.002)),
+          selectedLabelStyle: TextStyle(
+            fontSize: (width * 0.01) * (height * 0.002),
+          ),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: ColorConstants.lust,
+            backgroundColor: ColorConstants.deepPurple,
+            animationDuration: const Duration(milliseconds: 100),
+            alignment: Alignment.center,
             shape: const StadiumBorder(),
-            padding: const EdgeInsets.symmetric(
-              vertical: 16,
-            ),
             elevation: 0,
             foregroundColor: Colors.white,
             textStyle: _themeData.textTheme.titleMedium?.copyWith(
@@ -48,10 +64,36 @@ class AppTheme {
             ),
           ),
         ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: ColorConstants.lust,
-          foregroundColor: Colors.white,
-          shape: CircleBorder(),
+        popupMenuTheme: const PopupMenuThemeData(
+          iconColor: Colors.white,
+          surfaceTintColor: Color(0xFF00008B),
+          color: Color(0xFF1C0F45),
+        ),
+        tabBarTheme: TabBarTheme(
+          indicatorColor: Colors.deepPurple,
+          labelColor: const Color(0xff8b7e66),
+          tabAlignment: TabAlignment.start,
+          unselectedLabelStyle:
+              TextStyle(fontSize: (width * 0.01) * (height * 0.0025)),
+          labelStyle: TextStyle(fontSize: (width * 0.01) * (height * 0.0025)),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          iconColor: ColorConstants.ionicBlue,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: width * 0.0025,
+            vertical: height * 0.0025,
+          ),
+          enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey)),
+          focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black)),
+          border: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black)),
+          labelStyle: TextStyle(
+              fontSize: (width * 0.01) * (height * 0.002),
+              color: Colors.deepPurple),
+          alignLabelWithHint: true,
+          hintStyle: TextStyle(fontSize: (width * 0.01) * (height * 0.002)),
         ),
         colorScheme: const ColorScheme.dark(
           onSecondary: Colors.white,
@@ -65,8 +107,7 @@ class AppTheme {
               ),
           titleMedium: _themeData.textTheme.titleMedium?.copyWith(
             color: Colors.white,
-            fontSize: (const MediaQueryData().size.width * 0.01) *
-                (const MediaQueryData().size.height * 0.005),
+            fontSize: (width * 0.01) * (height * 0.002),
           ),
           titleSmall: _themeData.textTheme.titleSmall?.copyWith(
             color: Colors.white,

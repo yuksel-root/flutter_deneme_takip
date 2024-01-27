@@ -21,45 +21,24 @@ class AlertView extends StatelessWidget {
     return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1), //add blur
         child: AlertDialog(
-          backgroundColor: const Color(0xff1c0f45),
           title: Center(
             child: Text(
               title,
               maxLines: 1,
-              style: TextStyle(
-                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
-                  fontFamily: "Greycliff CF Bold",
-                  color: Colors.white),
             ),
           ),
           content: Text(
             content,
             maxLines: 3,
-            style: TextStyle(
-                fontSize: context.dynamicW(0.01) * context.dynamicH(0.0045),
-                fontFamily: "Greycliff CF Medium",
-                color: const Color.fromARGB(255, 0, 255, 8)),
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
           actions: <Widget>[
             isOneButton
                 ? Center(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        shape: const StadiumBorder(),
-                        foregroundColor: Colors.white,
-                        animationDuration: const Duration(milliseconds: 200),
-                        alignment: Alignment.center,
-                      ),
-                      child: FittedBox(
+                      child: const FittedBox(
                         child: Text(
                           "Tamam",
-                          style: TextStyle(
-                              fontSize: context.dynamicW(0.01) *
-                                  context.dynamicH(0.004),
-                              fontFamily: "Greycliff CF Bold",
-                              color: Colors.white),
                         ),
                       ),
                       onPressed: () {
@@ -72,22 +51,9 @@ class AlertView extends StatelessWidget {
                       spacing: context.dynamicW(0.15),
                       children: [
                         ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            shape: const StadiumBorder(),
-                            foregroundColor: Colors.white,
-                            animationDuration:
-                                const Duration(milliseconds: 100),
-                            alignment: Alignment.center,
-                          ),
-                          child: FittedBox(
+                          child: const FittedBox(
                             child: Text(
                               "Evet",
-                              style: TextStyle(
-                                  fontSize: context.dynamicW(0.01) *
-                                      context.dynamicH(0.004),
-                                  fontFamily: "Greycliff CF Bold",
-                                  color: Colors.white),
                             ),
                           ),
                           onPressed: () {
@@ -95,22 +61,9 @@ class AlertView extends StatelessWidget {
                           },
                         ),
                         ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            shape: const StadiumBorder(),
-                            foregroundColor: Colors.white,
-                            animationDuration:
-                                const Duration(milliseconds: 100),
-                            alignment: Alignment.center,
-                          ),
-                          child: FittedBox(
+                          child: const FittedBox(
                             child: Text(
                               "Hayır",
-                              style: TextStyle(
-                                  fontSize: context.dynamicW(0.01) *
-                                      context.dynamicH(0.004),
-                                  fontFamily: "Greycliff CF Bold",
-                                  color: Colors.white),
                             ),
                           ),
                           onPressed: () {

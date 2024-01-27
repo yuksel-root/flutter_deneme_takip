@@ -62,9 +62,13 @@ Column buildListTileHeader(BuildContext context, DenemeLoginViewModel loginProv,
             const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
         widget: UserAccountsDrawerHeader(
           accountName: Text(currentUser?.displayName ?? "Çevrimdışı kullanıcı",
-              style: const TextStyle()),
-          accountEmail: Text(currentUser?.email ??
-              "Lütfen Yedekleme için google ile giriş yapınız."),
+              style: TextStyle(
+                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.004))),
+          accountEmail: Text(
+              currentUser?.email ??
+                  "Lütfen Yedekleme için google ile giriş yapınız.",
+              style: TextStyle(
+                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.0032))),
           currentAccountPicture: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

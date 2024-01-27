@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_deneme_takip/components/app_bar/custom_app_bar.dart';
 import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
+import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_route.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/provider_list.dart';
@@ -61,9 +63,15 @@ class MainApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: AppTheme().currentTheme,
       onGenerateRoute: NavigationRoute.instance.generateRoute,
       navigatorKey: NavigationService.instance.navigatorKey,
       home: Scaffold(
+        appBar: CustomAppBar(
+          appBar: AppBar(),
+          dynamicPreferredSize: 55,
+          gradients: ColorConstants.mainGradient,
+        ),
         body: Center(
           child: StreamBuilder<User?>(
             stream: AuthService().fAuth.authStateChanges(),

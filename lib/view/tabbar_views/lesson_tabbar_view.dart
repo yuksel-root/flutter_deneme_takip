@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/app_bar/custom_app_bar.dart';
 import 'package:flutter_deneme_takip/core/constants/app_data.dart';
+import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
@@ -61,60 +63,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
         });
         return Scaffold(
             drawer: const NavDrawer(),
-            appBar: AppBar(
-                iconTheme: const IconThemeData(color: Colors.white),
-                actions: <Widget>[
-                  // buildSignOutButton(context, loginProv),
-                  PopupMenuButton(
-                    itemBuilder: (BuildContext context) {
-                      return <PopupMenuEntry>[
-                        PopupMenuItem(
-                          value: 'option1',
-                          child: Text(
-                            'Veriyi Temizle',
-                            style: TextStyle(
-                                fontSize: context.dynamicW(0.01) *
-                                    context.dynamicH(0.004)),
-                          ),
-                        ),
-                      ];
-                    },
-                    onSelected: (value) async {
-                      if (value == 'option1') {
-                        _showDialog(
-                            context,
-                            "DİKKAT!",
-                            "Tüm verileri silmek istiyor musunuz?",
-                            lessonProv,
-                            denemeProv);
-                      }
-                      if (value == 'option2') {}
-                      if (value == 'option3') {}
-                    },
-                  ),
-                ],
-                title: Center(
-                    child: Text(
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: context.dynamicW(0.01) *
-                                context.dynamicH(0.005)),
-                        "Konularına Göre Yanlış Listesi")),
-                backgroundColor: const Color(0xff1c0f45),
-                bottom: TabBar(
-                  labelColor: Colors.green,
-                  indicatorColor: Colors.greenAccent,
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  labelStyle: TextStyle(
-                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
-                  ),
-                  unselectedLabelStyle: TextStyle(
-                    fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
-                  ),
-                  tabs: tab,
-                )),
+            appBar: buildAppBar(context, lessonProv, denemeProv),
             body: TabBarView(
               children: List.generate(AppData.lessonNameList.length, (index) {
                 return const LessonView();
@@ -124,7 +73,54 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
     );
   }
 
-  List<Widget> tab = AppData.lessonNameList.map((tabName) {
+  CustomAppBar buildAppBar(BuildContext context, LessonViewModel lessonProv,
+      DenemeViewModel denemeProv) {
+    return CustomAppBar(
+      appBar: AppBar(
+          actions: <Widget>[
+            PopupMenuButton(
+              itemBuilder: (BuildContext context) {
+                return <PopupMenuEntry>[
+                  PopupMenuItem(
+                    value: 'option1',
+                    child: Text(
+                      'Veriyi Temizle',
+                      style: TextStyle(
+                          fontSize:
+                              context.dynamicW(0.01) * context.dynamicH(0.004)),
+                    ),
+                  ),
+                ];
+              },
+              onSelected: (value) async {
+                if (value == 'option1') {
+                  _showDialog(
+                      context,
+                      "DİKKAT!",
+                      "Tüm verileri silmek istiyor musunuz?",
+                      lessonProv,
+                      denemeProv);
+                }
+                if (value == 'option2') {}
+                if (value == 'option3') {}
+              },
+            ),
+          ],
+          title: const Center(
+              child: Text(
+                  textAlign: TextAlign.center,
+                  "Konularına Göre Yanlış Listesi")),
+          bottom: TabBar(
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            tabs: tab,
+          )),
+      dynamicPreferredSize: context.dynamicH(0.1),
+      gradients: ColorConstants.appBarGradient,
+    );
+  }
+
+  final List<Widget> tab = AppData.lessonNameList.map((tabName) {
     return Tab(
       text: tabName,
     );

@@ -85,13 +85,7 @@ class InsertDenemeTextField extends StatelessWidget {
                                   context.dynamicH(0.005)),
                         ),
                         icon: buildContaierIconField(
-                            context, Icons.assignment_rounded, Colors.purple),
-                        enabledBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey)),
-                        focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black)),
-                        border: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black)),
+                            context, Icons.assignment_rounded),
                       ),
                     ),
                   ),
@@ -106,8 +100,7 @@ class InsertDenemeTextField extends StatelessWidget {
     );
   }
 
-  Container buildContaierIconField(
-      BuildContext context, IconData icon, Color iconColor) {
+  Container buildContaierIconField(BuildContext context, IconData icon) {
     return Container(
       height: context.dynamicW(0.05),
       width: context.dynamicW(0.05),
@@ -115,8 +108,9 @@ class InsertDenemeTextField extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
       ),
-      padding: EdgeInsets.all(context.dynamicW(0.0025)),
-      child: Icon(icon, color: iconColor),
+      child: Icon(
+        icon,
+      ),
     );
   }
 }

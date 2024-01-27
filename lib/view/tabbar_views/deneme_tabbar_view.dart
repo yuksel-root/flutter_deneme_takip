@@ -1,12 +1,13 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/app_bar/custom_app_bar.dart';
 import 'package:flutter_deneme_takip/core/constants/app_data.dart';
+import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/bottom_tabbar_views/deneme_view.dart';
 import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -38,7 +39,6 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     final tabbarNavProv =
         Provider.of<TabbarNavigationProvider>(context, listen: true);
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
-    final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
 
     return DefaultTabController(
       length: AppData.lessonNameList.length,
@@ -54,7 +54,6 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
 
             denemeProv.initDenemeData(
                 AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
-            //  print(denemeProv.listDeneme);
 
             denemeProv.setInitPng = AppData.lessonPngList[
                 AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]];
@@ -62,7 +61,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
         });
         return Scaffold(
           drawer: const NavDrawer(),
-          appBar: buildAppbar(denemeProv, loginProv),
+          appBar: buildAppBar(denemeProv, context),
           body: TabBarView(
             controller: tabController,
             physics: const NeverScrollableScrollPhysics(),
@@ -78,33 +77,20 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     );
   }
 
-  AppBar buildAppbar(
-      DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) {
-    return AppBar(
-      iconTheme: const IconThemeData(color: Colors.white),
-      actions: <Widget>[
-        buildPopupMenu(Icons.more_vert_sharp, denemeProv),
-      ],
-      title: Center(
-          child: Text(
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
-              '   Deneme App')),
-      backgroundColor: const Color(0xff1c0f45),
-      bottom: TabBar(
-          indicatorColor: Colors.greenAccent,
-          isScrollable: true,
-          labelStyle: TextStyle(
-            fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
-          ),
-          unselectedLabelStyle: TextStyle(
-            fontSize: context.dynamicW(0.01) * context.dynamicH(0.005),
-          ),
-          tabAlignment: TabAlignment.start,
-          tabs: tab),
-    );
+  CustomAppBar buildAppBar(DenemeViewModel denemeProv, BuildContext context) {
+    return CustomAppBar(
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
+          actions: <Widget>[
+            buildPopupMenu(Icons.more_vert_sharp, denemeProv),
+          ],
+          title: const Center(
+              child: Text(textAlign: TextAlign.center, 'Deneme App')),
+          bottom: TabBar(
+              isScrollable: true, tabAlignment: TabAlignment.start, tabs: tab),
+        ),
+        dynamicPreferredSize: context.dynamicH(0.1),
+        gradients: ColorConstants.appBarGradient);
   }
 
   PopupMenuButton<dynamic> buildPopupMenu(
@@ -133,7 +119,6 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
       );
     }
     return PopupMenuButton(
-      iconColor: Colors.white,
       icon: Icon(icon),
       itemBuilder: (BuildContext context) {
         return menuItems;
@@ -145,7 +130,6 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
           denemeProv.setIsTotal = true;
 
           denemeProv.setSelectedGroupSize = groupSizes[index];
-          //denemeProv.initTable(denemeProv.getLessonName); later fix
         }
       },
     );

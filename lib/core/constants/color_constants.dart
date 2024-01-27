@@ -178,6 +178,10 @@ class ColorConstants {
   static MaterialColor primaryColor = ionicBlue;
   static MaterialColor secondaryColor = lightRed;
 
+  static const Color deepPurple = Color(0xff6750a4);
+
+  static const Color darkStrongBlue = Color(0xff1c0f45);
+
   static const Color lightWhite = Color(0xFFECECEC);
 
   static const Color cynicalBlack = Color(0xFF171617);
@@ -202,4 +206,12 @@ class ColorConstants {
 
   static const Gradient mainGradient =
       LinearGradient(colors: [Colors.green, Colors.purpleAccent]);
+  static const Gradient appBarGradient = LinearGradient(
+      stops: [0.3, 0.6],
+      begin: Alignment.bottomLeft,
+      end: Alignment.topLeft,
+      colors: [
+        Color(0xFF00008B),
+        Color(0xFF1C0F45),
+      ]);
 }

@@ -29,7 +29,7 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
     super.initState();
   }
 
-  static List<Widget> currentScreen = const [
+  final List<Widget> currentScreen = const [
     LessonTabbarView(),
     DenemeTabbarView(),
     DenemeEditTabbarView(),
@@ -37,35 +37,22 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<BottomNavigationProvider>(context);
+    final bottomProv = Provider.of<BottomNavigationProvider>(context);
     final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
 
     final lessonProv = Provider.of<LessonViewModel>(context);
     final denemeProv = Provider.of<DenemeViewModel>(context);
     final editProv = Provider.of<EditDenemeViewModel>(context);
+
     return Scaffold(
-      body: currentScreen[provider.getCurrentIndex],
+      body: currentScreen[bottomProv.getCurrentIndex],
       bottomNavigationBar: GradientWidget(
         blendModes: BlendMode.color,
         gradient: ColorConstants.mainGradient,
         widget: BottomNavigationBar(
-          backgroundColor: Colors.transparent,
-          currentIndex: provider.getCurrentIndex,
-          unselectedItemColor: Colors.white,
-          selectedFontSize: 22,
-          unselectedFontSize: 22,
-          selectedItemColor: Colors.greenAccent,
-          unselectedLabelStyle: TextStyle(
-              color: Colors.white,
-              fontSize: (const MediaQueryData().size.width * 0.01) *
-                  (const MediaQueryData().size.height * 0.005)),
-          selectedLabelStyle: TextStyle(
-            color: Colors.white,
-            fontSize: (const MediaQueryData().size.width * 0.01) *
-                (const MediaQueryData().size.height * 0.005),
-          ),
+          currentIndex: bottomProv.getCurrentIndex,
           onTap: (index) {
-            provider.setCurrentIndex = index;
+            bottomProv.setCurrentIndex = index;
             denemeProv.setLessonName =
                 AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
             denemeProv.initDenemeData(

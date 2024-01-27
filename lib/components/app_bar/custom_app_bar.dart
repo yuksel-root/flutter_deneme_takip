@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final AppBar appBar;
-  final double? dynamicPreferredSize;
-  final Gradient? gradients;
+  final double dynamicPreferredSize;
+  final Gradient gradients;
   const CustomAppBar(
       {super.key,
       required this.appBar,
@@ -14,14 +13,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: context.mediaQuery.size.height,
       decoration: BoxDecoration(
-        gradient: gradients!,
+        backgroundBlendMode: BlendMode.srcIn,
+        gradient: gradients,
       ),
       child: appBar,
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(dynamicPreferredSize!);
+  Size get preferredSize => Size.fromHeight(dynamicPreferredSize);
 }

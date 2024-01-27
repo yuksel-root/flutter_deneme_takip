@@ -77,9 +77,6 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
               child: TextFormField(
                 controller: controller,
                 maxLines: 1,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
                 textAlign: TextAlign.center,
                 autofocus: true,
                 keyboardType: TextInputType.number,
@@ -100,7 +97,7 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
                   }
                 },
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
