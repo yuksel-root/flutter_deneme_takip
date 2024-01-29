@@ -22,8 +22,9 @@ class AppTheme {
       {required double dynamicHSize, required double dynamicWSize}) {
     WidgetsBinding widgetsBinding = WidgetsBinding.instance;
 
-    Size screenSize = widgetsBinding.platformDispatcher.displays.single.size /
-        widgetsBinding.platformDispatcher.displays.single.devicePixelRatio;
+    Size screenSize =
+        widgetsBinding.platformDispatcher.views.last.physicalSize /
+            widgetsBinding.platformDispatcher.views.last.devicePixelRatio;
 
     double calculatedFontSize =
         (screenSize.width * dynamicWSize) * (screenSize.height * dynamicHSize);
@@ -48,11 +49,13 @@ class AppTheme {
         dialogTheme: DialogTheme(
           backgroundColor: const Color(0xff1c0f45),
           titleTextStyle: TextStyle(
-            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+            fontSize:
+                calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
             fontFamily: "Greycliff CF Bold",
           ),
           contentTextStyle: TextStyle(
-            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+            fontSize:
+                calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
             fontFamily: "Greycliff CF Medium",
           ),
         ),
@@ -61,22 +64,28 @@ class AppTheme {
           type: BottomNavigationBarType.fixed,
           selectedItemColor: Colors.black,
           unselectedItemColor: Colors.white,
-          unselectedLabelStyle:
-              TextStyle(fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
+          unselectedLabelStyle: TextStyle(
+              fontSize:
+                  calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
           selectedLabelStyle: TextStyle(
-            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+            fontSize:
+                calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
           ),
         ),
         primaryTextTheme: TextTheme(
           headlineLarge: ThemeData.dark().textTheme.headlineLarge?.copyWith(
-              color: Colors.white, fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
+              color: Colors.white,
+              fontSize:
+                  calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
           titleMedium: _themeData.textTheme.titleMedium?.copyWith(
             color: Colors.white,
-            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+            fontSize:
+                calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
           ),
           titleSmall: _themeData.textTheme.titleSmall?.copyWith(
             color: Colors.white,
-            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+            fontSize:
+                calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -103,9 +112,12 @@ class AppTheme {
           indicatorColor: Colors.deepPurple,
           labelColor: const Color(0xff8b7e66),
           tabAlignment: TabAlignment.start,
-          unselectedLabelStyle:
-              TextStyle(fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
-          labelStyle: TextStyle(fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
+          unselectedLabelStyle: TextStyle(
+              fontSize:
+                  calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
+          labelStyle: TextStyle(
+              fontSize:
+                  calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
         ),
         inputDecorationTheme: InputDecorationTheme(
           iconColor: ColorConstants.ionicBlue,
@@ -120,10 +132,13 @@ class AppTheme {
           border: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.black)),
           labelStyle: TextStyle(
-              fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+              fontSize:
+                  calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
               color: Colors.deepPurple),
           alignLabelWithHint: true,
-          hintStyle: TextStyle(fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
+          hintStyle: TextStyle(
+              fontSize:
+                  calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
         ),
         colorScheme: const ColorScheme.dark(
           onSecondary: Colors.white,
@@ -133,14 +148,18 @@ class AppTheme {
         ),
         textTheme: _themeData.textTheme.copyWith(
           headlineLarge: ThemeData.dark().textTheme.headlineLarge?.copyWith(
-              color: Colors.white, fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
+              color: Colors.white,
+              fontSize:
+                  calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
           titleMedium: _themeData.textTheme.titleMedium?.copyWith(
             color: Colors.white,
-            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.015),
+            fontSize:
+                calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.015),
           ),
           titleSmall: _themeData.textTheme.titleSmall?.copyWith(
             color: Colors.white,
-            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+            fontSize:
+                calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
           ),
         ),
       );
