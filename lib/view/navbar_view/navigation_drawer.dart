@@ -9,6 +9,7 @@ import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
+import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
@@ -33,16 +34,20 @@ class NavDrawer extends StatelessWidget {
         gradient: LinearGradient(colors: [Colors.green, Colors.yellow]),
       ),
       width: context.mediaQuery.size.width / 1.5,
+      height: context.mediaQuery.size.height,
       child: Drawer(
         backgroundColor: Colors.transparent,
-        child: Column(
+        child: Flex(
+          direction: Axis.vertical,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-                flex: 10,
+                flex: 21,
                 child: buildListTileHeader(
                     context, loginProv, currentUser, denemeProv)),
             Expanded(
-                flex: 35,
+                flex: 50,
                 child: buildListTiles(currentUser, bottomProv, context,
                     denemeProv, loginProv, lessonProv)),
           ],
@@ -63,15 +68,12 @@ Column buildListTileHeader(BuildContext context, DenemeLoginViewModel loginProv,
         widget: UserAccountsDrawerHeader(
           accountName: Text(currentUser?.displayName ?? "Çevrimdışı kullanıcı",
               style: TextStyle(
-                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.004))),
+                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.005))),
           accountEmail: Text(
-              currentUser?.email ??
-                  "Lütfen Yedekleme için google ile giriş yapınız.",
+              currentUser?.email ?? "Lütfen Yedekleme için  giriş yapınız.",
               style: TextStyle(
-                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.0032))),
+                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.004))),
           currentAccountPicture: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                   child: ClipOval(
@@ -95,35 +97,52 @@ Widget buildProfileImage(
     print("Error loading image: $e");
   }
 
-  return FlutterLogo(size: context.dynamicW(0.4));
+  return FlutterLogo(size: context.dynamicW(0.13));
 }
 
-Widget drawerCardMenu(
+Expanded drawerCardMenu(BuildContext context,
     {required String title,
+    int? flex,
     required IconData icon,
     required Gradient textGradient,
     required Gradient cardGradient,
     required Gradient iconGradient,
     required Function onTap}) {
-  return Card(
-    elevation: 80,
-    child: Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        gradient: cardGradient,
-      ),
-      child: ListTile(
-        leading: GradientWidget(
-            blendModes: BlendMode.srcIn,
-            gradient: iconGradient,
-            widget: Icon(icon)),
-        title: GradientWidget(
-            blendModes: BlendMode.srcIn,
-            gradient: textGradient,
-            widget: Text(title)),
-        onTap: () {
-          onTap();
-        },
+  return Expanded(
+    flex: flex ?? 2,
+    child: Card(
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                gradient: cardGradient,
+              ),
+              child: ListTile(
+                leading: GradientWidget(
+                    blendModes: BlendMode.srcIn,
+                    gradient: iconGradient,
+                    widget: Icon(
+                      icon,
+                      size: context.dynamicW(0.01) * context.dynamicH(0.005),
+                    )),
+                title: GradientWidget(
+                    blendModes: BlendMode.srcIn,
+                    gradient: textGradient,
+                    widget: Text(
+                      title,
+                      style: TextStyle(
+                          fontSize:
+                              context.dynamicW(0.01) * context.dynamicH(0.005)),
+                    )),
+                onTap: () {
+                  onTap();
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     ),
   );
@@ -137,9 +156,12 @@ Column buildListTiles(
     DenemeLoginViewModel loginProv,
     LessonViewModel lessonProv) {
   return Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       currentUser == null
           ? drawerCardMenu(
+              context,
               iconGradient:
                   const LinearGradient(colors: [Colors.white, Colors.white]),
               cardGradient: const LinearGradient(
@@ -180,6 +202,7 @@ Column buildListTiles(
             )
           : const SizedBox(),
       drawerCardMenu(
+        context,
         iconGradient:
             const LinearGradient(colors: [Colors.white, Colors.white]),
         cardGradient:
@@ -196,6 +219,7 @@ Column buildListTiles(
         },
       ),
       drawerCardMenu(
+        context,
         iconGradient:
             const LinearGradient(colors: [Colors.white, Colors.white]),
         cardGradient:
@@ -211,6 +235,7 @@ Column buildListTiles(
         },
       ),
       drawerCardMenu(
+        context,
         iconGradient:
             const LinearGradient(colors: [Colors.white, Colors.white]),
         cardGradient:
@@ -226,6 +251,7 @@ Column buildListTiles(
         },
       ),
       drawerCardMenu(
+        context,
         iconGradient: currentUser != null
             ? const LinearGradient(colors: [Colors.white, Colors.white])
             : LinearGradient(
@@ -266,6 +292,7 @@ Column buildListTiles(
         },
       ),
       drawerCardMenu(
+        context,
         iconGradient: currentUser != null
             ? const LinearGradient(colors: [Colors.white, Colors.white])
             : LinearGradient(
@@ -300,10 +327,9 @@ Column buildListTiles(
                   content:
                       "Şu anki veriler yedeklenen veri ile değiştirilecektir",
                   yesFunction: () async {
-                  await DenemeDbProvider.db.clearDatabase();
                   Future.delayed(Duration.zero, () async {
-                    await restoreData(
-                            context, loginProv, denemeProv, lessonProv)
+                    await restoreData(context, loginProv, denemeProv,
+                            lessonProv, currentUser)
                         .then((value) {
                       lessonProv.initLessonData(lessonProv.getLessonName);
                       denemeProv.initDenemeData(denemeProv.getLessonName);
@@ -317,6 +343,7 @@ Column buildListTiles(
       ),
       currentUser != null
           ? drawerCardMenu(
+              context,
               iconGradient:
                   const LinearGradient(colors: [Colors.white, Colors.white]),
               cardGradient: const LinearGradient(
@@ -342,7 +369,7 @@ Column buildListTiles(
                 });
               },
             )
-          : drawerCardMenu(
+          : drawerCardMenu(context,
               title: "Uygulamadan Çıkış",
               icon: Icons.exit_to_app,
               textGradient:
@@ -352,19 +379,20 @@ Column buildListTiles(
               iconGradient:
                   const LinearGradient(colors: [Colors.white, Colors.white]),
               onTap: () {
-                denemeProv.showAlert(context,
-                    isOneButton: false,
-                    title: "Uyarı",
-                    content: "Uygulamadan Çıkmak istiyor musunuz?",
-                    yesFunction: () {
-                  exit(0);
-                }, noFunction: () {
-                  Navigator.of(context, rootNavigator: true)
-                      .pushNamed(NavigationConstants.homeView);
-                });
-              }),
+              denemeProv.showAlert(context,
+                  isOneButton: false,
+                  title: "Uyarı",
+                  content: "Uygulamadan Çıkmak istiyor musunuz?",
+                  yesFunction: () {
+                exit(0);
+              }, noFunction: () {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed(NavigationConstants.homeView);
+              });
+            }),
       const Divider(),
       drawerCardMenu(
+        context,
         iconGradient: const LinearGradient(colors: [Colors.red, Colors.red]),
         cardGradient:
             const LinearGradient(colors: [Colors.white, Colors.white]),
@@ -387,6 +415,7 @@ Column buildListTiles(
         },
       ),
       drawerCardMenu(
+        context,
         iconGradient: currentUser != null
             ? const LinearGradient(colors: [Colors.white, Colors.white])
             : LinearGradient(
@@ -468,16 +497,22 @@ Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
       context, currentUser!.uid, denemeProv, loginProv);
 }
 
-Future<void> restoreData(BuildContext context, DenemeLoginViewModel loginProv,
-    DenemeViewModel denemeProv, LessonViewModel lessonProv) async {
+Future<void> restoreData(
+    BuildContext context,
+    DenemeLoginViewModel loginProv,
+    DenemeViewModel denemeProv,
+    LessonViewModel lessonProv,
+    User? currentUser) async {
   try {
-    if (AuthService().fAuth.currentUser != null) {
-      String? userId = AuthService().fAuth.currentUser?.uid;
-
+    print("abb");
+    if (currentUser != null) {
+      final isOnline =
+          await FirebaseService().isFromCache(currentUser.uid) ?? {};
       final denemePostData =
-          await denemeProv.getTablesFromFirebase(userId!) ?? {};
+          await denemeProv.getTablesFromFirebase(currentUser.uid) ?? {};
+      print("abcccb");
 
-      if (denemePostData.isEmpty) {
+      if (isOnline.isEmpty) {
         Future.delayed(Duration.zero, () {
           navigation.navigateToPage(path: NavigationConstants.homeView);
 
@@ -485,10 +520,12 @@ Future<void> restoreData(BuildContext context, DenemeLoginViewModel loginProv,
               context, "Uyarı", "İnternet olduğundan emin olunuz!", denemeProv);
         });
       } else {
+        await DenemeDbProvider.db.clearDatabase();
         await denemeProv.sendFirebaseToSqlite(denemePostData);
+        navigation.navigateToPage(path: NavigationConstants.homeView);
       }
     }
   } catch (e) {
-    print("AAAAAAAAAAAAAAAAAAAAAAASSSSSSSSSSS $e");
+    print("restoreData catch drawer $e");
   }
 }

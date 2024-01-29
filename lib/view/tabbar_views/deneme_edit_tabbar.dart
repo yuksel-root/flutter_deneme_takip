@@ -106,7 +106,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                       Tab(text: "Vatandaşlık"),
                     ]),
               ),
-              dynamicPreferredSize: context.dynamicH(0.1),
+              dynamicPreferredSize: context.dynamicH(0.15),
               gradients: ColorConstants.appBarGradient,
             ),
             body: const TabBarView(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
+import 'package:flutter_deneme_takip/main.dart';
 
 class AppTheme {
   static AppTheme? _instance;
@@ -14,28 +15,44 @@ class AppTheme {
   }
   AppTheme._init();
   late ThemeData _themeData;
-  static Size screenSize =
-      WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
-  double width = screenSize.width;
-  double height = screenSize.height;
+  double width = MainApp.screenSize.width;
+  double height = MainApp.screenSize.height;
+
+  static double calculatedFontSize(
+      {required double dynamicHSize, required double dynamicWSize}) {
+    WidgetsBinding widgetsBinding = WidgetsBinding.instance;
+
+    Size screenSize = widgetsBinding.platformDispatcher.displays.single.size /
+        widgetsBinding.platformDispatcher.displays.single.devicePixelRatio;
+
+    double calculatedFontSize =
+        (screenSize.width * dynamicWSize) * (screenSize.height * dynamicHSize);
+
+    return calculatedFontSize;
+  }
 
   ThemeData get currentTheme => _themeData.copyWith(
+        navigationDrawerTheme: const NavigationDrawerThemeData(
+          backgroundColor: Colors.transparent,
+        ),
         appBarTheme: AppBarTheme(
           iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: Colors.transparent,
           systemOverlayStyle: SystemUiOverlayStyle.light,
           centerTitle: true,
-          titleTextStyle:
-              TextStyle(fontSize: (width * 0.01) * (height * 0.0025)),
+          titleTextStyle: TextStyle(
+              color: Colors.white,
+              fontSize: (calculatedFontSize(
+                  dynamicHSize: 0.005, dynamicWSize: 0.01))),
         ),
         dialogTheme: DialogTheme(
           backgroundColor: const Color(0xff1c0f45),
           titleTextStyle: TextStyle(
-            fontSize: (width * 0.01) * (height * 0.0025),
+            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
             fontFamily: "Greycliff CF Bold",
           ),
           contentTextStyle: TextStyle(
-            fontSize: (width * 0.01) * (height * 0.002),
+            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
             fontFamily: "Greycliff CF Medium",
           ),
         ),
@@ -45,9 +62,21 @@ class AppTheme {
           selectedItemColor: Colors.black,
           unselectedItemColor: Colors.white,
           unselectedLabelStyle:
-              TextStyle(fontSize: (width * 0.01) * (height * 0.002)),
+              TextStyle(fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
           selectedLabelStyle: TextStyle(
-            fontSize: (width * 0.01) * (height * 0.002),
+            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+          ),
+        ),
+        primaryTextTheme: TextTheme(
+          headlineLarge: ThemeData.dark().textTheme.headlineLarge?.copyWith(
+              color: Colors.white, fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
+          titleMedium: _themeData.textTheme.titleMedium?.copyWith(
+            color: Colors.white,
+            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+          ),
+          titleSmall: _themeData.textTheme.titleSmall?.copyWith(
+            color: Colors.white,
+            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -64,24 +93,25 @@ class AppTheme {
             ),
           ),
         ),
-        popupMenuTheme: const PopupMenuThemeData(
+        popupMenuTheme: PopupMenuThemeData(
           iconColor: Colors.white,
-          surfaceTintColor: Color(0xFF00008B),
-          color: Color(0xFF1C0F45),
+          surfaceTintColor: const Color(0xFF00008B),
+          iconSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
+          color: const Color(0xFF1C0F45),
         ),
         tabBarTheme: TabBarTheme(
           indicatorColor: Colors.deepPurple,
           labelColor: const Color(0xff8b7e66),
           tabAlignment: TabAlignment.start,
           unselectedLabelStyle:
-              TextStyle(fontSize: (width * 0.01) * (height * 0.0025)),
-          labelStyle: TextStyle(fontSize: (width * 0.01) * (height * 0.0025)),
+              TextStyle(fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
+          labelStyle: TextStyle(fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
         ),
         inputDecorationTheme: InputDecorationTheme(
           iconColor: ColorConstants.ionicBlue,
           contentPadding: EdgeInsets.symmetric(
-            horizontal: width * 0.0025,
-            vertical: height * 0.0025,
+            horizontal: width * 0.0005,
+            vertical: height * 0.0005,
           ),
           enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.grey)),
@@ -90,10 +120,10 @@ class AppTheme {
           border: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.black)),
           labelStyle: TextStyle(
-              fontSize: (width * 0.01) * (height * 0.002),
+              fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
               color: Colors.deepPurple),
           alignLabelWithHint: true,
-          hintStyle: TextStyle(fontSize: (width * 0.01) * (height * 0.002)),
+          hintStyle: TextStyle(fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
         ),
         colorScheme: const ColorScheme.dark(
           onSecondary: Colors.white,
@@ -103,14 +133,14 @@ class AppTheme {
         ),
         textTheme: _themeData.textTheme.copyWith(
           headlineLarge: ThemeData.dark().textTheme.headlineLarge?.copyWith(
-                color: Colors.white,
-              ),
+              color: Colors.white, fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
           titleMedium: _themeData.textTheme.titleMedium?.copyWith(
             color: Colors.white,
-            fontSize: (width * 0.01) * (height * 0.002),
+            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.015),
           ),
           titleSmall: _themeData.textTheme.titleSmall?.copyWith(
             color: Colors.white,
+            fontSize: calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
           ),
         ),
       );

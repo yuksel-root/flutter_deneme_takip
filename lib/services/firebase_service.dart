@@ -12,18 +12,19 @@ class FirebaseService {
 
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
-  Future<Map<String, List<dynamic>>?>? getPostDataByUser(String userId) async {
+  Future<Map<String, List<dynamic>>?> getPostDataByUser(String userId) async {
+    Map<String, List<dynamic>> postModels = {};
     try {
       final postData =
           await usersCollection.doc(userId).get().then((querySnapshot) {
         if (querySnapshot.exists && !querySnapshot.metadata.isFromCache) {
           return querySnapshot.data();
+        } else {
+          return null;
         }
-        return null;
       });
-
-      if (postData != null) {
-        Map<String, List<dynamic>>? postModels = {
+      if (postData!['denemePosts'] != null) {
+        postModels = {
           DenemeTables.historyTableName: postData['denemePosts']
               [DenemeTables.historyTableName]['tableData'],
           DenemeTables.geographyTable: postData['denemePosts']
@@ -39,7 +40,23 @@ class FirebaseService {
         print("Fs getTable catch $error");
       }
     }
-    return null;
+    return postModels;
+  }
+
+  Future<Map<String, dynamic>?> isFromCache(String userId) async {
+    Map<String, dynamic>? postData;
+    try {
+      postData = await usersCollection.doc(userId).get().then((querySnapshot) {
+        if (querySnapshot.exists && !querySnapshot.metadata.isFromCache) {
+          return querySnapshot.data();
+        } else {
+          return null;
+        }
+      });
+    } catch (e) {
+      print("isFrom cache catch $e");
+    }
+    return postData;
   }
 
   Future<void> removeUserPostData(String userId) async {

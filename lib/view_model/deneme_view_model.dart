@@ -447,8 +447,8 @@ class DenemeViewModel extends ChangeNotifier {
   Future<void> backUpAllTablesData(BuildContext context, String userId,
       DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) async {
     try {
-      final denemePostData =
-          await denemeProv.getTablesFromFirebase(userId) ?? {};
+      final denemePostData = await FirebaseService().isFromCache(userId) ?? {};
+
       if (denemePostData.isEmpty) {
         Future.delayed(Duration.zero, () {
           navigation.navigateToPage(path: NavigationConstants.homeView);

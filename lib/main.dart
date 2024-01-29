@@ -3,9 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_deneme_takip/components/app_bar/custom_app_bar.dart';
 import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
-import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
+import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_route.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/provider_list.dart';
@@ -17,9 +16,11 @@ import 'package:google_api_availability/google_api_availability.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
 Future<void> main() async {
   await _init();
-
+  sqfliteFfiInit();
   runApp(
     MultiProvider(
       providers: [...ApplicationProvider.instance.dependItems],
@@ -44,7 +45,7 @@ Future<void> _init() async {
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // await checkGooglePlayServices();
+
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
     SystemUiOverlay.bottom,
   ]);
@@ -56,22 +57,22 @@ Future<void> _init() async {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
+  static Size screenSize =
+      WidgetsBinding.instance.platformDispatcher.views.single.display.size;
   @override
   Widget build(BuildContext context) {
     //print("mainUser ${AuthService().fAuth.currentUser}");
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
-
+    print(
+        "app font ${AppTheme.calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)}"); //20.48pixel
+    print(
+        "context ${context.dynamicH(0.005) * context.dynamicW(0.01)}"); //20.48pixel
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme().currentTheme,
       onGenerateRoute: NavigationRoute.instance.generateRoute,
       navigatorKey: NavigationService.instance.navigatorKey,
       home: Scaffold(
-        appBar: CustomAppBar(
-          appBar: AppBar(),
-          dynamicPreferredSize: 55,
-          gradients: ColorConstants.mainGradient,
-        ),
         body: Center(
           child: StreamBuilder<User?>(
             stream: AuthService().fAuth.authStateChanges(),

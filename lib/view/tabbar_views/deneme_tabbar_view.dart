@@ -89,7 +89,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
           bottom: TabBar(
               isScrollable: true, tabAlignment: TabAlignment.start, tabs: tab),
         ),
-        dynamicPreferredSize: context.dynamicH(0.1),
+      dynamicPreferredSize: context.dynamicH(0.15),
         gradients: ColorConstants.appBarGradient);
   }
 

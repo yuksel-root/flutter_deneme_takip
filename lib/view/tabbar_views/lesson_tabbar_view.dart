@@ -115,7 +115,7 @@ class _LessonTabbarViewState extends State<LessonTabbarView>
             tabAlignment: TabAlignment.start,
             tabs: tab,
           )),
-      dynamicPreferredSize: context.dynamicH(0.1),
+      dynamicPreferredSize: context.dynamicH(0.15),
       gradients: ColorConstants.appBarGradient,
     );
   }
