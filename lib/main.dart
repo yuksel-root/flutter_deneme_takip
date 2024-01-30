@@ -64,7 +64,7 @@ class MainApp extends StatelessWidget {
     //print("mainUser ${AuthService().fAuth.currentUser}");
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
     print(
-        "app font ${AppTheme.calculatedFontSize(dynamicHSize: 0.005, dynamicWSize: 0.01)}"); //20.48pixel
+        "app font ${AppTheme.dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01)}"); //20.48pixel
     print(
         "context ${context.dynamicH(0.005) * context.dynamicW(0.01)}"); //20.48pixel
     return MaterialApp(

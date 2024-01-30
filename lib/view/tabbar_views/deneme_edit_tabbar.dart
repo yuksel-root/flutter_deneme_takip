@@ -94,7 +94,6 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                     onSelected: (value) async {},
                   ),
                 ],
-                iconTheme: const IconThemeData(color: Colors.white),
                 title: const Center(child: Text('Deneme Verisi Ekle')),
                 bottom: const TabBar(
                     isScrollable: true,

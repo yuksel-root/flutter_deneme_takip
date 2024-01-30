@@ -205,7 +205,7 @@ class ColorConstants {
   };
 
   static const Gradient mainGradient =
-      LinearGradient(colors: [Colors.green, Colors.purpleAccent]);
+      LinearGradient(colors: [Color(0xff4E4E84), Color(0xffA1636E)]);
   static const Gradient appBarGradient = LinearGradient(
       stops: [0.3, 0.6],
       begin: Alignment.bottomLeft,

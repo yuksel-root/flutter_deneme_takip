@@ -7,7 +7,6 @@ import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart
 import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
-
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
@@ -22,7 +21,7 @@ enum DenemeState {
 
 enum FirebaseState {
   empty,
-  start,
+  loading,
   completed,
   catchError,
 }
@@ -59,7 +58,7 @@ class DenemeViewModel extends ChangeNotifier {
         AppData.tableNames[_lessonName] ?? AppData.tableNames['Tarih'];
 
     initDenemeData(_lessonName!);
-    initFakeData(_lessonName!);
+    initFakeData();
 
     _initPng =
         AppData.lessonPngList[_lessonName] ?? AppData.lessonPngList['Tarih'];
@@ -267,12 +266,10 @@ class DenemeViewModel extends ChangeNotifier {
     setDenemestate = DenemeState.completed;
   }
 
-  void initFakeData(String? lessonName) async {
+  void initFakeData() async {
     setDenemestate = DenemeState.loading;
-    _lessonTableName =
-        AppData.tableNames[lessonName] ?? DenemeTables.historyTableName;
 
-    fakeData = await DenemeDbProvider.db.getAllDataByTable(_lessonTableName!);
+    fakeData = [];
 
     setDenemestate = DenemeState.completed;
   }
@@ -458,14 +455,18 @@ class DenemeViewModel extends ChangeNotifier {
         });
       } else {
         await FirebaseService().sendMultiplePostsToFirebase(userId);
+
         Future.delayed(Duration.zero, () {
           navigation.navigateToPage(path: NavigationConstants.homeView);
+
           denemeProv.errorAlert(
               context, "Bilgi", "Veriler başarıyla yedeklendi!", denemeProv);
         });
+        setFirebaseState = FirebaseState.completed;
       }
     } catch (e) {
       print("catch denemeVM  CATCH ERROR ${e.toString()}");
+      setFirebaseState = FirebaseState.catchError;
     }
   }
 
@@ -509,21 +510,21 @@ class DenemeViewModel extends ChangeNotifier {
       content: content,
       isOneButton: true,
       noFunction: () => {
-        denemeProv.setAlert = false,
         Future.delayed(Duration.zero, () {
           Navigator.of(context, rootNavigator: true)
               .pushNamed(NavigationConstants.homeView);
-        })
+        }),
+        denemeProv.setAlert = false,
       },
       yesFunction: () async => {
-        denemeProv.setAlert = false,
         Future.delayed(Duration.zero, () {
           Navigator.of(context, rootNavigator: true)
               .pushNamed(NavigationConstants.homeView);
-        })
+        }),
+        denemeProv.setAlert = false
       },
     );
-
+    print("err alert ${denemeProv.getIsAlertOpen}");
     if (denemeProv.getIsAlertOpen == false) {
       denemeProv.setAlert = true;
       await showDialog(

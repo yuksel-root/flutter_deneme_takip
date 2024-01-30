@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
@@ -127,10 +128,10 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
               ElevatedButton(
                 child: const Text('Onayla'),
                 onPressed: () {
-                  denemeProv.setAlert = false;
                   saveData(context, editProv, denemeProv).then((value) {
                     denemeProv.initDenemeData(denemeProv.getLessonName);
                   });
+                  denemeProv.setAlert = true;
                 },
               )
             ],
@@ -146,7 +147,11 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
         editProv.getIsDiffZero &&
         editProv.getIsNumberBig == false) {
       editProv.getIsLoading
-          ? editProv.buildLoadingAlert(context)
+          ? showLoadingAlertDialog(
+              context,
+              title: 'Güncelleniyor...',
+              alert: !editProv.getIsLoading,
+            )
           : const SizedBox();
 
       await Future.delayed(const Duration(milliseconds: 50), () {

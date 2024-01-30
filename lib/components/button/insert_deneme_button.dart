@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
@@ -21,7 +22,11 @@ class InsertDenemeButton extends StatelessWidget {
         if (editProv.getFormKey.currentState?.validate() == true &&
             editProv.getIsDiffZero == true) {
           editProv.getIsLoading
-              ? editProv.buildLoadingAlert(context)
+              ? showLoadingAlertDialog(
+                  context,
+                  title: 'Kaydediliyor...',
+                  alert: editProv.getIsAlertOpen,
+                )
               : const SizedBox();
 
           await Future.delayed(const Duration(milliseconds: 50), () {
