@@ -11,7 +11,6 @@ import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
-import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
@@ -34,8 +33,10 @@ class NavDrawer extends StatelessWidget {
     //print(currentUser);
 
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [Colors.green, Colors.yellow]),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.grey.shade400, Colors.grey.shade500],
+        ),
       ),
       width: context.mediaQuery.size.width / 1.5,
       height: context.mediaQuery.size.height,
@@ -118,9 +119,9 @@ Expanded drawerCardMenu(BuildContext context,
         children: [
           Expanded(
             child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                gradient: cardGradient,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                gradient: ColorConstants.mainGradient,
               ),
               child: ListTile(
                 leading: GradientWidget(
@@ -283,7 +284,7 @@ Column buildListTiles(
         title: "Verileri Yedekle",
         icon: Icons.replay_circle_filled,
         onTap: () {
-          denemeProv.setFirebaseState = FirebaseState.loading;
+          denemeProv.setAlert = false;
           backUpFunction(context, denemeProv, currentUser, loginProv);
         },
       ),
@@ -316,27 +317,9 @@ Column buildListTiles(
         title: "Verileri Yükle",
         icon: Icons.upload,
         onTap: () {
-          currentUser != null
-              ? denemeProv.showAlert(context,
-                  isOneButton: false,
-                  title: "Uyarı",
-                  content:
-                      "Şu anki veriler yedeklenen veri ile değiştirilecektir",
-                  yesFunction: () async {
-                  Future.delayed(Duration.zero, () async {
-                    await restoreData(context, loginProv, denemeProv,
-                            lessonProv, currentUser)
-                        .then((value) {
-                      lessonProv.initLessonData(lessonProv.getLessonName);
-                      denemeProv.initDenemeData(denemeProv.getLessonName);
-                      Navigator.of(context, rootNavigator: true)
-                          .pushNamed(NavigationConstants.homeView);
-                    });
-                  });
-                }, noFunction: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                })
-              : currentUserNullAlert(context, denemeProv);
+          denemeProv.setAlert = false;
+          restoreDataFunction(
+              context, loginProv, denemeProv, lessonProv, currentUser);
         },
       ),
       currentUser != null
@@ -496,14 +479,13 @@ Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
           isOneButton: false,
           title: "Uyarı",
           content: "Şu anki veriler yedeklensin mi? ", yesFunction: () async {
+          denemeProv.setFirebaseState = FirebaseState.loading;
           denemeProv.getFirebaseState == FirebaseState.loading
               ? showLoadingAlertDialog(
                   context,
                   title: 'Yedekleniyor...',
                   alert: denemeProv.getIsAlertOpen,
-                ).then((value) => Future.delayed(Duration.zero, () {
-                    denemeProv.setAlert = true;
-                  }))
+                )
               : const SizedBox();
           Future.delayed(Duration.zero, () async {
             await denemeProv
@@ -520,29 +502,33 @@ Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
       : currentUserNullAlert(context, denemeProv);
 }
 
-Future<void> restoreData(
+Future<void> restoreDataFunction(
     BuildContext context,
     DenemeLoginViewModel loginProv,
     DenemeViewModel denemeProv,
     LessonViewModel lessonProv,
     User? currentUser) async {
   try {
-    if (currentUser != null) {
-      final isOnline =
-          await FirebaseService().isFromCache(currentUser.uid) ?? {};
-      final denemePostData =
-          await denemeProv.getTablesFromFirebase(currentUser.uid) ?? {};
-
-      if (isOnline.isEmpty) {
-        Future.delayed(Duration.zero, () {
-          denemeProv.errorAlert(
-              context, "Uyarı", "İnternet olduğundan emin olunuz!", denemeProv);
-        });
-      } else {
-        await DenemeDbProvider.db.clearDatabase();
-        await denemeProv.sendFirebaseToSqlite(denemePostData);
-      }
-    }
+    currentUser != null
+        ? denemeProv.showAlert(context,
+            isOneButton: false,
+            title: "Uyarı",
+            content: "Şu anki veriler yedeklenen veri ile değiştirilecektir",
+            yesFunction: () async {
+            denemeProv.setFirebaseState = FirebaseState.loading;
+            denemeProv.getFirebaseState == FirebaseState.loading
+                ? showLoadingAlertDialog(
+                    context,
+                    title: 'Yükleniyor...',
+                    alert: denemeProv.getIsAlertOpen,
+                  )
+                : const SizedBox();
+            await denemeProv.restoreData(
+                context, currentUser.uid, denemeProv, lessonProv);
+          }, noFunction: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          })
+        : currentUserNullAlert(context, denemeProv);
   } catch (e) {
     print("restoreData catch drawer $e");
   }

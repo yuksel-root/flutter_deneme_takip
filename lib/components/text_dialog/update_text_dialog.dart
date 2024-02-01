@@ -17,6 +17,7 @@ Future<T?> showTextDialog<T>(
 }) =>
     alert == false
         ? showDialog<T>(
+            barrierDismissible: false,
             context: context,
             builder: (context) => TextDialogWidget(
               title: title,
@@ -131,7 +132,7 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
                   saveData(context, editProv, denemeProv).then((value) {
                     denemeProv.initDenemeData(denemeProv.getLessonName);
                   });
-                  denemeProv.setAlert = true;
+                  denemeProv.setAlert = false;
                 },
               )
             ],

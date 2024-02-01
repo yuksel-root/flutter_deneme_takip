@@ -11,6 +11,7 @@ import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 
 enum DenemeState {
   empty,
@@ -453,6 +454,7 @@ class DenemeViewModel extends ChangeNotifier {
           denemeProv.errorAlert(context, "Uyarı",
               "İnternet bağlantısı olduğuna emin olunuz!", denemeProv);
         });
+        denemeProv.setAlert = false;
       } else {
         await FirebaseService().sendMultiplePostsToFirebase(userId);
 
@@ -461,11 +463,44 @@ class DenemeViewModel extends ChangeNotifier {
 
           denemeProv.errorAlert(
               context, "Bilgi", "Veriler başarıyla yedeklendi!", denemeProv);
+          denemeProv.setAlert = false;
         });
         setFirebaseState = FirebaseState.completed;
       }
     } catch (e) {
       print("catch denemeVM  CATCH ERROR ${e.toString()}");
+      setFirebaseState = FirebaseState.catchError;
+    }
+  }
+
+  Future<void> restoreData(BuildContext context, String userId,
+      DenemeViewModel denemeProv, LessonViewModel lessonProv) async {
+    try {
+      final isOnline = await FirebaseService().isFromCache(userId) ?? {};
+      final denemePostData =
+          await denemeProv.getTablesFromFirebase(userId) ?? {};
+
+      if (isOnline.isEmpty) {
+        Future.delayed(Duration.zero, () {
+          denemeProv.setAlert = false;
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed(NavigationConstants.homeView);
+          denemeProv.errorAlert(
+              context, "Uyarı", "İnternet olduğundan emin olunuz!", denemeProv);
+          denemeProv.setAlert = false;
+        });
+      } else {
+        await DenemeDbProvider.db.clearDatabase();
+        await denemeProv.sendFirebaseToSqlite(denemePostData).then((value) {
+          lessonProv.initLessonData(lessonProv.getLessonName);
+          denemeProv.initDenemeData(denemeProv.getLessonName);
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed(NavigationConstants.homeView);
+          setFirebaseState = FirebaseState.completed;
+        });
+      }
+    } catch (e) {
+      print(e);
       setFirebaseState = FirebaseState.catchError;
     }
   }
@@ -495,6 +530,7 @@ class DenemeViewModel extends ChangeNotifier {
           denemeProv.errorAlert(context, "Uyarı",
               "İnternet bağlantısı olduğuna emin olunuz!", denemeProv);
         });
+        denemeProv.setAlert = false;
       } else {
         await FirebaseService().removeUserPostData(userId);
       }

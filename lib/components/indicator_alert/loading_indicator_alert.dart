@@ -31,7 +31,7 @@ class LoadingAlert extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       child: Center(
         child: AlertDialog(
-            backgroundColor: Colors.white,
+            backgroundColor: Color(0xff),
             alignment: Alignment.center,
             actions: [
               Center(

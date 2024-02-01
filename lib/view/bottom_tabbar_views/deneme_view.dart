@@ -180,9 +180,23 @@ class DenemeView extends StatelessWidget {
                   ),
                 ),
                 child: InkWell(
+                  onDoubleTap: denemeProv.getIsTotal != true
+                      ? () async {
+                          await Future.delayed(const Duration(milliseconds: 0),
+                              () {
+                            denemeProv.removeAlert(
+                              context,
+                              'UYARI',
+                              '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                              denemeProv,
+                              cell,
+                            );
+                          });
+                        }
+                      : () {},
                   onLongPress: denemeProv.getIsTotal != true
                       ? () async {
-                          await Future.delayed(const Duration(milliseconds: 50),
+                          await Future.delayed(const Duration(milliseconds: 0),
                               () {
                             denemeProv.removeAlert(
                               context,
@@ -251,6 +265,7 @@ class DenemeView extends StatelessWidget {
                                 alert: denemeProv.getIsAlertOpen)
                             .then((value) {
                             denemeProv.initDenemeData(denemeProv.getLessonName);
+                            denemeProv.setIsTotal = false;
                           })
                         : () {};
                   },
@@ -301,9 +316,23 @@ class DenemeView extends StatelessWidget {
                   ),
                 ),
                 child: InkWell(
+                  onDoubleTap: denemeProv.getIsTotal != true
+                      ? () async {
+                          await Future.delayed(const Duration(milliseconds: 0),
+                              () {
+                            denemeProv.removeAlert(
+                              context,
+                              'UYARI',
+                              '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                              denemeProv,
+                              cell,
+                            );
+                          });
+                        }
+                      : () {},
                   onLongPress: () async {
                     denemeProv.getIsTotal == false
-                        ? await Future.delayed(const Duration(milliseconds: 50),
+                        ? await Future.delayed(const Duration(milliseconds: 0),
                             () {
                             denemeProv.removeAlert(
                               context,
@@ -370,6 +399,7 @@ class DenemeView extends StatelessWidget {
                                 alert: denemeProv.getIsAlertOpen)
                             .then((value) {
                             denemeProv.initDenemeData(denemeProv.getLessonName);
+                            denemeProv.setIsTotal = false;
                           })
                         : () {};
                   },
