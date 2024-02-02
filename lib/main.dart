@@ -12,33 +12,17 @@ import 'package:flutter_deneme_takip/firebase_options.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
-import 'package:google_api_availability/google_api_availability.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
 Future<void> main() async {
   await _init();
-  sqfliteFfiInit();
   runApp(
     MultiProvider(
       providers: [...ApplicationProvider.instance.dependItems],
       child: const MainApp(),
     ),
   );
-}
-
-Future<void> checkGooglePlayServices() async {
-  final availability = await GoogleApiAvailability.instance
-      .checkGooglePlayServicesAvailability();
-
-  if (availability == GooglePlayServicesAvailability.success) {
-    print('------------Google Play Services başarılı -----------');
-  } else {
-    print(
-        '----------Google Play Services mevcut değil veya uygun değil---------');
-  }
 }
 
 Future<void> _init() async {

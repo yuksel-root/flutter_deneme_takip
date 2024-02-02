@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'dart:async';
 
-Future<T?> showLoadingAlertDialog<T>(
+Future<Object?> showLoadingAlertDialog<T>(
   BuildContext context, {
   required String title,
   required bool alert,
-}) =>
+}) async =>
     alert == false
-        ? showDialog<T>(
+        ? await showDialog<T>(
+            barrierDismissible: false,
             context: context,
             builder: (context) => LoadingAlert(
               title: title,
               alert: alert,
             ),
           )
-        : Future.delayed(Duration.zero, () {
-            return null;
+        : await Future.delayed(Duration.zero, () {
+            return const SizedBox();
           });
 
 class LoadingAlert extends StatelessWidget {
@@ -31,8 +32,12 @@ class LoadingAlert extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       child: Center(
         child: AlertDialog(
-            backgroundColor: Color(0xff),
+            backgroundColor: Colors.transparent,
             alignment: Alignment.center,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
             actions: [
               Center(
                 child: Column(
@@ -51,7 +56,7 @@ class LoadingAlert extends StatelessWidget {
                             value: null,
                             backgroundColor: Colors.blueGrey,
                             valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.green),
+                                AlwaysStoppedAnimation<Color>(Colors.white12),
                             color: Colors.green,
                           ),
                         ),
@@ -61,7 +66,7 @@ class LoadingAlert extends StatelessWidget {
                     Center(
                       child: Text(
                         style: TextStyle(
-                            color: const Color(0xff1c0f45),
+                            color: Colors.white,
                             fontSize: context.dynamicW(0.01) *
                                 context.dynamicH(0.005)),
                         textAlign: TextAlign.center,

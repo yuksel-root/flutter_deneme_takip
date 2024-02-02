@@ -479,15 +479,20 @@ Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
           isOneButton: false,
           title: "Uyarı",
           content: "Şu anki veriler yedeklensin mi? ", yesFunction: () async {
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed(NavigationConstants.homeView);
           denemeProv.setFirebaseState = FirebaseState.loading;
-          denemeProv.getFirebaseState == FirebaseState.loading
+          context.read<DenemeViewModel>().getFirebaseState ==
+                  FirebaseState.loading
               ? showLoadingAlertDialog(
                   context,
                   title: 'Yedekleniyor...',
-                  alert: denemeProv.getIsAlertOpen,
+                  alert: denemeProv.getFirebaseState == FirebaseState.loading
+                      ? false
+                      : true,
                 )
               : const SizedBox();
-          Future.delayed(Duration.zero, () async {
+          Future.delayed(const Duration(milliseconds: 100), () async {
             await denemeProv
                 .backUpAllTablesData(
                     context, currentUser.uid, denemeProv, loginProv)
@@ -515,12 +520,16 @@ Future<void> restoreDataFunction(
             title: "Uyarı",
             content: "Şu anki veriler yedeklenen veri ile değiştirilecektir",
             yesFunction: () async {
+            Navigator.of(context, rootNavigator: true)
+                .pushNamed(NavigationConstants.homeView);
             denemeProv.setFirebaseState = FirebaseState.loading;
             denemeProv.getFirebaseState == FirebaseState.loading
                 ? showLoadingAlertDialog(
                     context,
                     title: 'Yükleniyor...',
-                    alert: denemeProv.getIsAlertOpen,
+                    alert: denemeProv.getFirebaseState == FirebaseState.loading
+                        ? false
+                        : true,
                   )
                 : const SizedBox();
             await denemeProv.restoreData(

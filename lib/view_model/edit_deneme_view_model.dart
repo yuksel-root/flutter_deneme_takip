@@ -169,6 +169,7 @@ class EditDenemeViewModel extends ChangeNotifier {
       {required bool isUpdate,
       int? updatingDenemeId,
       int? cellId,
+      String? lessonName,
       String? updateVal}) async {
     DateTime now = DateTime.now();
     // DateTime manualDate = DateTime(2024, 4, 14, 20, 23, 23);
@@ -178,9 +179,9 @@ class EditDenemeViewModel extends ChangeNotifier {
 
     _subjectSavedList = getSubjectList;
     List<int> existingIds = await DenemeDbProvider.db
-        .getAllDenemeIds(AppData.tableNames[_lessonName]!);
+        .getAllDenemeIds(AppData.tableNames[getLessonName]!);
     int latestId = await DenemeDbProvider.db
-            .getFindLastId(AppData.tableNames[_lessonName]!, "denemeId") ??
+            .getFindLastId(AppData.tableNames[getLessonName]!, "denemeId") ??
         0;
 
     //printFunct("falseCounters", _falseCountsIntegers);
@@ -206,6 +207,8 @@ class EditDenemeViewModel extends ChangeNotifier {
         });
       }
     } else {
+      _subjectSavedList = AppData.subjectListNames[lessonName ?? 'Tarih']!;
+
       DenemeModel updateDenemeModel = DenemeModel(
         denemeId: updatingDenemeId,
         subjectId: cellId! + 1,
@@ -213,7 +216,7 @@ class EditDenemeViewModel extends ChangeNotifier {
         falseCount: int.parse(updateVal!),
         denemeDate: _date,
       );
-      await updateDeneme(updateDenemeModel);
+      await updateDeneme(updateDenemeModel, lessonName ?? 'Tarih');
       Future.delayed(const Duration(milliseconds: 50), () async {
         setLoading = false;
         _navigation
@@ -222,10 +225,10 @@ class EditDenemeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateDeneme(DenemeModel deneme) async {
+  Future<void> updateDeneme(DenemeModel deneme, String lessonName) async {
     try {
       await DenemeDbProvider.db
-          .updateDeneme(deneme, AppData.tableNames[_lessonName]!);
+          .updateDeneme(deneme, AppData.tableNames[lessonName]!);
     } catch (e) {
       printFunct("updateDeneme error", e);
     }
@@ -235,7 +238,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   Future<void> saveDeneme(DenemeModel deneme) async {
     try {
       await DenemeDbProvider.db
-          .insertDeneme(deneme, AppData.tableNames[_lessonName]!);
+          .insertDeneme(deneme, AppData.tableNames[getLessonName]!);
     } catch (e) {
       printFunct("saveDeneme error", e);
     }

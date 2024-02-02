@@ -158,11 +158,13 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
       await Future.delayed(const Duration(milliseconds: 50), () {
         editProv.setLoading = false;
       });
+
       await editProv.saveButton(
         isUpdate: true,
         updatingDenemeId: widget.rowIndex,
         cellId: widget.index,
         updateVal: controller.text,
+        lessonName: denemeProv.getLessonName,
       );
     } else if (editProv.getIsDiffZero == false) {
       await Future.delayed(const Duration(milliseconds: 50), () {

@@ -459,13 +459,11 @@ class DenemeViewModel extends ChangeNotifier {
         await FirebaseService().sendMultiplePostsToFirebase(userId);
 
         Future.delayed(Duration.zero, () {
-          navigation.navigateToPage(path: NavigationConstants.homeView);
-
+          denemeProv.setFirebaseState = FirebaseState.completed;
           denemeProv.errorAlert(
               context, "Bilgi", "Veriler başarıyla yedeklendi!", denemeProv);
           denemeProv.setAlert = false;
         });
-        setFirebaseState = FirebaseState.completed;
       }
     } catch (e) {
       print("catch denemeVM  CATCH ERROR ${e.toString()}");

@@ -29,10 +29,9 @@ class InsertDenemeButton extends StatelessWidget {
                 )
               : const SizedBox();
 
-          await Future.delayed(const Duration(milliseconds: 50), () {
-            editProv.setLoading = false;
+          await Future.delayed(const Duration(milliseconds: 100), () {
+            editProv.saveButton(isUpdate: false);
           });
-          editProv.saveButton(isUpdate: false);
         } else if (editProv.getIsDiffZero == false) {
           Future.delayed(const Duration(milliseconds: 50), () {
             editProv.errorAlert(
