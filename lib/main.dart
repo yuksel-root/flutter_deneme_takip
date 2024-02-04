@@ -11,6 +11,7 @@ import 'package:flutter_deneme_takip/core/notifier/provider_list.dart';
 import 'package:flutter_deneme_takip/firebase_options.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
+import 'package:flutter_deneme_takip/view_model/app_life_cycle_manager.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -45,35 +46,36 @@ class MainApp extends StatelessWidget {
       WidgetsBinding.instance.platformDispatcher.views.single.display.size;
   @override
   Widget build(BuildContext context) {
-    //print("mainUser ${AuthService().fAuth.currentUser}");
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
     print(
         "app font ${AppTheme.dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01)}"); //20.48pixel
     print(
         "context ${context.dynamicH(0.005) * context.dynamicW(0.01)}"); //20.48pixel
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme().currentTheme,
-      onGenerateRoute: NavigationRoute.instance.generateRoute,
-      navigatorKey: NavigationService.instance.navigatorKey,
-      home: Scaffold(
-        body: Center(
-          child: StreamBuilder<User?>(
-            stream: AuthService().fAuth.authStateChanges(),
-            builder: (BuildContext context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                User? user = snapshot.data;
+    return AppLifeCycleManager(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme().currentTheme,
+        onGenerateRoute: NavigationRoute.instance.generateRoute,
+        navigatorKey: NavigationService.instance.navigatorKey,
+        home: Scaffold(
+          body: Center(
+            child: StreamBuilder<User?>(
+              stream: AuthService().fAuth.authStateChanges(),
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.active) {
+                  User? user = snapshot.data;
 
-                if (user == null) {
-                  loginProv.setCurrentUser = null;
-                  return const BottomTabbarView();
-                } else {
-                  loginProv.setCurrentUser = user;
-                  return const BottomTabbarView();
+                  if (user == null) {
+                    loginProv.setCurrentUser = null;
+                    return const BottomTabbarView();
+                  } else {
+                    loginProv.setCurrentUser = user;
+                    return const BottomTabbarView();
+                  }
                 }
-              }
-              return const BottomTabbarView();
-            },
+                return const BottomTabbarView();
+              },
+            ),
           ),
         ),
       ),
