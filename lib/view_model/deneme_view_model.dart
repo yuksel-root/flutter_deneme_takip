@@ -145,11 +145,12 @@ class DenemeViewModel extends ChangeNotifier {
 
   void insertRowData(List<Map<String, dynamic>> denemelerData) {
     rowData.clear();
+    _listFalseCounts.clear();
 
     falseCountsByDenemeId(denemelerData).forEach((denemeId, falseCounts) {
       List<dynamic> arr = List.generate(columnData.length, (index) => 0);
 
-      for (int j = 0; j < (falseCounts.length); j++) {
+      for (int j = 0; j < (columnData.length); j++) {
         arr[0] = "Deneme$denemeId";
         arr[j] = falseCounts[j];
       }
@@ -220,7 +221,7 @@ class DenemeViewModel extends ChangeNotifier {
   List<dynamic> sumAllLists(List<List<int>> inputList) {
     if (inputList.isEmpty) return [];
 
-    List<dynamic> sumList = List.filled(columnData.length, 0);
+    List<dynamic> sumList = List.from(List.filled(columnData.length, 0));
 
     for (int i = 0; i < inputList.length; i++) {
       for (int j = 0; j < inputList[i].length; j++) {

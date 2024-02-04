@@ -63,7 +63,7 @@ class DenemeDbProvider {
       //   conflictAlgorithm: ConflictAlgorithm.replace);
 
       await db.rawInsert(
-        'INSERT INTO $lessonTable (subjectId, denemeId, falseCount, denemeDate, subjectName) VALUES (?, ?, ?, ?, ?)',
+        'INSERT or REPLACE INTO $lessonTable (subjectId, denemeId, falseCount, denemeDate, subjectName) VALUES (?, ?, ?, ?, ?)',
         [
           deneme.subjectId,
           deneme.denemeId,
@@ -142,10 +142,11 @@ class DenemeDbProvider {
       ];
       try {
         final db = await getDatabase;
-        Batch batch = db.batch();
+
         for (int j = 0; j < denemePostData.length; j++) {
           final tableData = denemePostData[j];
           String tableName = lessonNames[j];
+          Batch batch = db.batch();
 
           for (var item in tableData) {
             DenemeModel denemeData = DenemeModel(
@@ -156,10 +157,10 @@ class DenemeDbProvider {
               denemeDate: item['denemeDate'],
             );
 
-            // batch.insert(tableName, denemeData.toMap(),
-            //   conflictAlgorithm: ConflictAlgorithm.replace);
+            //batch.insert(tableName, denemeData.toMap(),
+            //  conflictAlgorithm: ConflictAlgorithm.replace);
             batch.rawInsert('''
-        INSERT INTO $tableName (
+        INSERT or REPLACE INTO $tableName (
           denemeId, subjectId, falseCount, subjectName, denemeDate
         ) VALUES (?, ?, ?, ?, ?)
       ''', [

@@ -44,6 +44,7 @@ class _AppLifeCycleManagerState extends State<AppLifeCycleManager>
         print('LifeCycleState = $state');
         break;
       case AppLifecycleState.paused:
+        print('LifeCycleState = $state');
         break;
       case AppLifecycleState.resumed:
         print('LifeCycleState = $state');
