@@ -204,8 +204,21 @@ class ColorConstants {
     'Green': aospExtendedGreen,
   };
 
-  static const Gradient mainGradient =
+  static const Gradient bottomGradient =
       LinearGradient(colors: [Color(0xff4E4E84), Color(0xffA1636E)]);
+
+  static const Gradient navCardGradient = LinearGradient(
+    colors: [
+      Color(0xFF00bfff),
+      Color(0xFFbdc3c7),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static Gradient navTextGradient =
+      const LinearGradient(colors: [Colors.white, Colors.white]);
+
   static const Gradient appBarGradient = LinearGradient(
       stops: [0.3, 0.6],
       begin: Alignment.bottomLeft,
@@ -214,4 +227,12 @@ class ColorConstants {
         Color(0xFF00008B),
         Color(0xFF1C0F45),
       ]);
+
+  static const Gradient secondaryGradient = LinearGradient(
+    colors: [
+      Color(0xFF00bfff),
+      Color(0xFFbdc3c7),
+    ],
+    stops: [0.0, 1.0],
+  );
 }

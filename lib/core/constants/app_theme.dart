@@ -63,7 +63,7 @@ class AppTheme {
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           backgroundColor: Colors.transparent,
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.black,
+          selectedItemColor: const Color(0xFF000000),
           unselectedItemColor: Colors.white,
           unselectedLabelStyle: TextStyle(
               fontSize: dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
@@ -105,8 +105,8 @@ class AppTheme {
           color: const Color(0xFF1C0F45),
         ),
         tabBarTheme: TabBarTheme(
-          indicatorColor: Colors.deepPurple,
-          labelColor: const Color(0xff8b7e66),
+          indicatorColor: const Color(0xFF5CB85C),
+          labelColor: const Color(0xFF5CB85C),
           tabAlignment: TabAlignment.start,
           unselectedLabelStyle: TextStyle(
               fontSize: dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),

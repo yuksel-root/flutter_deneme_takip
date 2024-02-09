@@ -21,16 +21,20 @@ class InsertDenemeButton extends StatelessWidget {
       onPressed: () async {
         if (editProv.getFormKey.currentState?.validate() == true &&
             editProv.getIsDiffZero == true) {
-          editProv.getIsLoading
-              ? showLoadingAlertDialog(
-                  context,
-                  title: 'Kaydediliyor...',
-                  alert: editProv.getIsAlertOpen,
-                )
-              : const SizedBox();
+          FocusScope.of(context).unfocus();
+          Future.delayed(const Duration(milliseconds: 50), () {
+            editProv.getIsLoading
+                ? showLoadingAlertDialog(
+                    context,
+                    title: 'Kaydediliyor...',
+                    alert: editProv.getIsAlertOpen,
+                  )
+                : const SizedBox();
+          });
 
-          await Future.delayed(const Duration(milliseconds: 100), () {
+          Future.delayed(const Duration(milliseconds: 80), () {
             editProv.saveButton(isUpdate: false);
+            editProv.getFormKey.currentState!.reset();
           });
         } else if (editProv.getIsDiffZero == false) {
           Future.delayed(const Duration(milliseconds: 50), () {
@@ -38,7 +42,7 @@ class InsertDenemeButton extends StatelessWidget {
                 context, "HATA", "En az bir değer giriniz", editProv);
           });
         } else {
-          await Future.delayed(
+          Future.delayed(
             const Duration(milliseconds: 50),
             () {
               editProv.errorAlert(

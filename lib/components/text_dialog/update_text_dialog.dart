@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
+import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
@@ -128,11 +129,17 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
             actions: [
               ElevatedButton(
                 child: const Text('Onayla'),
-                onPressed: () {
-                  saveData(context, editProv, denemeProv).then((value) {
-                    denemeProv.initDenemeData(denemeProv.getLessonName);
+                onPressed: () async {
+                  await Future.delayed(const Duration(milliseconds: 0), () {
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamed(NavigationConstants.homeView);
                   });
-                  denemeProv.setAlert = false;
+                  await Future.delayed(const Duration(milliseconds: 20), () {
+                    saveData(context, editProv, denemeProv).then((value) {
+                      denemeProv.initDenemeData(denemeProv.getLessonName);
+                    });
+                    denemeProv.setAlert = false;
+                  });
                 },
               )
             ],
@@ -152,12 +159,11 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
               context,
               title: 'Güncelleniyor...',
               alert: !editProv.getIsLoading,
-            )
+            ).then((value) async =>
+              await Future.delayed(const Duration(milliseconds: 50), () {
+                editProv.setLoading = false;
+              }))
           : const SizedBox();
-
-      await Future.delayed(const Duration(milliseconds: 50), () {
-        editProv.setLoading = false;
-      });
 
       await editProv.saveButton(
         isUpdate: true,

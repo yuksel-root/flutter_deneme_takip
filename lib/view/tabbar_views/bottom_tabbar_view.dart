@@ -48,7 +48,7 @@ class _BottomTabbarViewState extends State<BottomTabbarView> {
       body: currentScreen[bottomProv.getCurrentIndex],
       bottomNavigationBar: GradientWidget(
         blendModes: BlendMode.color,
-        gradient: ColorConstants.mainGradient,
+        gradient: ColorConstants.bottomGradient,
         widget: BottomNavigationBar(
           currentIndex: bottomProv.getCurrentIndex,
           onTap: (index) {

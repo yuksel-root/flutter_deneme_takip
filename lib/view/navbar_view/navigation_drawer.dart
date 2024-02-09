@@ -11,7 +11,6 @@ import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
-import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
@@ -67,8 +66,8 @@ Column buildListTileHeader(BuildContext context, DenemeLoginViewModel loginProv,
   return Column(
     children: [
       GradientWidget(
-        blendModes: BlendMode.hue,
-        gradient: ColorConstants.mainGradient,
+        blendModes: BlendMode.color,
+        gradient: ColorConstants.secondaryGradient,
         widget: UserAccountsDrawerHeader(
           accountName: Text(currentUser?.displayName ?? "Çevrimdışı kullanıcı",
               style: TextStyle(
@@ -119,9 +118,9 @@ Expanded drawerCardMenu(BuildContext context,
         children: [
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                gradient: ColorConstants.mainGradient,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                gradient: cardGradient,
               ),
               child: ListTile(
                 leading: GradientWidget(
@@ -169,15 +168,25 @@ Column buildListTiles(
               context,
               iconGradient:
                   const LinearGradient(colors: [Colors.white, Colors.white]),
-              cardGradient: const LinearGradient(
-                  colors: [Colors.blue, Colors.purpleAccent]),
-              textGradient:
-                  const LinearGradient(colors: [Colors.white, Colors.white]),
+              cardGradient: ColorConstants.navCardGradient,
+              textGradient: ColorConstants.navTextGradient,
               title: "Giriş Yap",
               icon: Icons.account_circle_rounded,
               onTap: () async {
-                navigation.navigateToPage(
-                    path: NavigationConstants.homeView, data: []);
+                editProv.setLoading = true;
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed(NavigationConstants.homeView);
+                editProv.getIsLoading
+                    ? showLoadingAlertDialog(
+                        context,
+                        title: 'Loading...',
+                        alert: !editProv.getIsLoading,
+                      ).then((value) async => await Future.delayed(
+                            const Duration(milliseconds: 100), () {
+                          editProv.setLoading = false;
+                        }))
+                    : const SizedBox();
+
                 await Future.delayed(const Duration(milliseconds: 50), () {
                   if (context.read<DenemeLoginViewModel>().getState ==
                       LoginState.notLoggedIn) {
@@ -192,8 +201,8 @@ Column buildListTiles(
                         LoginState.loggedIn) {
                       loginProv.errorAlert(
                           context, "Uyarı", loginProv.getError, loginProv);
-                      navigation.navigateToPage(
-                          path: NavigationConstants.homeView, data: []);
+                      Navigator.of(context, rootNavigator: true)
+                          .pushNamed(NavigationConstants.homeView);
                     }
 
                     loginProv.errorAlert(context, "Uyarı",
@@ -210,10 +219,8 @@ Column buildListTiles(
         context,
         iconGradient:
             const LinearGradient(colors: [Colors.white, Colors.white]),
-        cardGradient:
-            const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
-        textGradient:
-            const LinearGradient(colors: [Colors.white, Colors.white]),
+        cardGradient: ColorConstants.navCardGradient,
+        textGradient: ColorConstants.navTextGradient,
         title: "Dersler",
         icon: Icons.library_books,
         onTap: () async {
@@ -227,10 +234,8 @@ Column buildListTiles(
         context,
         iconGradient:
             const LinearGradient(colors: [Colors.white, Colors.white]),
-        cardGradient:
-            const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
-        textGradient:
-            const LinearGradient(colors: [Colors.white, Colors.white]),
+        cardGradient: ColorConstants.navCardGradient,
+        textGradient: ColorConstants.navTextGradient,
         title: "Denemeler",
         icon: Icons.group_work_rounded,
         onTap: () async {
@@ -243,10 +248,8 @@ Column buildListTiles(
         context,
         iconGradient:
             const LinearGradient(colors: [Colors.white, Colors.white]),
-        cardGradient:
-            const LinearGradient(colors: [Colors.blue, Colors.purpleAccent]),
-        textGradient:
-            const LinearGradient(colors: [Colors.white, Colors.white]),
+        cardGradient: ColorConstants.navCardGradient,
+        textGradient: ColorConstants.navTextGradient,
         title: "Yeni Deneme Ekle",
         icon: Icons.assured_workload,
         onTap: () async {
@@ -266,7 +269,7 @@ Column buildListTiles(
                 ],
               ),
         cardGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            ? ColorConstants.navCardGradient
             : LinearGradient(
                 colors: [
                   Colors.black.withOpacity(0.6),
@@ -274,7 +277,7 @@ Column buildListTiles(
                 ],
               ),
         textGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.white, Colors.white])
+            ? ColorConstants.navTextGradient
             : LinearGradient(
                 colors: [
                   Colors.grey.shade300.withOpacity(0.9),
@@ -299,7 +302,7 @@ Column buildListTiles(
                 ],
               ),
         cardGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            ? ColorConstants.navCardGradient
             : LinearGradient(
                 colors: [
                   Colors.black.withOpacity(0.6),
@@ -307,7 +310,7 @@ Column buildListTiles(
                 ],
               ),
         textGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.white, Colors.white])
+            ? ColorConstants.navTextGradient
             : LinearGradient(
                 colors: [
                   Colors.grey.shade300.withOpacity(0.9),
@@ -327,10 +330,8 @@ Column buildListTiles(
               context,
               iconGradient:
                   const LinearGradient(colors: [Colors.white, Colors.white]),
-              cardGradient: const LinearGradient(
-                  colors: [Colors.blue, Colors.purpleAccent]),
-              textGradient:
-                  const LinearGradient(colors: [Colors.white, Colors.white]),
+              cardGradient: ColorConstants.navCardGradient,
+              textGradient: ColorConstants.navTextGradient,
               title: "Çıkış",
               icon: Icons.logout,
               onTap: () {
@@ -343,8 +344,8 @@ Column buildListTiles(
 
                   loginProv.setState = LoginState.notLoggedIn;
                   loginProv.setCurrentUser = null;
-                  navigation.navigateToPageClear(
-                      path: NavigationConstants.homeView);
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamed(NavigationConstants.homeView);
                 }, noFunction: () {
                   Navigator.of(context, rootNavigator: true).pop();
                 });
@@ -353,10 +354,8 @@ Column buildListTiles(
           : drawerCardMenu(context,
               title: "Uygulamadan Çıkış",
               icon: Icons.exit_to_app,
-              textGradient:
-                  const LinearGradient(colors: [Colors.white, Colors.white]),
-              cardGradient: const LinearGradient(
-                  colors: [Colors.blue, Colors.purpleAccent]),
+              textGradient: ColorConstants.navTextGradient,
+              cardGradient: ColorConstants.navCardGradient,
               iconGradient:
                   const LinearGradient(colors: [Colors.white, Colors.white]),
               onTap: () {
@@ -371,14 +370,22 @@ Column buildListTiles(
                     .pushNamed(NavigationConstants.homeView);
               });
             }),
-      const Divider(),
+      const GradientWidget(
+          blendModes: BlendMode.color,
+          gradient: ColorConstants.bottomGradient,
+          widget: Divider()),
       drawerCardMenu(
         context,
-        iconGradient: const LinearGradient(colors: [Colors.red, Colors.red]),
-        cardGradient:
-            const LinearGradient(colors: [Colors.white, Colors.white]),
-        textGradient: const LinearGradient(colors: [Colors.red, Colors.red]),
-        title: "Tüm Verileri Yok Et",
+        iconGradient: const LinearGradient(colors: [
+          Color(0xFF000000),
+          Color(0xFF000000),
+        ]),
+        cardGradient: ColorConstants.navCardGradient,
+        textGradient: const LinearGradient(colors: [
+          Color(0xFF000000),
+          Color(0xFF000000),
+        ]),
+        title: "Tüm Verileri Temizle",
         icon: Icons.delete,
         onTap: () {
           denemeProv.showAlert(context,
@@ -389,7 +396,10 @@ Column buildListTiles(
             await DenemeDbProvider.db.clearDatabase();
             lessonProv.initLessonData(lessonProv.getLessonName);
             denemeProv.initDenemeData(denemeProv.getLessonName);
-            navigation.navigateToPageClear(path: NavigationConstants.homeView);
+            Future.delayed(Duration.zero, () {
+              Navigator.of(context, rootNavigator: true)
+                  .pushNamed(NavigationConstants.homeView);
+            });
           }, noFunction: () {
             Navigator.of(context, rootNavigator: true).pop();
           });
@@ -406,7 +416,7 @@ Column buildListTiles(
                 ],
               ),
         cardGradient: currentUser != null
-            ? const LinearGradient(colors: [Colors.blue, Colors.purpleAccent])
+            ? ColorConstants.navCardGradient
             : LinearGradient(
                 colors: [
                   Colors.black.withOpacity(0.6),

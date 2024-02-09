@@ -6,19 +6,26 @@ Future<Object?> showLoadingAlertDialog<T>(
   BuildContext context, {
   required String title,
   required bool alert,
-}) async =>
-    alert == false
-        ? await showDialog<T>(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => LoadingAlert(
-              title: title,
-              alert: alert,
-            ),
-          )
-        : await Future.delayed(Duration.zero, () {
-            return const SizedBox();
-          });
+}) async {
+  if (alert == false) {
+    await showDialog<T>(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => LoadingAlert(
+        title: title,
+        alert: alert,
+      ),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 100), () {
+      Navigator.of(context).pop();
+    });
+
+    return null;
+  } else {
+    return null;
+  }
+}
 
 class LoadingAlert extends StatelessWidget {
   final String title;
