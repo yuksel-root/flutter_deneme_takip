@@ -87,7 +87,7 @@ class AppTheme {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorConstants.deepPurple,
-            animationDuration: const Duration(milliseconds: 100),
+            animationDuration: const Duration(milliseconds: 30),
             alignment: Alignment.center,
             shape: const StadiumBorder(),
             elevation: 0,

@@ -21,38 +21,36 @@ class InsertDenemeButton extends StatelessWidget {
       onPressed: () async {
         if (editProv.getFormKey.currentState?.validate() == true &&
             editProv.getIsDiffZero == true) {
-          FocusScope.of(context).unfocus();
-          Future.delayed(const Duration(milliseconds: 50), () {
-            editProv.getIsLoading
-                ? showLoadingAlertDialog(
-                    context,
-                    title: 'Kaydediliyor...',
-                    alert: editProv.getIsAlertOpen,
-                  )
-                : const SizedBox();
-          });
+          FocusScope.of(context).autofocus(FocusNode());
 
-          Future.delayed(const Duration(milliseconds: 80), () {
+          showLoadingAlertDialog(
+            context,
+            title: "Kaydediliyor...",
+          );
+
+          await Future.delayed(const Duration(seconds: 1), () {
             editProv.saveButton(isUpdate: false);
+            Navigator.of(context, rootNavigator: true).pop();
             editProv.getFormKey.currentState!.reset();
+            editProv.getFalseControllers[0].selection = TextSelection.collapsed(
+                offset: editProv.getFalseControllers[0].text.length);
           });
         } else if (editProv.getIsDiffZero == false) {
-          Future.delayed(const Duration(milliseconds: 50), () {
+          Future.delayed(const Duration(milliseconds: 20), () {
             editProv.errorAlert(
                 context, "HATA", "En az bir değer giriniz", editProv);
           });
+          editProv.getFormKey.currentState!.reset();
         } else {
           Future.delayed(
-            const Duration(milliseconds: 50),
+            const Duration(milliseconds: 20),
             () {
               editProv.errorAlert(
                   context, 'HATA', 'Sadece Tam sayı giriniz!', editProv);
+              editProv.getFormKey.currentState!.reset();
             },
           );
         }
-
-        editProv.setLoading = true;
-        editProv.getFormKey.currentState!.reset();
       },
     );
   }

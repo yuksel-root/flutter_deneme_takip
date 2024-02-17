@@ -94,7 +94,10 @@ Widget buildProfileImage(
     BuildContext context, DenemeViewModel denemeProv, User? currentUser) {
   try {
     if (currentUser != null) {
-      return Image.network(currentUser.photoURL!);
+      denemeProv.isOnline(currentUser.uid);
+      if (denemeProv.getOnline) {
+        return Image.network(currentUser.photoURL!);
+      }
     }
   } catch (e) {
     print("Error loading image: $e");
@@ -176,17 +179,16 @@ Column buildListTiles(
                 editProv.setLoading = true;
                 Navigator.of(context, rootNavigator: true)
                     .pushNamed(NavigationConstants.homeView);
-                editProv.getIsLoading
-                    ? showLoadingAlertDialog(
-                        context,
-                        title: 'Loading...',
-                        alert: !editProv.getIsLoading,
-                      ).then((value) async => await Future.delayed(
-                            const Duration(milliseconds: 100), () {
-                          editProv.setLoading = false;
-                        }))
-                    : const SizedBox();
 
+                showLoadingAlertDialog(
+                  context,
+                  title: 'Giriş Yapılıyor...',
+                );
+                await Future.delayed(const Duration(milliseconds: 1500),
+                    () async {
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamed(NavigationConstants.homeView);
+                });
                 await Future.delayed(const Duration(milliseconds: 50), () {
                   if (context.read<DenemeLoginViewModel>().getState ==
                       LoginState.notLoggedIn) {
@@ -208,9 +210,6 @@ Column buildListTiles(
                     loginProv.errorAlert(context, "Uyarı",
                         loginProv.getState.toString(), loginProv);
                   }
-                  // print(loginProv.getState);
-                  Navigator.of(context, rootNavigator: true)
-                      .pushNamed(NavigationConstants.homeView);
                 });
               },
             )
@@ -340,12 +339,20 @@ Column buildListTiles(
                     title: "Uyarı",
                     content: "Mevcut hesaptan çıkış yapmak ister misiniz?",
                     yesFunction: () async {
-                  AuthService().signOut();
-
-                  loginProv.setState = LoginState.notLoggedIn;
-                  loginProv.setCurrentUser = null;
                   Navigator.of(context, rootNavigator: true)
                       .pushNamed(NavigationConstants.homeView);
+                  showLoadingAlertDialog(
+                    context,
+                    title: 'Çıkış Yapılıyor...',
+                  );
+                  Future.delayed(const Duration(seconds: 1), () {
+                    AuthService().signOut();
+
+                    loginProv.setState = LoginState.notLoggedIn;
+                    loginProv.setCurrentUser = null;
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamed(NavigationConstants.homeView);
+                  });
                 }, noFunction: () {
                   Navigator.of(context, rootNavigator: true).pop();
                 });
@@ -492,17 +499,11 @@ Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
           Navigator.of(context, rootNavigator: true)
               .pushNamed(NavigationConstants.homeView);
           denemeProv.setFirebaseState = FirebaseState.loading;
-          context.read<DenemeViewModel>().getFirebaseState ==
-                  FirebaseState.loading
-              ? showLoadingAlertDialog(
-                  context,
-                  title: 'Yedekleniyor...',
-                  alert: denemeProv.getFirebaseState == FirebaseState.loading
-                      ? false
-                      : true,
-                )
-              : const SizedBox();
-          Future.delayed(const Duration(milliseconds: 100), () async {
+          showLoadingAlertDialog(
+            context,
+            title: 'Yedekleniyor...',
+          );
+          await Future.delayed(const Duration(milliseconds: 1500), () async {
             await denemeProv
                 .backUpAllTablesData(
                     context, currentUser.uid, denemeProv, loginProv)
@@ -532,18 +533,17 @@ Future<void> restoreDataFunction(
             yesFunction: () async {
             Navigator.of(context, rootNavigator: true)
                 .pushNamed(NavigationConstants.homeView);
-            denemeProv.setFirebaseState = FirebaseState.loading;
-            denemeProv.getFirebaseState == FirebaseState.loading
-                ? showLoadingAlertDialog(
-                    context,
-                    title: 'Yükleniyor...',
-                    alert: denemeProv.getFirebaseState == FirebaseState.loading
-                        ? false
-                        : true,
-                  )
-                : const SizedBox();
-            await denemeProv.restoreData(
-                context, currentUser.uid, denemeProv, lessonProv);
+
+            showLoadingAlertDialog(
+              context,
+              title: 'Yükleniyor...',
+            );
+            await Future.delayed(const Duration(seconds: 1), () async {
+              Navigator.of(context, rootNavigator: true)
+                  .pushNamed(NavigationConstants.homeView);
+              await denemeProv.restoreData(
+                  context, currentUser.uid, denemeProv, lessonProv);
+            });
           }, noFunction: () {
             Navigator.of(context, rootNavigator: true).pop();
           })

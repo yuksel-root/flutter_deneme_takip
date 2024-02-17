@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
-import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:intl/intl.dart';
@@ -16,7 +15,7 @@ enum EditDenemeState {
 }
 
 class EditDenemeViewModel extends ChangeNotifier {
-  late NavigationService _navigation;
+  // late NavigationService _navigation;
   final DateTime _now = DateTime.now();
   late EditDenemeState _state;
 
@@ -34,6 +33,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   late List<TextEditingController> _falseCountControllers;
   late int? _falseInputCount;
   List<int?> _falseCountsIntegers = [];
+  late List<Map<String, dynamic>>? fakeData;
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final formKey0 = GlobalKey<FormState>();
@@ -42,7 +42,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     _falseCountsIntegers.clear();
     _subjectSavedList.clear();
 
-    _navigation = NavigationService.instance;
+    //  _navigation = NavigationService.instance;
     _state = EditDenemeState.loading;
     _date =
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(_now).toString();
@@ -56,6 +56,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     _subjectList = AppData.historySubjects;
     _falseInputCount = _subjectList!.length;
     _formKey = formKey0;
+    fakeData = [];
 
     _lastDenemeId = 0;
 
@@ -69,6 +70,16 @@ class EditDenemeViewModel extends ChangeNotifier {
   set setState(EditDenemeState state) {
     _state = state;
     notifyListeners();
+  }
+
+  void initFakeData() async {
+    setState = EditDenemeState.loading;
+
+    fakeData = [];
+
+    await Future.delayed(const Duration(milliseconds: 350), () {
+      setState = EditDenemeState.completed;
+    });
   }
 
   List<String> findList(String lessonName) {
@@ -112,7 +123,7 @@ class EditDenemeViewModel extends ChangeNotifier {
 
   set setLoading(bool newBool) {
     _isLoading = newBool;
-    //notifyListeners();
+    // notifyListeners();
   }
 
   bool get getIsLoading {
@@ -140,6 +151,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   set setFalseControllers(int controllerCount) {
     _falseCountControllers = List.generate(
         controllerCount, (index) => TextEditingController(text: "0"));
+
     notifyListeners();
   }
 
@@ -198,13 +210,7 @@ class EditDenemeViewModel extends ChangeNotifier {
             subjectName: _subjectSavedList[i]);
 
         await saveDeneme(newDenemeModel);
-
-        Future.delayed(const Duration(milliseconds: 50), () async {
-          setLoading = false;
-          setFalseControllers = getFalseControllers.length;
-          _navigation.navigateToPageClear(
-              path: NavigationConstants.homeView, data: []);
-        });
+        setFalseControllers = getFalseControllers.length;
       }
     } else {
       _subjectSavedList = AppData.subjectListNames[lessonName ?? 'Tarih']!;
@@ -217,11 +223,6 @@ class EditDenemeViewModel extends ChangeNotifier {
         denemeDate: _date,
       );
       await updateDeneme(updateDenemeModel, lessonName ?? 'Tarih');
-      Future.delayed(const Duration(milliseconds: 50), () async {
-        setLoading = false;
-        _navigation
-            .navigateToPageClear(path: NavigationConstants.homeView, data: []);
-      });
     }
   }
 

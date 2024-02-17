@@ -154,24 +154,20 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
     if (_formKey.currentState?.validate() != false &&
         editProv.getIsDiffZero &&
         editProv.getIsNumberBig == false) {
-      editProv.getIsLoading
-          ? showLoadingAlertDialog(
-              context,
-              title: 'Güncelleniyor...',
-              alert: !editProv.getIsLoading,
-            ).then((value) async =>
-              await Future.delayed(const Duration(milliseconds: 50), () {
-                editProv.setLoading = false;
-              }))
-          : const SizedBox();
-
-      await editProv.saveButton(
-        isUpdate: true,
-        updatingDenemeId: widget.rowIndex,
-        cellId: widget.index,
-        updateVal: controller.text,
-        lessonName: denemeProv.getLessonName,
+      showLoadingAlertDialog(
+        context,
+        title: 'Güncelleniyor...',
       );
+      await Future.delayed(const Duration(seconds: 1), () async {
+        Navigator.of(context, rootNavigator: true).pop();
+        await editProv.saveButton(
+          isUpdate: true,
+          updatingDenemeId: widget.rowIndex,
+          cellId: widget.index,
+          updateVal: controller.text,
+          lessonName: denemeProv.getLessonName,
+        );
+      });
     } else if (editProv.getIsDiffZero == false) {
       await Future.delayed(const Duration(milliseconds: 50), () {
         denemeProv.errorAlert(
@@ -192,7 +188,6 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
       );
     }
 
-    editProv.setLoading = true;
     _formKey.currentState!.reset();
   }
 }

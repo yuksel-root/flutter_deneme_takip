@@ -44,11 +44,13 @@ class DenemeViewModel extends ChangeNotifier {
   late List<Map<String, dynamic>> denemelerData;
   late List<List<int>> _listFalseCounts;
   late String? _initPng;
+  late bool _isOnline;
 
   DenemeViewModel() {
     _navigation = NavigationService.instance;
 
     _isAlertOpen = false;
+    _isOnline = false;
     _lessonName = 'Tarih';
     _state = DenemeState.empty;
     _firebaseState = FirebaseState.empty;
@@ -148,7 +150,9 @@ class DenemeViewModel extends ChangeNotifier {
     _listFalseCounts.clear();
 
     falseCountsByDenemeId(denemelerData).forEach((denemeId, falseCounts) {
-      List<dynamic> arr = List.generate(columnData.length, (index) => 0);
+      print(columnData.length);
+      List<dynamic> arr =
+          List.from(List.generate(columnData.length, (index) => 0));
 
       for (int j = 0; j < (columnData.length); j++) {
         arr[0] = "Deneme$denemeId";
@@ -363,6 +367,13 @@ class DenemeViewModel extends ChangeNotifier {
     _isAlertOpen = newBool;
   }
 
+  bool get getOnline => _isOnline;
+
+  set setOnline(bool newBool) {
+    _isOnline = newBool;
+    notifyListeners();
+  }
+
   String? get getLessonName {
     return _lessonName ?? 'Tarih';
   }
@@ -469,6 +480,20 @@ class DenemeViewModel extends ChangeNotifier {
     } catch (e) {
       print("catch denemeVM  CATCH ERROR ${e.toString()}");
       setFirebaseState = FirebaseState.catchError;
+    }
+  }
+
+  void isOnline(String userId) async {
+    try {
+      final isOnline = await FirebaseService().isFromCache(userId) ?? {};
+      if (isOnline.isEmpty) {
+        setOnline = false;
+      } else {
+        setOnline = true;
+      }
+    } catch (e) {
+      print(e);
+      setOnline = false;
     }
   }
 
