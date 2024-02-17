@@ -21,8 +21,6 @@ class InsertDenemeButton extends StatelessWidget {
       onPressed: () async {
         if (editProv.getFormKey.currentState?.validate() == true &&
             editProv.getIsDiffZero == true) {
-          FocusScope.of(context).autofocus(FocusNode());
-
           showLoadingAlertDialog(
             context,
             title: "Kaydediliyor...",
@@ -32,8 +30,6 @@ class InsertDenemeButton extends StatelessWidget {
             editProv.saveButton(isUpdate: false);
             Navigator.of(context, rootNavigator: true).pop();
             editProv.getFormKey.currentState!.reset();
-            editProv.getFalseControllers[0].selection = TextSelection.collapsed(
-                offset: editProv.getFalseControllers[0].text.length);
           });
         } else if (editProv.getIsDiffZero == false) {
           Future.delayed(const Duration(milliseconds: 20), () {

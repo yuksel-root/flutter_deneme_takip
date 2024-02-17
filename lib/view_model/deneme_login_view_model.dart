@@ -4,10 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/local_storage/local_storage_manager.dart';
+import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
-import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 
 enum LoginState {
   notLoggedIn,
@@ -24,7 +24,7 @@ class DenemeLoginViewModel extends ChangeNotifier {
   String? _error;
   late bool _isAlertOpen;
   final LocalStorageManager _storageManager = LocalStorageManager.instance;
-
+  final NavigationService navigation = NavigationService.instance;
   DenemeLoginViewModel() {
     _loggedInStatus = LoginState.notLoggedIn;
     _isAlertOpen = false;

@@ -17,7 +17,6 @@ class InsertDeneme extends StatelessWidget {
         Provider.of<EditDenemeViewModel>(context, listen: true);
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: true);
     final fakeData = denemeProv.fakeData ?? []; //fake data for loading
-
     return FutureBuilder(
       future: Future.delayed(Duration.zero, () => fakeData),
       builder: (context, snapshot) {
@@ -25,7 +24,12 @@ class InsertDeneme extends StatelessWidget {
             DenemeState.loading) {
           return const FadedLoadingForm();
         } else {
-          return buildScaffold(editDenemeProv, context);
+          return GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: buildScaffold(editDenemeProv, context),
+          );
         }
       },
     );

@@ -9,7 +9,6 @@ import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/models/deneme.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
-import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 
@@ -45,7 +44,7 @@ class DenemeViewModel extends ChangeNotifier {
   late List<List<int>> _listFalseCounts;
   late String? _initPng;
   late bool _isOnline;
-
+  final NavigationService navigation = NavigationService.instance;
   DenemeViewModel() {
     _navigation = NavigationService.instance;
 

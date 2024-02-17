@@ -7,10 +7,10 @@ import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
+import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/insert_views/insert_deneme_view.dart';
 import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
-import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +30,8 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
   late TabController tabController;
   late List<String> denemeSubjectList;
   late List<String>? lessonNameList;
+
+  final NavigationService navigation = NavigationService.instance;
   @override
   void initState() {
     denemeSubjectList = lessonNameList = AppData.lessonNameList;

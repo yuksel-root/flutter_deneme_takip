@@ -4,11 +4,11 @@ import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
+import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:flutter_deneme_takip/view/bottom_tabbar_views/lesson_view.dart';
 import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
-import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +24,7 @@ class LessonTabbarView extends StatefulWidget {
 class _LessonTabbarViewState extends State<LessonTabbarView>
     with TickerProviderStateMixin {
   late TabController tabController;
-
+  final NavigationService navigation = NavigationService.instance;
   @override
   void initState() {
     super.initState();
