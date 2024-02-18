@@ -158,8 +158,10 @@ class TextDialogWidgetState extends State<TextDialogWidget> {
         context,
         title: 'Güncelleniyor...',
       );
+      FocusScope.of(context).unfocus();
       await Future.delayed(const Duration(seconds: 1), () async {
         Navigator.of(context, rootNavigator: true).pop();
+
         await editProv.saveButton(
           isUpdate: true,
           updatingDenemeId: widget.rowIndex,

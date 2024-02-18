@@ -31,6 +31,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   late List<String>? _subjectList;
   List<String?> _subjectSavedList = [];
   late List<TextEditingController> _falseCountControllers;
+  late List<FocusNode> _listFocusNode;
   late int? _falseInputCount;
   List<int?> _falseCountsIntegers = [];
   late List<Map<String, dynamic>>? fakeData;
@@ -64,6 +65,8 @@ class EditDenemeViewModel extends ChangeNotifier {
     _subjectSavedList = List.of(findList(_lessonName!));
     _falseCountControllers = List.generate(_falseCountsIntegers.length,
         (index) => TextEditingController(text: '0'));
+    _listFocusNode =
+        List.generate(_falseCountsIntegers.length, (index) => FocusNode());
   }
 
   EditDenemeState get getState => _state;
@@ -157,6 +160,17 @@ class EditDenemeViewModel extends ChangeNotifier {
 
   List<TextEditingController> get getFalseControllers {
     return _falseCountControllers;
+  }
+
+  void setFocusNode() {
+    _listFocusNode =
+        List.generate(_falseCountsIntegers.length, (index) => FocusNode());
+
+    notifyListeners();
+  }
+
+  List<FocusNode> get getFocusNode {
+    return _listFocusNode;
   }
 
   int getFindDenemeId(List<int> existingIds, int latestId) {

@@ -27,52 +27,71 @@ class InsertDenemeTextField extends StatelessWidget {
                   Expanded(
                     child: TextFormField(
                       controller: editProv.getFalseControllers[i],
+                      focusNode: editProv.getFocusNode[i],
                       autofocus: false,
                       keyboardType: TextInputType.number,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       textInputAction: TextInputAction.next,
+                      onTap: () {
+                        editProv.getFalseControllers[i].clear();
+                      },
+                      onEditingComplete: () {
+                        if (i < editProv.getFalseCountsIntegers!.length - 1) {
+                          FocusScope.of(context)
+                              .requestFocus(editProv.getFocusNode[i + 1]);
+                          editProv.getFalseControllers[i + 1].clear();
+                        } else {
+                          FocusScope.of(context)
+                              .requestFocus(editProv.getFocusNode[1]);
+                          editProv.getFalseControllers[1].clear();
+                        }
+                      },
                       style: TextStyle(
                           color: Colors.black,
                           fontSize:
                               context.dynamicW(0.01) * context.dynamicH(0.004)),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Lütfen boş bırakmayın';
-                        }
-                        final isNumeric = RegExp(r'^-?[0-9]+$').hasMatch(value);
-                        if (!isNumeric) {
-                          Future.delayed(
-                            const Duration(milliseconds: 20),
-                            () {
-                              editProv.getFormKey.currentState!.reset();
-                            },
-                          );
-                        } else if (int.parse(value) > 99) {
-                          try {
-                            editProv.getFalseControllers[i].clear();
-                          } catch (e) {
-                            print(e);
+                        try {
+                          if (value == null || value.isEmpty) {
+                            return 'Lütfen boş bırakmayın';
                           }
-                          return "Yanlış sayısı 99'dan büyük olamaz!";
-                        } else {
-                          return null;
-                        }
+                          final isNumeric =
+                              RegExp(r'^-?[0-9]+$').hasMatch(value);
+                          if (!isNumeric) {
+                            Future.delayed(
+                              const Duration(milliseconds: 0),
+                              () {
+                                editProv.getFormKey.currentState!.reset();
+                              },
+                            );
+                          } else if (int.parse(value) > 99) {
+                            editProv.getFalseControllers[i].clear();
 
-                        return "Sadece Sayı Giriniz";
+                            return "Yanlış sayısı 99'dan büyük olamaz!";
+                          } else {
+                            return null;
+                          }
+
+                          return "Sadece Sayı Giriniz";
+                        } catch (e) {
+                          print(e);
+                        }
+                        return null;
                       },
                       onChanged: (value) {
-                        if (int.parse(value) != 0) {
-                          editProv.setIsDiffZero = true;
-                        } else if (int.parse(value) > 99) {
-                          editProv.getFalseControllers[i].clear();
-                        } else {
-                          editProv.setIsDiffZero = false;
-                        }
-
                         try {
+                          if (int.parse(value) != 0) {
+                            editProv.setIsDiffZero = true;
+                          } else if (int.parse(value) > 99) {
+                            editProv.getFalseControllers[i].clear();
+                          } else {
+                            editProv.setIsDiffZero = false;
+                          }
+
                           editProv.getFalseCountsIntegers![i] =
                               int.parse(value);
                         } catch (e) {
+                          print(e);
                           DenemeViewModel().printFunct("onChanged catch", e);
                         }
                       },
