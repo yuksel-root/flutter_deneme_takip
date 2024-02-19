@@ -33,9 +33,40 @@ class InsertDenemeTextField extends StatelessWidget {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       textInputAction: TextInputAction.next,
                       onTap: () {
-                        editProv.getFalseControllers[i].clear();
+                        var focusNode = editProv.getFocusNode[i];
+
+                        void onFocusChange() {
+                          if (focusNode.hasFocus) {
+                            editProv.setKeyboardVisibility = true;
+                            editProv.getFalseControllers[i].clear();
+                          } else {
+                            editProv.setKeyboardVisibility = false;
+                            focusNode.removeListener(onFocusChange);
+                          }
+                        }
+
+                        focusNode.addListener(onFocusChange);
+                      },
+                      onTapOutside: (event) {
+                        context
+                            .read<EditDenemeViewModel>()
+                            .setKeyboardVisibility = false;
                       },
                       onEditingComplete: () {
+                        Future.delayed(const Duration(milliseconds: 2), () {
+                          if (WidgetsBinding.instance.platformDispatcher.views
+                                  .last.viewInsets.bottom ==
+                              0) {
+                            context
+                                .read<EditDenemeViewModel>()
+                                .setKeyboardVisibility = false;
+                          } else {
+                            context
+                                .read<EditDenemeViewModel>()
+                                .setKeyboardVisibility = true;
+                          }
+                        });
+
                         if (i < editProv.getFalseCountsIntegers!.length - 1) {
                           FocusScope.of(context)
                               .requestFocus(editProv.getFocusNode[i + 1]);

@@ -180,10 +180,12 @@ Column buildListTiles(
                 Navigator.of(context, rootNavigator: true)
                     .pushNamed(NavigationConstants.homeView);
 
-                showLoadingAlertDialog(
-                  context,
-                  title: 'Giriş Yapılıyor...',
-                );
+                await Future.delayed(const Duration(milliseconds: 10), () {
+                  showLoadingAlertDialog(
+                    context,
+                    title: 'Giriş Yapılıyor...',
+                  );
+                });
                 await Future.delayed(const Duration(milliseconds: 1500),
                     () async {
                   Navigator.of(context, rootNavigator: true)
@@ -341,10 +343,12 @@ Column buildListTiles(
                     yesFunction: () async {
                   Navigator.of(context, rootNavigator: true)
                       .pushNamed(NavigationConstants.homeView);
-                  showLoadingAlertDialog(
-                    context,
-                    title: 'Çıkış Yapılıyor...',
-                  );
+                  await Future.delayed(const Duration(milliseconds: 10), () {
+                    showLoadingAlertDialog(
+                      context,
+                      title: 'Çıkış Yapılıyor...',
+                    );
+                  });
                   Future.delayed(const Duration(seconds: 1), () {
                     AuthService().signOut();
 
@@ -499,10 +503,12 @@ Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
           Navigator.of(context, rootNavigator: true)
               .pushNamed(NavigationConstants.homeView);
           denemeProv.setFirebaseState = FirebaseState.loading;
-          showLoadingAlertDialog(
-            context,
-            title: 'Yedekleniyor...',
-          );
+          await Future.delayed(const Duration(milliseconds: 20), () {
+            showLoadingAlertDialog(
+              context,
+              title: 'Yedekleniyor...',
+            );
+          });
           await Future.delayed(const Duration(milliseconds: 1500), () async {
             await denemeProv
                 .backUpAllTablesData(
@@ -534,10 +540,12 @@ Future<void> restoreDataFunction(
             Navigator.of(context, rootNavigator: true)
                 .pushNamed(NavigationConstants.homeView);
 
-            showLoadingAlertDialog(
-              context,
-              title: 'Yükleniyor...',
-            );
+            await Future.delayed(const Duration(milliseconds: 20), () {
+              showLoadingAlertDialog(
+                context,
+                title: 'Yükleniyor...',
+              );
+            });
             await Future.delayed(const Duration(seconds: 1), () async {
               Navigator.of(context, rootNavigator: true)
                   .pushNamed(NavigationConstants.homeView);

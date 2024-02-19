@@ -23,6 +23,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   late bool _isNumberBig;
   late bool _isLoading;
   late bool _isAlertOpen;
+  late bool _isKeyboardOpen;
 
   late String? _lessonName;
   late int? _lastDenemeId;
@@ -52,6 +53,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     _isDiffZero = false;
     _isNumberBig = false;
     _isAlertOpen = false;
+    _isKeyboardOpen = false;
 
     _lessonName = 'Tarih';
     _subjectList = AppData.historySubjects;
@@ -122,6 +124,15 @@ class EditDenemeViewModel extends ChangeNotifier {
 
   bool get getIsNumberBig {
     return _isNumberBig;
+  }
+
+  set setKeyboardVisibility(bool newBool) {
+    _isKeyboardOpen = newBool;
+    notifyListeners();
+  }
+
+  bool get getKeyboardVisibility {
+    return _isKeyboardOpen;
   }
 
   set setLoading(bool newBool) {

@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
+import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
+import 'package:provider/provider.dart';
 
 class AppLifeCycleManager extends StatefulWidget {
   final Widget child;
@@ -29,6 +31,24 @@ class _AppLifeCycleManagerState extends State<AppLifeCycleManager>
     super.dispose();
     DenemeDbProvider.db.closeDatabase();
     WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+
+    final double bottomInset =
+        WidgetsBinding.instance.platformDispatcher.views.last.viewInsets.bottom;
+
+    if (bottomInset != 0.0) {
+      context.read<EditDenemeViewModel>().setKeyboardVisibility = true;
+
+      print("açık a");
+    } else {
+      context.read<EditDenemeViewModel>().setKeyboardVisibility = false;
+
+      print("kapalı a");
+    }
   }
 
   @override

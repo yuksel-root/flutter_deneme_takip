@@ -41,7 +41,7 @@ Future<void> _init() async {
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
-
+  static WidgetsBinding widgetsBinding = WidgetsBinding.instance;
   static Size screenSize =
       WidgetsBinding.instance.platformDispatcher.views.single.display.size;
   @override

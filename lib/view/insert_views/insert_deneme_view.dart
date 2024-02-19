@@ -13,10 +13,10 @@ class InsertDeneme extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final editDenemeProv =
-        Provider.of<EditDenemeViewModel>(context, listen: true);
+    final editProv = Provider.of<EditDenemeViewModel>(context, listen: true);
     final denemeProv = Provider.of<DenemeViewModel>(context, listen: true);
     final fakeData = denemeProv.fakeData ?? []; //fake data for loading
+
     return FutureBuilder(
       future: Future.delayed(Duration.zero, () => fakeData),
       builder: (context, snapshot) {
@@ -24,11 +24,12 @@ class InsertDeneme extends StatelessWidget {
             DenemeState.loading) {
           return const FadedLoadingForm();
         } else {
-          return GestureDetector(
+          return InkWell(
             onTap: () {
               FocusScope.of(context).unfocus();
+              editProv.setKeyboardVisibility = false;
             },
-            child: buildScaffold(editDenemeProv, context),
+            child: buildScaffold(editProv, context),
           );
         }
       },

@@ -61,8 +61,9 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
           tabController.addListener(() {
             if (!tabController.indexIsChanging) {
               editDenemeProv.getFormKey.currentState!.reset();
-
               FocusScope.of(context).unfocus();
+              editDenemeProv.setKeyboardVisibility = false;
+
               tabbarNavProv.setCurrentEditDeneme = tabController.index;
               editDenemeProv.setLessonName =
                   AppData.lessonNameList[tabbarNavProv.getCurrentEditDeneme];

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/utils/gradient_widget.dart';
 import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
+
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/deneme_edit_tabbar.dart';
@@ -24,7 +25,6 @@ class BottomTabbarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding widgetsBinding = WidgetsBinding.instance;
     final bottomProv = Provider.of<BottomNavigationProvider>(context);
     final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
 
@@ -32,56 +32,59 @@ class BottomTabbarView extends StatelessWidget {
     final denemeProv = Provider.of<DenemeViewModel>(context);
     final editProv = Provider.of<EditDenemeViewModel>(context);
 
-    return Scaffold(
-        body: currentScreen[bottomProv.getCurrentIndex],
-        bottomNavigationBar: Visibility(
-          visible:
-              widgetsBinding.platformDispatcher.views.last.viewInsets.bottom ==
-                  0,
-          child: GradientWidget(
-            blendModes: BlendMode.color,
-            gradient: ColorConstants.bottomGradient,
-            widget: BottomNavigationBar(
-              currentIndex: bottomProv.getCurrentIndex,
-              onTap: (index) {
-                bottomProv.setCurrentIndex = index;
-                denemeProv.setLessonName =
-                    AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
-                denemeProv.initDenemeData(AppData
-                    .lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+          body: currentScreen[bottomProv.getCurrentIndex],
+          bottomNavigationBar: Visibility(
+            visible: editProv.getKeyboardVisibility == false,
+            child: GradientWidget(
+              blendModes: BlendMode.color,
+              gradient: ColorConstants.bottomGradient,
+              widget: BottomNavigationBar(
+                currentIndex: bottomProv.getCurrentIndex,
+                onTap: (index) {
+                  bottomProv.setCurrentIndex = index;
+                  denemeProv.setLessonName = AppData
+                      .lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
+                  denemeProv.initDenemeData(AppData
+                      .lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
 
-                lessonProv.setLessonName =
-                    AppData.lessonNameList[tabbarNavProv.getLessonCurrentIndex];
-                lessonProv.initLessonData(AppData
-                    .lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
+                  lessonProv.setLessonName = AppData
+                      .lessonNameList[tabbarNavProv.getLessonCurrentIndex];
+                  lessonProv.initLessonData(AppData
+                      .lessonNameList[tabbarNavProv.getLessonCurrentIndex]);
 
-                editProv.setFalseControllers =
-                    editProv.getFalseCountsIntegers!.length;
+                  editProv.setFalseControllers =
+                      editProv.getFalseCountsIntegers!.length;
 
-                editProv.setLoading = true;
-              },
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    FontAwesomeIcons.house,
+                  editProv.setLoading = true;
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      FontAwesomeIcons.house,
+                    ),
+                    label: "Dersler",
                   ),
-                  label: "Dersler",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    FontAwesomeIcons.house,
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      FontAwesomeIcons.house,
+                    ),
+                    label: "Denemeler",
                   ),
-                  label: "Denemeler",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    FontAwesomeIcons.house,
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      FontAwesomeIcons.house,
+                    ),
+                    label: "DenemeGir",
                   ),
-                  label: "DenemeGir",
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 }

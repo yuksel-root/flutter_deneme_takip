@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
+import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
@@ -28,7 +29,8 @@ class InsertDenemeButton extends StatelessWidget {
 
           await Future.delayed(const Duration(seconds: 1), () {
             editProv.saveButton(isUpdate: false);
-            Navigator.of(context, rootNavigator: true).pop();
+            Navigator.of(context, rootNavigator: true)
+                .pushNamed(NavigationConstants.homeView);
             editProv.getFormKey.currentState!.reset();
           });
         } else if (editProv.getIsDiffZero == false) {
