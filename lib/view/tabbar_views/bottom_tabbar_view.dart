@@ -46,6 +46,7 @@ class BottomTabbarView extends StatelessWidget {
               widget: BottomNavigationBar(
                 currentIndex: bottomProv.getCurrentIndex,
                 onTap: (index) {
+                  denemeProv.listContHeights.clear();
                   bottomProv.setCurrentIndex = index;
                   denemeProv.setLessonName = AppData
                       .lessonNameList[tabbarNavProv.getCurrentDenemeIndex];

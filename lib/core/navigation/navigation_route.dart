@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
+import 'package:flutter_deneme_takip/view/bottom_tabbar_views/image_view.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 
@@ -13,6 +14,8 @@ class NavigationRoute {
     switch (settings?.name) {
       case NavigationConstants.homeView:
         return pageNavigate(const BottomTabbarView(), settings!);
+      case NavigationConstants.imageView:
+        return pageNavigate(const ImageView(), settings!);
 
       default:
         return MaterialPageRoute(

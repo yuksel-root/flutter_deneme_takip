@@ -114,6 +114,15 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                             context.dynamicW(0.01) * context.dynamicH(0.004)),
                   ),
                 ),
+                PopupMenuItem(
+                  value: 'option2',
+                  child: Text(
+                    'Png olustur',
+                    style: TextStyle(
+                        fontSize:
+                            context.dynamicW(0.01) * context.dynamicH(0.004)),
+                  ),
+                ),
               ];
             },
             onSelected: (value) async {
@@ -121,7 +130,9 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
                 _showDialog(context, "DİKKAT!",
                     "Tüm verileri silmek istiyor musunuz?", denemeProv);
               }
-              if (value == 'option2') {}
+              if (value == 'option2') {
+                Navigator.of(context).pushNamed(NavigationConstants.imageView);
+              }
               if (value == 'option3') {}
             },
           ),

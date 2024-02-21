@@ -11,6 +11,10 @@ import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 enum DenemeState {
   empty,
@@ -45,6 +49,14 @@ class DenemeViewModel extends ChangeNotifier {
   late String? _initPng;
   late bool _isOnline;
   final NavigationService navigation = NavigationService.instance;
+
+  late double _subContainerHeight;
+  late double _subContainerWidth;
+
+  final double subContainerDEFH = 100;
+  final double subContainerDEFW = 200;
+  final List<double> listContHeights = [];
+
   DenemeViewModel() {
     _navigation = NavigationService.instance;
 
@@ -59,11 +71,15 @@ class DenemeViewModel extends ChangeNotifier {
     _lessonTableName =
         AppData.tableNames[_lessonName] ?? AppData.tableNames['Tarih'];
 
+    _subContainerHeight = 100;
+    _subContainerWidth = 200;
+
     initDenemeData(_lessonName!);
     initFakeData();
 
     _initPng =
         AppData.lessonPngList[_lessonName] ?? AppData.lessonPngList['Tarih'];
+
     columnData = List.of(findList(_lessonName ?? 'Tarih'));
 
     rowData = [];
@@ -367,6 +383,19 @@ class DenemeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  double get getSubjectContainerHSize => _subContainerHeight;
+
+  set setSubjectContainerHSize(double newD) {
+    _subContainerHeight = newD;
+  }
+
+  double get getSubjectContainerWSize => _subContainerWidth;
+
+  set setSubjectContainerWSize(double newD) {
+    _subContainerWidth = newD;
+    notifyListeners();
+  }
+
   String? get getLessonName {
     return _lessonName ?? 'Tarih';
   }
@@ -625,6 +654,80 @@ class DenemeViewModel extends ChangeNotifier {
           }).then(
         (value) => setAlert = false,
       );
+    }
+  }
+
+  Future<void> generateAndSaveImage() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+
+    // Output.png dosyasının tam yolu
+    String filePath = '$appDocPath/output.png';
+
+    // Resmi oluştur
+    ui.PictureRecorder recorder = ui.PictureRecorder();
+    ui.Canvas canvas = ui.Canvas(
+        recorder,
+        ui.Rect.fromPoints(
+            const ui.Offset(0.0, 0.0), const ui.Offset(200.0, 200.0)));
+
+    // Resmi çiz
+    Paint paint = Paint()..color = Colors.blue; // Resmin arka plan rengi
+    canvas.drawRect(
+        Rect.fromPoints(const Offset(0.0, 0.0), const Offset(200.0, 200.0)),
+        paint);
+
+    drawText(canvas, "Merhaba, Flutter!", 20.0,
+        100.0); // Metni ekleyerek resmi özelleştir
+
+    ui.Picture picture = recorder.endRecording();
+
+    // Resmi PNG formatına dönüştür
+    ui.Image img = await picture.toImage(200, 200);
+    ByteData? byteData = await img.toByteData(format: ui.ImageByteFormat.png);
+
+    // ByteData'ı dosyaya kaydet
+    List<int> pngBytes = byteData!.buffer.asUint8List();
+    await File(filePath).writeAsBytes(pngBytes);
+
+    print('Resim başarıyla oluşturuldu: $filePath');
+  }
+
+  void drawText(ui.Canvas canvas, String text, double x, double y) {
+    final ui.ParagraphBuilder paragraphBuilder = ui.ParagraphBuilder(
+      ui.ParagraphStyle(
+        textAlign: TextAlign.left,
+        fontSize: 16.0,
+        textDirection: TextDirection.ltr,
+      ),
+    )
+      ..pushStyle(ui.TextStyle(color: Colors.white))
+      ..addText(text);
+
+    final ui.Paragraph paragraph = paragraphBuilder.build()
+      ..layout(const ui.ParagraphConstraints(width: 200.0));
+
+    canvas.drawParagraph(paragraph, Offset(x, y));
+  }
+
+  void accessSavedImage() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+
+    // Erişmek istediğiniz dosyanın adı
+    String fileName = 'output.png';
+
+    // Dosyanın tam yolu
+    String filePath = '$appDocPath/$fileName';
+
+    // Şimdi bu dosyayı okuyabilir veya işleyebilirsiniz
+    File file = File(filePath);
+
+    if (await file.exists()) {
+      // Dosya mevcutsa işlemlerinizi gerçekleştirin
+      print('Dosya mevcut: $filePath');
+    } else {
+      print('Dosya bulunamadı: $filePath');
     }
   }
 }

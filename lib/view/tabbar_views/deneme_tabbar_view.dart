@@ -57,6 +57,8 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
 
             denemeProv.setInitPng = AppData.lessonPngList[
                 AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]];
+
+            denemeProv.listContHeights.clear();
           }
         });
         return Scaffold(
@@ -89,7 +91,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
           bottom: TabBar(
               isScrollable: true, tabAlignment: TabAlignment.start, tabs: tab),
         ),
-      dynamicPreferredSize: context.dynamicH(0.15),
+        dynamicPreferredSize: context.dynamicH(0.15),
         gradients: ColorConstants.appBarGradient);
   }
 

@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/utils/gradient_widget.dart';
 import 'package:flutter_deneme_takip/components/text_dialog/update_text_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
@@ -17,6 +16,8 @@ class DenemeView extends StatelessWidget {
     final denemeProv = Provider.of<DenemeViewModel>(context);
     final editProv = Provider.of<EditDenemeViewModel>(context);
     final denemeData = context.read<DenemeViewModel>().listDeneme ?? [];
+    int defaultH = 100;
+    int defaultW = 200;
 
     return buildFutureView(denemeProv, denemeData, editProv);
   }
@@ -121,8 +122,8 @@ class DenemeView extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                height: 100,
-                width: 200,
+                height: denemeProv.getSubjectContainerHSize,
+                width: denemeProv.getSubjectContainerWSize,
                 child: Center(
                   child: Text(
                     "Deneme Sıra No",
@@ -135,290 +136,208 @@ class DenemeView extends StatelessWidget {
                   ),
                 ),
               )
-            : GradientWidget(
-                blendModes: BlendMode.srcOut,
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xff1c0f45),
-                    Color(0xff191970),
-                  ],
-                  begin: Alignment.bottomLeft,
-                  end: Alignment.topRight,
-                ),
-                widget: Container(
-                  height: 100,
-                  width: 200,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                          'assets/img/table_columns/${denemeProv.getInitPng}/$index.png'),
-                      fit: BoxFit.fill,
-                      alignment: Alignment.center,
-                      repeat: ImageRepeat.noRepeat,
-                    ),
-                  ),
-                ),
-              ),
-      ],
-    ));
-  }
-
-  Widget getRowCell(BuildContext context, int i, dynamic cell,
-      DenemeViewModel denemeProv, EditDenemeViewModel editProv, int rowIndex) {
-    return TableCell(
-        child: i == 0
-            ? Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xff283048),
-                      Color.fromARGB(255, 0, 187, 255),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: InkWell(
-                  onDoubleTap: denemeProv.getIsTotal != true
-                      ? () async {
-                          await Future.delayed(const Duration(milliseconds: 0),
-                              () {
-                            denemeProv.removeAlert(
-                              context,
-                              'UYARI',
-                              '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                              denemeProv,
-                              cell,
-                            );
-                          });
-                        }
-                      : () {},
-                  onLongPress: denemeProv.getIsTotal != true
-                      ? () async {
-                          await Future.delayed(const Duration(milliseconds: 0),
-                              () {
-                            denemeProv.removeAlert(
-                              context,
-                              'UYARI',
-                              '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                              denemeProv,
-                              cell,
-                            );
-                          });
-                        }
-                      : () {},
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          bottom: AppTheme.dynamicSize(
-                              dynamicHSize: 0.003, dynamicWSize: 0.004)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: InkWell(
-                              child: Text(
-                                cell.toString(),
-                                textAlign: TextAlign.center,
-                                style: i != 0
-                                    ? TextStyle(
-                                        color: Colors.black,
-                                        fontSize: AppTheme.dynamicSize(
-                                            dynamicHSize: 0.005,
-                                            dynamicWSize: 0.01))
-                                    : TextStyle(
-                                        color: Colors.white,
-                                        fontSize: AppTheme.dynamicSize(
-                                            dynamicHSize: 0.005,
-                                            dynamicWSize: 0.01)),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              )
             : Container(
-                height: context.dynamicW(0.13),
-                width: context.dynamicW(0.13),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xff283048),
-                      Color.fromARGB(255, 0, 187, 255),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: InkWell(
-                  onDoubleTap: () async {
-                    denemeProv.setAlert = false;
-                    editProv.setLoading = true;
-                    denemeProv.getIsTotal == false
-                        ? await showTextDialog(context,
-                                title: 'Yanlış Sayısı Değiştir',
-                                value: cell.toString(),
-                                index: i,
-                                rowIndex: (rowIndex + 1),
-                                alert: denemeProv.getIsAlertOpen)
-                            .then((value) {
-                            denemeProv.initDenemeData(denemeProv.getLessonName);
-                            denemeProv.setIsTotal = false;
-                          })
-                        : () {};
-                  },
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          bottom: AppTheme.dynamicSize(
-                              dynamicHSize: 0.003, dynamicWSize: 0.004)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(cell.toString(),
-                                textAlign: TextAlign.center,
-                                style: i != 0
-                                    ? TextStyle(
-                                        color: Colors.white,
-                                        fontSize: AppTheme.dynamicSize(
-                                            dynamicHSize: 0.005,
-                                            dynamicWSize: 0.01))
-                                    : TextStyle(
-                                        color: Colors.white,
-                                        fontSize: AppTheme.dynamicSize(
-                                            dynamicHSize: 0.005,
-                                            dynamicWSize: 0.01))),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ));
-  }
-
-  Widget getRowCell2(BuildContext context, int i, dynamic cell,
-      DenemeViewModel denemeProv, int rowIndex) {
-    return TableCell(
-        child: i == 0
-            ? Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xff283048),
-                      Color(0xff859398),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: InkWell(
-                  onDoubleTap: denemeProv.getIsTotal != true
-                      ? () async {
-                          await Future.delayed(const Duration(milliseconds: 0),
-                              () {
-                            denemeProv.removeAlert(
-                              context,
-                              'UYARI',
-                              '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                              denemeProv,
-                              cell,
-                            );
-                          });
-                        }
-                      : () {},
-                  onLongPress: () async {
-                    denemeProv.getIsTotal == false
-                        ? await Future.delayed(const Duration(milliseconds: 0),
-                            () {
-                            denemeProv.removeAlert(
-                              context,
-                              'UYARI',
-                              '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                              denemeProv,
-                              cell,
-                            );
-                          })
-                        : () {};
-                  },
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          bottom: AppTheme.dynamicSize(
-                              dynamicHSize: 0.003, dynamicWSize: 0.004)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(cell.toString(),
-                                textAlign: TextAlign.center,
-                                style: i != 0
-                                    ? TextStyle(
-                                        color: Colors.black,
-                                        fontSize: AppTheme.dynamicSize(
-                                            dynamicHSize: 0.005,
-                                            dynamicWSize: 0.01))
-                                    : TextStyle(
-                                        color: Colors.white,
-                                        fontSize: AppTheme.dynamicSize(
-                                            dynamicHSize: 0.005,
-                                            dynamicWSize: 0.01))),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            : Container(
-                height: context.dynamicW(0.13),
-                width: context.dynamicW(0.13),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
                       Color(0xff1c0f45),
-                      Color.fromARGB(255, 189, 188, 188),
+                      Color(0xff191970),
                     ],
-                    begin: Alignment.topLeft,
+                    begin: Alignment.topCenter,
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: InkWell(
-                  onDoubleTap: () async {
-                    denemeProv.setAlert = false;
+                height: denemeProv.getSubjectContainerHSize,
+                width: denemeProv.getSubjectContainerWSize,
+                child: Center(
+                  child: buildResizableText(denemeProv, index),
+                ),
+              )
+      ],
+    ));
+  }
 
-                    denemeProv.getIsTotal == false
-                        ? await showTextDialog(context,
-                                title: 'Yanlış Sayısı Değiştir',
-                                value: cell.toString(),
-                                index: i,
-                                rowIndex: (rowIndex + 1),
-                                alert: denemeProv.getIsAlertOpen)
-                            .then((value) {
-                            denemeProv.initDenemeData(denemeProv.getLessonName);
-                            denemeProv.setIsTotal = false;
-                          })
-                        : () {};
-                  },
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          bottom: AppTheme.dynamicSize(
-                              dynamicHSize: 0.003, dynamicWSize: 0.004)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
+  Widget buildResizableText(DenemeViewModel denemeProv, int index) {
+    TextPainter textPainter = TextPainter(
+      text: TextSpan(
+        text: denemeProv.findList(denemeProv.getLessonName ?? "Tarih")[index],
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.normal,
+          fontFamily: 'Calibri',
+          letterSpacing: -0.1,
+          fontStyle: FontStyle.normal,
+          fontSize:
+              AppTheme.dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.008),
+        ),
+      ),
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+
+    textPainter.layout();
+
+    double textWidth = textPainter.width;
+    double textHeight = textPainter.height;
+
+    double containerHeight = (textWidth / denemeProv.subContainerDEFW) *
+        denemeProv.subContainerDEFH /
+        1.1;
+
+    denemeProv.listContHeights.add(containerHeight);
+
+    print("index $index h $textHeight w $textWidth");
+    print("Max ${findMax(denemeProv)}");
+    if (textWidth > denemeProv.subContainerDEFW) {
+      denemeProv.setSubjectContainerHSize = findMax(denemeProv);
+    }
+
+    return Text(
+      denemeProv.findList(denemeProv.getLessonName ?? "Tarih")[index],
+      style: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.normal,
+        letterSpacing: -0.1,
+        fontFamily: 'Calibri',
+        fontStyle: FontStyle.normal,
+        fontSize: AppTheme.dynamicSize(
+            dynamicHSize: 0.005, dynamicWSize: 0.008), //4x4 16px
+      ),
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+  }
+}
+
+double findMax(DenemeViewModel denemeProv) {
+  double largestH = 0;
+  for (double height in denemeProv.listContHeights) {
+    if (height > largestH) {
+      largestH = height;
+    }
+  }
+  return largestH;
+}
+
+Widget getRowCell(BuildContext context, int i, dynamic cell,
+    DenemeViewModel denemeProv, EditDenemeViewModel editProv, int rowIndex) {
+  return TableCell(
+      child: i == 0
+          ? Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xff283048),
+                    Color.fromARGB(255, 0, 187, 255),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: InkWell(
+                onDoubleTap: denemeProv.getIsTotal != true
+                    ? () async {
+                        await Future.delayed(const Duration(milliseconds: 0),
+                            () {
+                          denemeProv.removeAlert(
+                            context,
+                            'UYARI',
+                            '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                            denemeProv,
+                            cell,
+                          );
+                        });
+                      }
+                    : () {},
+                onLongPress: denemeProv.getIsTotal != true
+                    ? () async {
+                        await Future.delayed(const Duration(milliseconds: 0),
+                            () {
+                          denemeProv.removeAlert(
+                            context,
+                            'UYARI',
+                            '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                            denemeProv,
+                            cell,
+                          );
+                        });
+                      }
+                    : () {},
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: AppTheme.dynamicSize(
+                            dynamicHSize: 0.003, dynamicWSize: 0.004)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: InkWell(
                             child: Text(
                               cell.toString(),
+                              textAlign: TextAlign.center,
+                              style: i != 0
+                                  ? TextStyle(
+                                      color: Colors.black,
+                                      fontSize: AppTheme.dynamicSize(
+                                          dynamicHSize: 0.005,
+                                          dynamicWSize: 0.01))
+                                  : TextStyle(
+                                      color: Colors.white,
+                                      fontSize: AppTheme.dynamicSize(
+                                          dynamicHSize: 0.005,
+                                          dynamicWSize: 0.01)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : Container(
+              height: context.dynamicW(0.13),
+              width: context.dynamicW(0.13),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xff283048),
+                    Color.fromARGB(255, 0, 187, 255),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: InkWell(
+                onDoubleTap: () async {
+                  denemeProv.setAlert = false;
+                  editProv.setLoading = true;
+                  denemeProv.getIsTotal == false
+                      ? await showTextDialog(context,
+                              title: 'Yanlış Sayısı Değiştir',
+                              value: cell.toString(),
+                              index: i,
+                              rowIndex: (rowIndex + 1),
+                              alert: denemeProv.getIsAlertOpen)
+                          .then((value) {
+                          denemeProv.initDenemeData(denemeProv.getLessonName);
+                          denemeProv.setIsTotal = false;
+                        })
+                      : () {};
+                },
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: AppTheme.dynamicSize(
+                            dynamicHSize: 0.003, dynamicWSize: 0.004)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(cell.toString(),
                               textAlign: TextAlign.center,
                               style: i != 0
                                   ? TextStyle(
@@ -430,46 +349,182 @@ class DenemeView extends StatelessWidget {
                                       color: Colors.white,
                                       fontSize: AppTheme.dynamicSize(
                                           dynamicHSize: 0.005,
-                                          dynamicWSize: 0.01)),
-                            ),
-                          ),
-                        ],
-                      ),
+                                          dynamicWSize: 0.01))),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ));
-  }
+              ),
+            ));
+}
 
-  List<TableRow> getRows(BuildContext context, DenemeViewModel denemeProv,
-      EditDenemeViewModel editProv) {
-    int k = -1;
-    List<Map<String, dynamic>> rowXdata = List.from(denemeProv.rowData);
+Widget getRowCell2(BuildContext context, int i, dynamic cell,
+    DenemeViewModel denemeProv, int rowIndex) {
+  return TableCell(
+      child: i == 0
+          ? Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xff283048),
+                    Color(0xff859398),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: InkWell(
+                onDoubleTap: denemeProv.getIsTotal != true
+                    ? () async {
+                        await Future.delayed(const Duration(milliseconds: 0),
+                            () {
+                          denemeProv.removeAlert(
+                            context,
+                            'UYARI',
+                            '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                            denemeProv,
+                            cell,
+                          );
+                        });
+                      }
+                    : () {},
+                onLongPress: () async {
+                  denemeProv.getIsTotal == false
+                      ? await Future.delayed(const Duration(milliseconds: 0),
+                          () {
+                          denemeProv.removeAlert(
+                            context,
+                            'UYARI',
+                            '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
+                            denemeProv,
+                            cell,
+                          );
+                        })
+                      : () {};
+                },
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: AppTheme.dynamicSize(
+                            dynamicHSize: 0.003, dynamicWSize: 0.004)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(cell.toString(),
+                              textAlign: TextAlign.center,
+                              style: i != 0
+                                  ? TextStyle(
+                                      color: Colors.black,
+                                      fontSize: AppTheme.dynamicSize(
+                                          dynamicHSize: 0.005,
+                                          dynamicWSize: 0.01))
+                                  : TextStyle(
+                                      color: Colors.white,
+                                      fontSize: AppTheme.dynamicSize(
+                                          dynamicHSize: 0.005,
+                                          dynamicWSize: 0.01))),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : Container(
+              height: context.dynamicW(0.13),
+              width: context.dynamicW(0.13),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xff1c0f45),
+                    Color.fromARGB(255, 189, 188, 188),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: InkWell(
+                onDoubleTap: () async {
+                  denemeProv.setAlert = false;
 
-    return rowXdata.map((row) {
-      k++;
-      List<Widget> cells = List.generate(
-        row['row'].length,
-        (i) {
-          dynamic cell = row['row'][i];
-          if (((k % 2) == 0)) {
-            return getRowCell(context, i, cell, denemeProv, editProv, k);
-          } else {
-            return getRowCell2(context, i, cell, denemeProv, k);
-          }
-        },
-      );
+                  denemeProv.getIsTotal == false
+                      ? await showTextDialog(context,
+                              title: 'Yanlış Sayısı Değiştir',
+                              value: cell.toString(),
+                              index: i,
+                              rowIndex: (rowIndex + 1),
+                              alert: denemeProv.getIsAlertOpen)
+                          .then((value) {
+                          denemeProv.initDenemeData(denemeProv.getLessonName);
+                          denemeProv.setIsTotal = false;
+                        })
+                      : () {};
+                },
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: AppTheme.dynamicSize(
+                            dynamicHSize: 0.003, dynamicWSize: 0.004)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            cell.toString(),
+                            textAlign: TextAlign.center,
+                            style: i != 0
+                                ? TextStyle(
+                                    color: Colors.white,
+                                    fontSize: AppTheme.dynamicSize(
+                                        dynamicHSize: 0.005,
+                                        dynamicWSize: 0.01))
+                                : TextStyle(
+                                    color: Colors.white,
+                                    fontSize: AppTheme.dynamicSize(
+                                        dynamicHSize: 0.005,
+                                        dynamicWSize: 0.01)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ));
+}
 
-      return TableRow(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.black,
-            style: BorderStyle.solid,
-            width: 0.5,
-          ),
+List<TableRow> getRows(BuildContext context, DenemeViewModel denemeProv,
+    EditDenemeViewModel editProv) {
+  int k = -1;
+  List<Map<String, dynamic>> rowXdata = List.from(denemeProv.rowData);
+
+  return rowXdata.map((row) {
+    k++;
+    List<Widget> cells = List.generate(
+      row['row'].length,
+      (i) {
+        dynamic cell = row['row'][i];
+        if (((k % 2) == 0)) {
+          return getRowCell(context, i, cell, denemeProv, editProv, k);
+        } else {
+          return getRowCell2(context, i, cell, denemeProv, k);
+        }
+      },
+    );
+
+    return TableRow(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.black,
+          style: BorderStyle.solid,
+          width: 0.5,
         ),
-        children: cells,
-      );
-    }).toList();
-  }
+      ),
+      children: cells,
+    );
+  }).toList();
 }
