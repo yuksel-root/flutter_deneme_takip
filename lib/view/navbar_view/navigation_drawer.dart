@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
 import 'package:flutter_deneme_takip/components/utils/gradient_widget.dart';
+import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
@@ -29,7 +30,6 @@ class NavDrawer extends StatelessWidget {
     final bottomProv =
         Provider.of<BottomNavigationProvider>(context, listen: false);
     final currentUser = loginProv.getCurrentUser;
-    //print(currentUser);
 
     return Container(
       decoration: BoxDecoration(
@@ -43,8 +43,9 @@ class NavDrawer extends StatelessWidget {
         backgroundColor: Colors.transparent,
         child: Flex(
           direction: Axis.vertical,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
                 flex: 18,
@@ -64,6 +65,9 @@ class NavDrawer extends StatelessWidget {
 Column buildListTileHeader(BuildContext context, DenemeLoginViewModel loginProv,
     User? currentUser, DenemeViewModel denemeProv) {
   return Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.max,
     children: [
       GradientWidget(
         blendModes: BlendMode.color,
@@ -71,11 +75,13 @@ Column buildListTileHeader(BuildContext context, DenemeLoginViewModel loginProv,
         widget: UserAccountsDrawerHeader(
           accountName: Text(currentUser?.displayName ?? "Çevrimdışı kullanıcı",
               style: TextStyle(
-                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.005))),
+                  fontSize: AppTheme.dynamicSize(
+                      dynamicHSize: 0.005, dynamicWSize: 0.01))),
           accountEmail: Text(
               currentUser?.email ?? "Lütfen Yedekleme için  giriş yapınız.",
               style: TextStyle(
-                  fontSize: context.dynamicW(0.01) * context.dynamicH(0.004))),
+                  fontSize: AppTheme.dynamicSize(
+                      dynamicHSize: 0.004, dynamicWSize: 0.01))),
           currentAccountPicture: Row(
             children: [
               Expanded(
@@ -103,7 +109,8 @@ Widget buildProfileImage(
     print("Error loading image: $e");
   }
 
-  return FlutterLogo(size: context.dynamicW(0.13));
+  return FlutterLogo(
+      size: AppTheme.dynamicSize(dynamicHSize: 0.01, dynamicWSize: 0.014));
 }
 
 Expanded drawerCardMenu(BuildContext context,
@@ -122,26 +129,25 @@ Expanded drawerCardMenu(BuildContext context,
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                borderRadius: BorderRadius.all(Radius.circular(
+                    AppTheme.dynamicSize(
+                        dynamicHSize: 0.005, dynamicWSize: 0.006))),
                 gradient: cardGradient,
               ),
               child: ListTile(
                 leading: GradientWidget(
                     blendModes: BlendMode.srcIn,
                     gradient: iconGradient,
-                    widget: Icon(
-                      icon,
-                      size: context.dynamicW(0.01) * context.dynamicH(0.005),
-                    )),
+                    widget: Icon(icon,
+                        size: AppTheme.dynamicSize(
+                            dynamicHSize: 0.005, dynamicWSize: 0.01))),
                 title: GradientWidget(
                     blendModes: BlendMode.srcIn,
                     gradient: textGradient,
-                    widget: Text(
-                      title,
-                      style: TextStyle(
-                          fontSize:
-                              context.dynamicW(0.01) * context.dynamicH(0.005)),
-                    )),
+                    widget: Text(title,
+                        style: TextStyle(
+                            fontSize: AppTheme.dynamicSize(
+                                dynamicHSize: 0.005, dynamicWSize: 0.01)))),
                 onTap: () {
                   onTap();
                 },

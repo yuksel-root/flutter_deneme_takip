@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'dart:async';
 
@@ -30,14 +31,16 @@ class LoadingAlert extends StatelessWidget {
 
   Padding buildAlertDialog(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(context.dynamicH(0.0714)),
+      padding: EdgeInsets.all(
+          AppTheme.dynamicSize(dynamicHSize: 0.012, dynamicWSize: 0.008)),
       child: Center(
         child: AlertDialog(
             backgroundColor: Colors.transparent,
             alignment: Alignment.center,
             elevation: 0,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(context.dynamicH(0.0714)),
+              borderRadius: BorderRadius.circular(AppTheme.dynamicSize(
+                  dynamicHSize: 0.012, dynamicWSize: 0.008)),
             ),
             actions: [
               Center(

@@ -149,7 +149,6 @@ class DenemeViewModel extends ChangeNotifier {
     _listFalseCounts.clear();
 
     falseCountsByDenemeId(denemelerData).forEach((denemeId, falseCounts) {
-      print(columnData.length);
       List<dynamic> arr =
           List.from(List.generate(columnData.length, (index) => 0));
 
@@ -164,11 +163,9 @@ class DenemeViewModel extends ChangeNotifier {
     });
 
     rowData.sort((a, b) {
-      // print("Sorted");
       String aTitle = a['row'][0].toString();
       String bTitle = b['row'][0].toString();
 
-      // "Deneme" ifadesini atarak sadece sayısal değerleri alıyoruz
       int aNumber = int.parse(aTitle.replaceAll("Deneme", ""));
       int bNumber = int.parse(bTitle.replaceAll("Deneme", ""));
 
@@ -180,13 +177,10 @@ class DenemeViewModel extends ChangeNotifier {
     rowData.clear();
     _listFalseCounts.clear();
 
-    // print("denemeData $denemeData");
-
     falseCountsByDenemeId(denemeData).forEach((denemeId, falseCounts) {
       _listFalseCounts.add(falseCounts);
     });
 
-    // print("get groupSize $getSelectedGroupSize");
     List<dynamic> sumList =
         List.from(sumByGroups(_listFalseCounts, getSelectedGroupSize));
     List<dynamic> sumArr = List.generate(columnData.length, (index) => 0);
@@ -456,9 +450,9 @@ class DenemeViewModel extends ChangeNotifier {
   Future<void> backUpAllTablesData(BuildContext context, String userId,
       DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) async {
     try {
-      final denemePostData = await FirebaseService().isFromCache(userId) ?? {};
+      final isOnline = await FirebaseService().isFromCache(userId) ?? {};
 
-      if (denemePostData.isEmpty) {
+      if (isOnline.isEmpty) {
         Future.delayed(Duration.zero, () {
           navigation.navigateToPage(path: NavigationConstants.homeView);
 

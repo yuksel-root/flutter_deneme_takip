@@ -20,11 +20,9 @@ class AppTheme {
 
   static double dynamicSize(
       {required double dynamicHSize, required double dynamicWSize}) {
-    WidgetsBinding widgetsBinding = WidgetsBinding.instance;
-
-    Size screenSize =
-        widgetsBinding.platformDispatcher.views.last.physicalSize /
-            widgetsBinding.platformDispatcher.views.last.devicePixelRatio;
+    Size screenSize = WidgetsBinding
+            .instance.platformDispatcher.views.last.physicalSize /
+        WidgetsBinding.instance.platformDispatcher.views.last.devicePixelRatio;
 
     double dynamicSize =
         (screenSize.width * dynamicWSize) * (screenSize.height * dynamicHSize);

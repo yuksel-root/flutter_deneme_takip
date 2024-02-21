@@ -42,12 +42,8 @@ class _AppLifeCycleManagerState extends State<AppLifeCycleManager>
 
     if (bottomInset != 0.0) {
       context.read<EditDenemeViewModel>().setKeyboardVisibility = true;
-
-      print("açık a");
     } else {
       context.read<EditDenemeViewModel>().setKeyboardVisibility = false;
-
-      print("kapalı a");
     }
   }
 
