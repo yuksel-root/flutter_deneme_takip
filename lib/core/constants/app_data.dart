@@ -91,6 +91,12 @@ class AppData {
     "Vatandaşlık": "vt",
   };
 
+  static const Map<int, String> lessonPng = {
+    0: "vt",
+    1: "cg",
+    2: "hs",
+  };
+
   static const Map<String, String> tableNames = {
     "Tarih": DenemeTables.historyTableName,
     "Coğrafya": DenemeTables.geographyTable,

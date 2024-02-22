@@ -16,8 +16,6 @@ class DenemeView extends StatelessWidget {
     final denemeProv = Provider.of<DenemeViewModel>(context);
     final editProv = Provider.of<EditDenemeViewModel>(context);
     final denemeData = context.read<DenemeViewModel>().listDeneme ?? [];
-    int defaultH = 100;
-    int defaultW = 200;
 
     return buildFutureView(denemeProv, denemeData, editProv);
   }
@@ -165,25 +163,21 @@ class DenemeView extends StatelessWidget {
           color: Colors.white,
           fontWeight: FontWeight.normal,
           fontFamily: 'Calibri',
-          letterSpacing: -0.1,
           fontStyle: FontStyle.normal,
           fontSize:
-              AppTheme.dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.008),
+              AppTheme.dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.009),
         ),
       ),
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
     );
-
     textPainter.layout();
 
     double textWidth = textPainter.width;
     double textHeight = textPainter.height;
 
-    double containerHeight = (textWidth / denemeProv.subContainerDEFW) *
-        denemeProv.subContainerDEFH /
-        1.1;
-
+    double containerHeight =
+        (textWidth / denemeProv.subContainerDEFW) * denemeProv.subContainerDEFH;
     denemeProv.listContHeights.add(containerHeight);
 
     print("index $index h $textHeight w $textWidth");
@@ -197,11 +191,11 @@ class DenemeView extends StatelessWidget {
       style: TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.normal,
-        letterSpacing: -0.1,
+
         fontFamily: 'Calibri',
         fontStyle: FontStyle.normal,
         fontSize: AppTheme.dynamicSize(
-            dynamicHSize: 0.005, dynamicWSize: 0.008), //4x4 16px
+            dynamicHSize: 0.005, dynamicWSize: 0.009), //4x4 16px
       ),
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,

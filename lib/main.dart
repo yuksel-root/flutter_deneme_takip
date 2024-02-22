@@ -10,6 +10,7 @@ import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/provider_list.dart';
 import 'package:flutter_deneme_takip/firebase_options.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
+import 'package:flutter_deneme_takip/view/bottom_tabbar_views/image_view.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/app_life_cycle_manager.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
@@ -47,10 +48,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
-    print(
+    /*    print(
         "app font ${AppTheme.dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01)}"); //20.48pixel
     print(
-        "context ${context.dynamicH(0.005) * context.dynamicW(0.01)}"); //20.48pixel
+        "context ${context.dynamicH(0.005) * context.dynamicW(0.01)}"); //20.48pixel */
     return AppLifeCycleManager(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -67,13 +68,13 @@ class MainApp extends StatelessWidget {
 
                   if (user == null) {
                     loginProv.setCurrentUser = null;
-                    return const BottomTabbarView();
+                    return const ImageView();
                   } else {
                     loginProv.setCurrentUser = user;
-                    return const BottomTabbarView();
+                    return const ImageView();
                   }
                 }
-                return const BottomTabbarView();
+                return const ImageView();
               },
             ),
           ),

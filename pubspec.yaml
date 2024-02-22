@@ -17,6 +17,7 @@ dependencies:
   #Local Database
   sqflite: ^2.3.0
   path: ^1.8.3
+  path_provider: ^2.1.2
 
   #State Management
   provider: ^6.1.1
