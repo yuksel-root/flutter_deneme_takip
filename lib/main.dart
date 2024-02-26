@@ -17,6 +17,8 @@ import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+BuildContext? context;
+
 Future<void> main() async {
   await _init();
   runApp(
@@ -47,6 +49,7 @@ class MainApp extends StatelessWidget {
       WidgetsBinding.instance.platformDispatcher.views.single.display.size;
   @override
   Widget build(BuildContext context) {
+    context = context;
     final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
     /*    print(
         "app font ${AppTheme.dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01)}"); //20.48pixel
@@ -68,13 +71,13 @@ class MainApp extends StatelessWidget {
 
                   if (user == null) {
                     loginProv.setCurrentUser = null;
-                    return const ImageView();
+                    return const BottomTabbarView();
                   } else {
                     loginProv.setCurrentUser = user;
-                    return const ImageView();
+                    return const BottomTabbarView();
                   }
                 }
-                return const ImageView();
+                return const BottomTabbarView();
               },
             ),
           ),

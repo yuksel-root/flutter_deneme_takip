@@ -1,8 +1,10 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/custom_painter/custom_painter.dart';
 import 'package:flutter_deneme_takip/components/text_dialog/update_text_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
+import 'package:flutter_deneme_takip/view/bottom_tabbar_views/subject_image.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
@@ -15,13 +17,14 @@ class DenemeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final denemeProv = Provider.of<DenemeViewModel>(context);
     final editProv = Provider.of<EditDenemeViewModel>(context);
+    final paintProv = Provider.of<CustomWidgetPainter>(context);
     final denemeData = context.read<DenemeViewModel>().listDeneme ?? [];
 
-    return buildFutureView(denemeProv, denemeData, editProv);
+    return buildFutureView(denemeProv, denemeData, editProv, paintProv);
   }
 
-  FutureBuilder buildFutureView(
-      DenemeViewModel denemeProv, denemeData, EditDenemeViewModel editProv) {
+  FutureBuilder buildFutureView(DenemeViewModel denemeProv, denemeData,
+      EditDenemeViewModel editProv, CustomWidgetPainter paintProv) {
     return FutureBuilder(
         future: Future.delayed(Duration.zero, () async {
           return denemeData;
@@ -32,7 +35,8 @@ class DenemeView extends StatelessWidget {
             return Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
-                child: buildDataTable(context, denemeProv, editProv));
+                child:
+                    buildDataTable(context, denemeProv, editProv, paintProv));
           } else if (context.watch<DenemeViewModel>().listDeneme!.isEmpty) {
             return Center(
                 child: Text(
@@ -62,8 +66,8 @@ class DenemeView extends StatelessWidget {
                         scrollDirection: Axis.vertical,
                         child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            child:
-                                buildDataTable(context, denemeProv, editProv)),
+                            child: buildDataTable(
+                                context, denemeProv, editProv, paintProv)),
                       ),
                     ),
                   ],
@@ -75,7 +79,7 @@ class DenemeView extends StatelessWidget {
   }
 
   Widget buildDataTable(BuildContext context, DenemeViewModel denemeProv,
-      EditDenemeViewModel editProv) {
+      EditDenemeViewModel editProv, CustomWidgetPainter paintProv) {
     return Center(
         child: Column(children: <Widget>[
       SizedBox(
@@ -86,7 +90,7 @@ class DenemeView extends StatelessWidget {
           border: TableBorder.all(
               color: Colors.black, style: BorderStyle.solid, width: 1),
           children: [
-            getColumns(context, denemeProv),
+            getColumns(context, denemeProv, paintProv),
             ...getRows(context, denemeProv, editProv),
           ],
         ),
@@ -94,17 +98,24 @@ class DenemeView extends StatelessWidget {
     ]));
   }
 
-  TableRow getColumns(BuildContext context, DenemeViewModel denemeProv) {
+  TableRow getColumns(BuildContext context, DenemeViewModel denemeProv,
+      CustomWidgetPainter paintProv) {
     return TableRow(
       children: List.generate(
         denemeProv.columnData.length,
-        (index) => getColumnCell(context, denemeProv, index),
+        (index) => FutureBuilder(
+            future: Future.delayed(Duration.zero, () {
+              paintProv.setSubjectText = denemeProv
+                  .findList(denemeProv.getLessonName ?? "Tarih")[index];
+            }),
+            builder: (context, snapshot) =>
+                getColumnCell(context, denemeProv, index, paintProv)),
       ),
     );
   }
 
-  TableCell getColumnCell(
-      BuildContext context, DenemeViewModel denemeProv, int index) {
+  TableCell getColumnCell(BuildContext context, DenemeViewModel denemeProv,
+      int index, CustomWidgetPainter paintProv) {
     return TableCell(
         child: Column(
       children: [
@@ -120,8 +131,8 @@ class DenemeView extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                height: denemeProv.getSubjectContainerHSize,
-                width: denemeProv.getSubjectContainerWSize,
+                height: paintProv.getHeight,
+                width: paintProv.getWidth,
                 child: Center(
                   child: Text(
                     "Deneme Sıra No",
@@ -145,11 +156,9 @@ class DenemeView extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                height: denemeProv.getSubjectContainerHSize,
-                width: denemeProv.getSubjectContainerWSize,
-                child: Center(
-                  child: buildResizableText(denemeProv, index),
-                ),
+                height: paintProv.getHeight,
+                width: paintProv.getWidth,
+                child: const SubjectImage(),
               )
       ],
     ));

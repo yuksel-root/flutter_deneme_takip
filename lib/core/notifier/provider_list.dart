@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/custom_painter/custom_painter.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
-import 'package:flutter_deneme_takip/core/notifier/create_png_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
@@ -37,7 +38,7 @@ class ApplicationProvider {
       create: (context) => DenemeLoginViewModel(),
     ),
     ChangeNotifierProvider(
-      create: (context) => CreatePngProvider(),
+      create: (context) => CustomWidgetPainter(),
     ),
     Provider.value(value: NavigationService.instance),
   ];
