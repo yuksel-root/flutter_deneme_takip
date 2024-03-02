@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_print
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
@@ -34,8 +33,6 @@ class DenemeViewModel extends ChangeNotifier {
   late DenemeState? _state;
   late FirebaseState? _firebaseState;
   late NavigationService _navigation;
-
-  FirebaseFirestore? firestore = FirebaseFirestore.instance;
 
   late String? _lessonName;
   late String? _lessonTableName;
@@ -169,7 +166,7 @@ class DenemeViewModel extends ChangeNotifier {
           List.from(List.generate(columnData.length, (index) => 0));
 
       for (int j = 0; j < (columnData.length); j++) {
-        arr[0] = "Deneme$denemeId";
+        arr[0] = "Deneme\n $denemeId";
         arr[j] = falseCounts[j];
       }
 

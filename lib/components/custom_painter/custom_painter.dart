@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'dart:io';
 
@@ -34,8 +33,8 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
   late Map<String, List<String>> _mapSubjectText;
 
   CustomWidgetPainter() {
-    _containerHeight = 200;
-    _containerWidth = 150;
+    _containerHeight = 150;
+    _containerWidth = 200;
 
     _textWidth = 0;
     _textHeight = 0;
@@ -208,20 +207,29 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
 
   Future<void> generateAndSaveImage(denemeProv) async {
     for (int k = 0; k < 3; k++) {
-      for (int i = 1; i < 10; i++) {
+      for (int i = 1; i < 11; i++) {
         try {
           final CustomPainter painter = CustomWidgetPainter();
           final Directory appDocDir = await getApplicationDocumentsDirectory();
-          String fileName = 'output$i$k.png';
+          if (k == 0) {
+            setFileName = 'Vatandaşlık$i.png';
+          }
+          if (k == 1) {
+            setFileName = 'Coğrafya$i.png';
+          }
+          if (k == 2) {
+            setFileName = 'Tarih$i.png';
+          }
+
           setSubjectText = getText(denemeProv, k, i);
-          painter.shouldRepaint(painter);
+          //painter.shouldRepaint(painter);
           ui.PictureRecorder recorder = ui.PictureRecorder();
 
           Canvas canvas = Canvas(recorder);
 
           painter.paint(canvas, Size(getWidth, getHeight));
-          print("scaleX $getCenterScaleX");
-          drawText(canvas, getCenterScaleX, getCenterScaleY);
+
+          drawText(canvas, getCenterScaleX, getCenterScaleY, getSubjectText);
 
           ui.Picture picture = recorder.endRecording();
 
@@ -233,7 +241,7 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
 
           List<int> pngBytes = byteData!.buffer.asUint8List();
 
-          setFilePath = '${appDocDir.path}/$fileName';
+          setFilePath = '${appDocDir.path}/$getFileName';
           File(getFilePath).writeAsBytesSync(pngBytes, flush: true);
         } catch (error) {
           print('Hata oluştu: $error');
@@ -254,7 +262,7 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
     );
 
     canvas.drawRect(rect, paint);
-    // drawText(canvas, getCenterScaleX, getCenterScaleY);
+    drawText(canvas, getCenterScaleX, getCenterScaleY, getSubjectText);
   }
 
   @override
@@ -262,12 +270,12 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
     return true;
   }
 
-  Future<void> drawText(
-      Canvas canvas, double centerScaleX, double centerScaleY) async {
+  Future<void> drawText(Canvas canvas, double centerScaleX, double centerScaleY,
+      String text) async {
     TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: getSubjectText,
-        style: TextStyle(
+        style:const  TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w100,
           fontFamily: 'Calibri',
@@ -301,7 +309,9 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
         fontStyle: FontStyle.normal,
         fontSize: 20,
       ))
-      ..addText(getSubjectText);
+      ..addText(
+        "Anayasa Hukukuna Giriş Temel Kavramlar Ve Türk Anayasa Tarihi Tarihleri",
+      );
     ui.Paragraph pr = prB.build()
       ..layout(ui.ParagraphConstraints(width: getWidth));
 

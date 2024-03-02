@@ -28,54 +28,64 @@ class InsertDenemeTextField extends StatelessWidget {
                     child: TextFormField(
                       controller: editProv.getFalseControllers[i],
                       focusNode: editProv.getFocusNode[i],
+                      canRequestFocus: true,
                       autofocus: false,
                       keyboardType: TextInputType.number,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       textInputAction: TextInputAction.next,
                       onTap: () {
-                        var focusNode = editProv.getFocusNode[i];
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          var focusNode = editProv.getFocusNode[i];
 
-                        void onFocusChange() {
-                          if (focusNode.hasFocus) {
-                            editProv.setKeyboardVisibility = true;
-                            editProv.getFalseControllers[i].clear();
-                          } else {
-                            editProv.setKeyboardVisibility = false;
-                            focusNode.removeListener(onFocusChange);
+                          void onFocusChange() {
+                            if (focusNode.hasFocus) {
+                              editProv.setKeyboardVisibility = true;
+                              editProv.getFalseControllers[i].clear();
+                            } else {
+                              editProv.setKeyboardVisibility = false;
+                              focusNode.removeListener(onFocusChange);
+                            }
                           }
-                        }
 
-                        focusNode.addListener(onFocusChange);
+                          focusNode.addListener(onFocusChange);
+                        });
                       },
                       onTapOutside: (event) {
                         context
                             .read<EditDenemeViewModel>()
                             .setKeyboardVisibility = false;
+                        FocusScope.of(context).unfocus();
                       },
                       onEditingComplete: () {
-                        Future.delayed(const Duration(milliseconds: 2), () {
-                          if (WidgetsBinding.instance.platformDispatcher.views
-                                  .last.viewInsets.bottom ==
-                              0) {
-                            context
-                                .read<EditDenemeViewModel>()
-                                .setKeyboardVisibility = false;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          Future.delayed(const Duration(milliseconds: 2), () {
+                            if (WidgetsBinding.instance.platformDispatcher.views
+                                    .last.viewInsets.bottom ==
+                                0) {
+                              context
+                                  .read<EditDenemeViewModel>()
+                                  .setKeyboardVisibility = false;
+                            } else {
+                              context
+                                  .read<EditDenemeViewModel>()
+                                  .setKeyboardVisibility = true;
+                            }
+                          });
+
+                          if (i < editProv.getFalseCountsIntegers!.length - 1) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              FocusScope.of(context)
+                                  .requestFocus(editProv.getFocusNode[i + 1]);
+                              editProv.getFalseControllers[i + 1].clear();
+                            });
                           } else {
-                            context
-                                .read<EditDenemeViewModel>()
-                                .setKeyboardVisibility = true;
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              FocusScope.of(context)
+                                  .requestFocus(editProv.getFocusNode[1]);
+                              editProv.getFalseControllers[1].clear();
+                            });
                           }
                         });
-
-                        if (i < editProv.getFalseCountsIntegers!.length - 1) {
-                          FocusScope.of(context)
-                              .requestFocus(editProv.getFocusNode[i + 1]);
-                          editProv.getFalseControllers[i + 1].clear();
-                        } else {
-                          FocusScope.of(context)
-                              .requestFocus(editProv.getFocusNode[1]);
-                          editProv.getFalseControllers[1].clear();
-                        }
                       },
                       style: TextStyle(
                           color: Colors.black,

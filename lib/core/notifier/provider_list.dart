@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/custom_painter/custom_painter.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';

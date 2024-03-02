@@ -1,10 +1,10 @@
 // ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/custom_painter/custom_painter.dart';
 import 'package:flutter_deneme_takip/components/text_dialog/update_text_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-import 'package:flutter_deneme_takip/view/bottom_tabbar_views/subject_image.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
 import 'package:provider/provider.dart';
@@ -86,7 +86,7 @@ class DenemeView extends StatelessWidget {
         child: Table(
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           defaultColumnWidth: FixedColumnWidth(
-              AppTheme.dynamicSize(dynamicHSize: 0.012, dynamicWSize: 0.018)),
+              AppTheme.dynamicSize(dynamicHSize: 0.014, dynamicWSize: 0.02)),
           border: TableBorder.all(
               color: Colors.black, style: BorderStyle.solid, width: 1),
           children: [
@@ -118,6 +118,8 @@ class DenemeView extends StatelessWidget {
       int index, CustomWidgetPainter paintProv) {
     return TableCell(
         child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         index == 0
             ? Container(
@@ -131,70 +133,46 @@ class DenemeView extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                height: paintProv.getHeight,
-                width: paintProv.getWidth,
+                height: AppTheme.dynamicSize(
+                    dynamicHSize: 0.0117, dynamicWSize: 0.032),
+                width: AppTheme.dynamicSize(
+                    dynamicHSize: 0.014, dynamicWSize: 0.02),
                 child: Center(
                   child: Text(
-                    "Deneme Sıra No",
+                    "Deneme\n Sıra\n No",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: AppTheme.dynamicSize(
-                          dynamicHSize: 0.004, dynamicWSize: 0.01),
+                          dynamicHSize: 0.005, dynamicWSize: 0.0095),
                     ),
                   ),
                 ),
               )
             : Container(
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xff1c0f45),
-                      Color(0xff191970),
+                      Color(0xFF1C0F45),
+                      Color(0xFF1C0F45),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomRight,
                   ),
                 ),
-                height: paintProv.getHeight,
-                width: paintProv.getWidth,
-                child: const SubjectImage(),
-              )
+                height: AppTheme.dynamicSize(
+                    dynamicHSize: 0.0117, dynamicWSize: 0.032),
+                width: AppTheme.dynamicSize(
+                    dynamicHSize: 0.014, dynamicWSize: 0.02),
+                child: Center(
+                    child: buildResizableText(context, denemeProv, index))),
       ],
     ));
   }
 
-  Widget buildResizableText(DenemeViewModel denemeProv, int index) {
-    TextPainter textPainter = TextPainter(
-      text: TextSpan(
-        text: denemeProv.findList(denemeProv.getLessonName ?? "Tarih")[index],
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.normal,
-          fontFamily: 'Calibri',
-          fontStyle: FontStyle.normal,
-          fontSize:
-              AppTheme.dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.009),
-        ),
-      ),
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout();
-
-    double textWidth = textPainter.width;
-    double textHeight = textPainter.height;
-
-    double containerHeight =
-        (textWidth / denemeProv.subContainerDEFW) * denemeProv.subContainerDEFH;
-    denemeProv.listContHeights.add(containerHeight);
-
-    print("index $index h $textHeight w $textWidth");
-    print("Max ${findMax(denemeProv)}");
-    if (textWidth > denemeProv.subContainerDEFW) {
-      denemeProv.setSubjectContainerHSize = findMax(denemeProv);
-    }
-
+  Widget buildResizableText(
+      BuildContext context, DenemeViewModel denemeProv, int index) {
     return Text(
       denemeProv.findList(denemeProv.getLessonName ?? "Tarih")[index],
       style: TextStyle(
@@ -204,7 +182,7 @@ class DenemeView extends StatelessWidget {
         fontFamily: 'Calibri',
         fontStyle: FontStyle.normal,
         fontSize: AppTheme.dynamicSize(
-            dynamicHSize: 0.005, dynamicWSize: 0.009), //4x4 16px
+            dynamicHSize: 0.0045, dynamicWSize: 0.0085), //4x4 16px
       ),
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
@@ -302,7 +280,8 @@ Widget getRowCell(BuildContext context, int i, dynamic cell,
             )
           : Container(
               height: context.dynamicW(0.13),
-              width: context.dynamicW(0.13),
+              width:
+                  AppTheme.dynamicSize(dynamicHSize: 0.014, dynamicWSize: 0.02),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -438,7 +417,8 @@ Widget getRowCell2(BuildContext context, int i, dynamic cell,
             )
           : Container(
               height: context.dynamicW(0.13),
-              width: context.dynamicW(0.13),
+              width:
+                  AppTheme.dynamicSize(dynamicHSize: 0.014, dynamicWSize: 0.02),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [

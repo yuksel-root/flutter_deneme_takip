@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/app_bar/custom_app_bar.dart';
 import 'package:flutter_deneme_takip/core/constants/app_data.dart';
+import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
@@ -45,9 +46,15 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
       initialIndex: tabbarNavProv.getCurrentDenemeIndex,
       child: Builder(builder: (BuildContext context) {
         final TabController tabController = DefaultTabController.of(context);
-        tabController.addListener(() {
+        tabController.addListener(() async {
           if (!tabController.indexIsChanging) {
             tabbarNavProv.setCurrentDenemeIndex = tabController.index;
+            print(
+                "fontSize ${AppTheme.dynamicSize(dynamicHSize: 0.0045, dynamicWSize: 0.0085)}");
+            print(
+                "height ${AppTheme.dynamicSize(dynamicHSize: 0.0117, dynamicWSize: 0.032)}");
+            print(
+                "width ${AppTheme.dynamicSize(dynamicHSize: 0.014, dynamicWSize: 0.02)}");
 
             denemeProv.setLessonName =
                 AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];

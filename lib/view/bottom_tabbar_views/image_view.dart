@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/custom_painter/custom_painter.dart';
 import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
 import 'package:flutter_deneme_takip/core/constants/app_data.dart';
+import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -31,8 +32,9 @@ class ImageView extends StatelessWidget {
                   await getApplicationDocumentsDirectory();
               painterProv.deleteImages(directoryPath);
               painterProv.setNavText = "showPng";
-              painterProv.setWidth = 130;
-              painterProv.setHeight = 200;
+              painterProv.setWidth =
+                  AppTheme.dynamicSize(dynamicHSize: 0.014, dynamicWSize: 0.02);
+              painterProv.setHeight = 160;
               painterProv.setCenterScaleX = 10;
               painterProv.setCenterScaleY = 2;
               painterProv.generateAndSaveImage(denemeProv);
@@ -45,8 +47,8 @@ class ImageView extends StatelessWidget {
                   await getApplicationDocumentsDirectory();
               painterProv.deleteImages(directoryPath);
               painterProv.setNavText = "createPng";
-              painterProv.setWidth = 130;
-              painterProv.setHeight = 200;
+              painterProv.setWidth = 250;
+              painterProv.setHeight = 150;
               painterProv.setCenterScaleX = 10;
               painterProv.setCenterScaleY = 2;
               painterProv.generateAndSaveImage(denemeProv);
@@ -85,28 +87,28 @@ class ImageView extends StatelessWidget {
                     children: [
                       for (int i = 1; i < 10; i++)
                         painterProv.getNavText == "showPng"
-                            ? Container(
-                                height: painterProv.getHeight,
-                                width: painterProv.getWidth,
-                                decoration: const BoxDecoration(
-                                  border: Border(
-                                      left: BorderSide(
-                                    color: Colors.white,
-                                    width: 3.0,
-                                  )),
-                                ),
-                                child: CustomPaint(
-                                  willChange: true,
-                                  painter: painterProv,
-                                  child: Center(
-                                      child: Text(
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                    painterProv.getText(denemeProv, j, i),
-                                  )),
-                                ),
-                              )
+                            ? FutureBuilder(
+                                future: Future.delayed(Duration.zero, () {
+                                  painterProv.setSubjectText =
+                                      painterProv.getText(denemeProv, j, i);
+                                }),
+                                builder: (context, snapshot) {
+                                  return Container(
+                                    height: painterProv.getHeight,
+                                    width: painterProv.getWidth,
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                          left: BorderSide(
+                                        color: Colors.white,
+                                        width: 3.0,
+                                      )),
+                                    ),
+                                    child: CustomPaint(
+                                      willChange: true,
+                                      painter: painterProv,
+                                    ),
+                                  );
+                                })
                             : painterProv.getNavText == "orjPng"
                                 ? Container(
                                     height: painterProv.getHeight,
@@ -140,7 +142,7 @@ class ImageView extends StatelessWidget {
                                         future:
                                             Future.delayed(Duration.zero, () {
                                           return File(
-                                                  '/data/user/0/com.example.flutter_deneme_takip/app_flutter/output$i$j.png')
+                                                  '/data/user/0/com.example.flutter_deneme_takip/app_flutter/${j == 0 ? 'Vatandaşlık' : j == 1 ? 'Coğrafya' : 'Tarih'}$i.png')
                                               .exists();
                                         }),
                                         builder: (context, snapshot) {
@@ -148,10 +150,13 @@ class ImageView extends StatelessWidget {
                                                   snapshot.data!
                                               ? Image.file(
                                                   File(
-                                                      '/data/user/0/com.example.flutter_deneme_takip/app_flutter/output$i$j.png'),
+                                                      '/data/user/0/com.example.flutter_deneme_takip/app_flutter/${j == 0 ? 'Vatandaşlık' : j == 1 ? 'Coğrafya' : 'Tarih'}$i.png'),
                                                   fit: BoxFit.fill,
                                                   alignment: Alignment.center,
                                                   repeat: ImageRepeat.noRepeat,
+                                                  isAntiAlias: true,
+                                                  filterQuality:
+                                                      FilterQuality.high,
                                                 )
                                               : const LoadingAlert(
                                                   title: 'Loading...');
