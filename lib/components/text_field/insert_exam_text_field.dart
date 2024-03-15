@@ -1,18 +1,18 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
-import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
+import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
+import 'package:provider/provider.dart';
 
-class InsertDenemeTextField extends StatelessWidget {
-  const InsertDenemeTextField({super.key});
+class InsertExamTextField extends StatelessWidget {
+  const InsertExamTextField({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final EditDenemeViewModel editProv =
-        Provider.of<EditDenemeViewModel>(context, listen: true);
+    final EditExamViewModel editProv =
+        Provider.of<EditExamViewModel>(context, listen: true);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -34,25 +34,22 @@ class InsertDenemeTextField extends StatelessWidget {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       textInputAction: TextInputAction.next,
                       onTap: () {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          var focusNode = editProv.getFocusNode[i];
-
-                          void onFocusChange() {
-                            if (focusNode.hasFocus) {
-                              editProv.setKeyboardVisibility = true;
-                              editProv.getFalseControllers[i].clear();
-                            } else {
-                              editProv.setKeyboardVisibility = false;
-                              focusNode.removeListener(onFocusChange);
-                            }
+                        var focusNode = editProv.getFocusNode[i];
+                        void onFocusChange() {
+                          if (focusNode.hasFocus) {
+                            editProv.setKeyboardVisibility = true;
+                            editProv.getFalseControllers[i].clear();
+                          } else {
+                            editProv.setKeyboardVisibility = false;
+                            focusNode.removeListener(onFocusChange);
                           }
+                        }
 
-                          focusNode.addListener(onFocusChange);
-                        });
+                        focusNode.addListener(onFocusChange);
                       },
                       onTapOutside: (event) {
                         context
-                            .read<EditDenemeViewModel>()
+                            .read<EditExamViewModel>()
                             .setKeyboardVisibility = false;
                         FocusScope.of(context).unfocus();
                       },
@@ -63,11 +60,11 @@ class InsertDenemeTextField extends StatelessWidget {
                                     .last.viewInsets.bottom ==
                                 0) {
                               context
-                                  .read<EditDenemeViewModel>()
+                                  .read<EditExamViewModel>()
                                   .setKeyboardVisibility = false;
                             } else {
                               context
-                                  .read<EditDenemeViewModel>()
+                                  .read<EditExamViewModel>()
                                   .setKeyboardVisibility = true;
                             }
                           });
@@ -133,7 +130,7 @@ class InsertDenemeTextField extends StatelessWidget {
                               int.parse(value);
                         } catch (e) {
                           print(e);
-                          DenemeViewModel().printFunct("onChanged catch", e);
+                          ExamTableViewModel().printFunct("onChanged catch", e);
                         }
                       },
                       decoration: InputDecoration(
