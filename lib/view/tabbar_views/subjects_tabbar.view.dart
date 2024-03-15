@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/view/bottom_tabbar_views/lesson_view.dart';
+import 'package:flutter_deneme_takip/view_model/subject_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:flutter_deneme_takip/components/app_bar/custom_app_bar.dart';
@@ -13,21 +13,22 @@ import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/models/lesson.dart';
+import 'package:flutter_deneme_takip/view/bottom_tabbar_views/subject_view.dart';
 import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
 import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 
-class LessonTabbarView extends StatefulWidget {
-  const LessonTabbarView({
+class SubjectsTabbarView extends StatefulWidget {
+  const SubjectsTabbarView({
     super.key,
   });
 
   @override
-  State<LessonTabbarView> createState() => _ExamTabbarViewState();
+  State<SubjectsTabbarView> createState() => _ExamTabbarViewState();
 }
 
-class _ExamTabbarViewState extends State<LessonTabbarView>
+class _ExamTabbarViewState extends State<SubjectsTabbarView>
     with TickerProviderStateMixin {
   late TabController tabController;
 
@@ -52,53 +53,57 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
 
   @override
   Widget build(BuildContext context) {
-    final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
-    final editExamProv = Provider.of<EditExamViewModel>(context);
-    final examTableProv = Provider.of<ExamTableViewModel>(context);
+    final tabbarProv = Provider.of<TabbarNavigationProvider>(context);
+    final editexamProv = Provider.of<EditExamViewModel>(context);
+    final examProv = Provider.of<ExamTableViewModel>(context);
     final lessonProv = Provider.of<LessonViewModel>(context);
-    return buildDefTabController(lessonProv, editExamProv, examTableProv);
+    final subjectProv = Provider.of<SubjectViewModel>(context);
+    return buildTabController(
+        subjectProv, lessonProv, editexamProv, examProv, tabbarProv);
   }
 
-  DefaultTabController buildDefTabController(LessonViewModel lessonProv,
-      EditExamViewModel editexamProv, ExamTableViewModel examTableProv) {
+  DefaultTabController buildTabController(
+      SubjectViewModel subjectProv,
+      LessonViewModel lessonProv,
+      EditExamViewModel editexamProv,
+      ExamTableViewModel examProv,
+      TabbarNavigationProvider tabbarProv) {
     return DefaultTabController(
       length: lessonProv.getLessonData.length,
-      initialIndex: 0,
+      initialIndex: tabbarProv.getSubjectTabIndex,
       child: Builder(
         builder: (BuildContext context) {
           final TabController tabController = DefaultTabController.of(context);
           tabController.addListener(() {
             if (!tabController.indexIsChanging) {
               editexamProv.setKeyboardVisibility = false;
-              print("controller ${lessonProv.getLessonData.length}");
+
+              subjectProv.setLessonId =
+                  lessonProv.getLessonData[tabController.index].lessonId!;
             }
           });
-          return buildScaffold(lessonProv, examTableProv);
+          return buildScaffold(examProv, context, lessonProv);
         },
       ),
     );
   }
 
-  Scaffold buildScaffold(
-      LessonViewModel lessonProv, ExamTableViewModel examProv) {
+  Scaffold buildScaffold(ExamTableViewModel examProv, BuildContext context,
+      LessonViewModel lessonProv) {
     return Scaffold(
       drawer: const NavDrawer(),
       appBar: buildAppBAr(context, examProv),
-      body: const LessonView(),
-    );
-  }
-
-  TabBarView buildTabbarView(LessonViewModel lessonProv) {
-    return TabBarView(
-      children: List.generate(
-        lessonProv.getLessonData.length,
-        (index) => const LessonView(),
+      body: TabBarView(
+        children: List.generate(
+          lessonProv.getLessonData.length,
+          (index) => const SubjectView(),
+        ),
       ),
     );
   }
 
   List<Widget> generateTabs() {
-    final lessonProv = Provider.of<LessonViewModel>(context, listen: true);
+    final lessonProv = Provider.of<LessonViewModel>(context, listen: false);
 
     return List.generate(
       lessonProv.getLessonData.length,
@@ -108,7 +113,6 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
         return GestureDetector(
           onDoubleTap: () {
             lessonProv.removeLesson(lesson.lessonId!);
-
             Navigator.of(context, rootNavigator: true)
                 .pushNamed(NavigationConstants.homeView);
           },
@@ -160,7 +164,7 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
             },
           ),
         ],
-        title: const Center(child: Text('Dersler')),
+        title: const Center(child: Text('Konular')),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Selector<LessonViewModel, int>(

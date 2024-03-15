@@ -7,19 +7,19 @@ import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
-import 'package:flutter_deneme_takip/view/bottom_tabbar_views/deneme_view.dart';
+import 'package:flutter_deneme_takip/view/bottom_tabbar_views/exam_table_view.dart';
 import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
 import 'package:provider/provider.dart';
 
-class DenemeTabbarView extends StatefulWidget {
-  const DenemeTabbarView({super.key});
+class ExamTableTabbarView extends StatefulWidget {
+  const ExamTableTabbarView({super.key});
 
   @override
-  State<DenemeTabbarView> createState() => _DenemeTabbarViewState();
+  State<ExamTableTabbarView> createState() => _ExamTableTabbarViewState();
 }
 
-class _DenemeTabbarViewState extends State<DenemeTabbarView>
+class _ExamTableTabbarViewState extends State<ExamTableTabbarView>
     with TickerProviderStateMixin {
   late TabController tabController;
   @override
@@ -39,16 +39,16 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
   Widget build(BuildContext context) {
     final tabbarNavProv =
         Provider.of<TabbarNavigationProvider>(context, listen: true);
-    final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
+    final examProv = Provider.of<ExamTableViewModel>(context, listen: false);
 
     return DefaultTabController(
-      length: AppData.lessonNameList.length,
-      initialIndex: tabbarNavProv.getCurrentDenemeIndex,
+      length: AppData.kpssLessonNames.length,
+      initialIndex: tabbarNavProv.getExamTableTabIndex,
       child: Builder(builder: (BuildContext context) {
         final TabController tabController = DefaultTabController.of(context);
         tabController.addListener(() async {
           if (!tabController.indexIsChanging) {
-            tabbarNavProv.setCurrentDenemeIndex = tabController.index;
+            tabbarNavProv.setExamTableIndex = tabController.index;
             print(
                 "fontSize ${AppTheme.dynamicSize(dynamicHSize: 0.0045, dynamicWSize: 0.0085)}");
             print(
@@ -56,28 +56,25 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
             print(
                 "width ${AppTheme.dynamicSize(dynamicHSize: 0.014, dynamicWSize: 0.02)}");
 
-            denemeProv.setLessonName =
-                AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex];
+            //     examProv.setLessonName =
+            //         AppData.lessonNameList[tabbarNavProv.getCurrentexamIndex];
 
-            denemeProv.initDenemeData(
-                AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
+            examProv.initExamData(
+                AppData.kpssLessonNames[tabbarNavProv.getExamTableTabIndex]);
 
-            denemeProv.setInitPng = AppData.lessonPngList[
-                AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]];
-
-            denemeProv.listContHeights.clear();
+            examProv.listContHeights.clear();
           }
         });
         return Scaffold(
           drawer: const NavDrawer(),
-          appBar: buildAppBar(denemeProv, context),
+          appBar: buildAppBar(examProv, context),
           body: TabBarView(
             controller: tabController,
             physics: const NeverScrollableScrollPhysics(),
             children: List.generate(
-              AppData.lessonNameList.length,
+              AppData.kpssLessonNames.length,
               (index) {
-                return const DenemeView();
+                return const ExamTableView();
               },
             ),
           ),
@@ -86,12 +83,12 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
     );
   }
 
-  CustomAppBar buildAppBar(DenemeViewModel denemeProv, BuildContext context) {
+  CustomAppBar buildAppBar(ExamTableViewModel examProv, BuildContext context) {
     return CustomAppBar(
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.white),
           actions: <Widget>[
-            buildPopupMenu(Icons.more_vert_sharp, denemeProv),
+            buildPopupMenu(Icons.more_vert_sharp, examProv),
           ],
           title: const Center(
               child: Text(textAlign: TextAlign.center, 'Deneme App')),
@@ -103,7 +100,7 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
   }
 
   PopupMenuButton<dynamic> buildPopupMenu(
-      IconData icon, DenemeViewModel denemeProv) {
+      IconData icon, ExamTableViewModel examProv) {
     List<dynamic> groupSizes = [1, 5, 10, 20, 30, 40, 50];
     List<String> options = [
       'tekli',
@@ -134,17 +131,17 @@ class _DenemeTabbarViewState extends State<DenemeTabbarView>
       },
       onSelected: (index) {
         if (index == 0) {
-          denemeProv.setIsTotal = false;
+          examProv.setIsTotal = false;
         } else {
-          denemeProv.setIsTotal = true;
+          examProv.setIsTotal = true;
 
-          denemeProv.setSelectedGroupSize = groupSizes[index];
+          examProv.setSelectedGroupSize = groupSizes[index];
         }
       },
     );
   }
 
-  List<Widget> tab = AppData.lessonNameList.map((tabName) {
+  List<Widget> tab = AppData.kpssLessonNames.map((tabName) {
     return Tab(
       text: tabName,
     );

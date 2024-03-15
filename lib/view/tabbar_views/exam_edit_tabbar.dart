@@ -2,42 +2,44 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:flutter_deneme_takip/components/app_bar/custom_app_bar.dart';
-import 'package:flutter_deneme_takip/core/constants/app_data.dart';
+
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
+import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/view/insert_views/insert_deneme_view.dart';
+
 import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
-import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
+
 import 'package:provider/provider.dart';
 
-class DenemeEditTabbarView extends StatefulWidget {
-  final List<String>? denemeSubjectList;
+class ExamEditTabbarView extends StatefulWidget {
+  final List<String>? examSubjectList;
   final List<String>? lessonNameList;
-  const DenemeEditTabbarView(
-      {super.key, this.denemeSubjectList, this.lessonNameList});
+  const ExamEditTabbarView(
+      {super.key, this.examSubjectList, this.lessonNameList});
 
   @override
-  State<DenemeEditTabbarView> createState() => _DenemeTabbarViewState();
+  State<ExamEditTabbarView> createState() => _ExamTabbarViewState();
 }
 
-class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
+class _ExamTabbarViewState extends State<ExamEditTabbarView>
     with TickerProviderStateMixin {
   late TabController tabController;
-  late List<String> denemeSubjectList;
-  late List<String>? lessonNameList;
+  //late List<String> examSubjectList;
+  //late List<String>? lessonNameList;
 
   final NavigationService navigation = NavigationService.instance;
   @override
   void initState() {
-    denemeSubjectList = lessonNameList = AppData.lessonNameList;
+    // examSubjectList = lessonNameList = AppData.lessonNameList;
     super.initState();
 
-    tabController = TabController(length: lessonNameList!.length, vsync: this);
+    tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -49,46 +51,46 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
   @override
   Widget build(BuildContext context) {
     final tabbarNavProv = Provider.of<TabbarNavigationProvider>(context);
-    final editDenemeProv = Provider.of<EditDenemeViewModel>(context);
-    final denemeProv = Provider.of<DenemeViewModel>(context);
+    final editexamProv = Provider.of<EditExamViewModel>(context);
+    final examProv = Provider.of<ExamTableViewModel>(context);
 
     return DefaultTabController(
-      length: AppData.lessonNameList.length,
-      initialIndex: tabbarNavProv.getCurrentEditDeneme,
+      length: 3,
+      initialIndex: tabbarNavProv.getEditExamTabIndex,
       child: Builder(
         builder: (BuildContext context) {
           final TabController tabController = DefaultTabController.of(context);
           tabController.addListener(() {
             if (!tabController.indexIsChanging) {
-              editDenemeProv.getFormKey.currentState!.reset();
+              editexamProv.getFormKey.currentState!.reset();
               FocusScope.of(context).unfocus();
-              editDenemeProv.setKeyboardVisibility = false;
+              editexamProv.setKeyboardVisibility = false;
 
-              tabbarNavProv.setCurrentEditDeneme = tabController.index;
-              editDenemeProv.setLessonName =
-                  AppData.lessonNameList[tabbarNavProv.getCurrentEditDeneme];
+              tabbarNavProv.setCurrentEditexam = tabController.index;
+              //   editexamProv.setLessonName =
+//AppData.lessonNameList[tabbarNavProv.getCurrentEditexam];
 
-              editDenemeProv.setSubjectList =
-                  AppData.subjectListNames[editDenemeProv.getLessonName];
+              //            editexamProv.setSubjectList =
+//AppData.subjectListNames[editexamProv.getLessonName];
 
-              editDenemeProv.setFalseCountsIntegers =
-                  List.filled(editDenemeProv.getFalseCountsIntegers!.length, 0);
+              editexamProv.setFalseCountsIntegers =
+                  List.filled(editexamProv.getFalseCountsIntegers!.length, 0);
 
-              denemeProv.initDenemeData(
-                  AppData.lessonNameList[tabbarNavProv.getCurrentDenemeIndex]);
+              //   examProv.initExamData(
+              //    AppData.lessonNameList[tabbarNavProv.getCurrentexamIndex]);
 
-              editDenemeProv.setFalseControllers =
-                  editDenemeProv.getFalseCountsIntegers!.length;
+              editexamProv.setFalseControllers =
+                  editexamProv.getFalseCountsIntegers!.length;
             }
           });
           return Scaffold(
             drawer: const NavDrawer(),
-            appBar: buildAppBAr(context, denemeProv),
+            appBar: buildAppBAr(context, examProv),
             body: const TabBarView(
               children: [
-                InsertDeneme(),
-                InsertDeneme(),
-                InsertDeneme(),
+                InsertExam(),
+                InsertExam(),
+                InsertExam(),
               ],
             ),
           );
@@ -97,7 +99,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
     );
   }
 
-  CustomAppBar buildAppBAr(BuildContext context, DenemeViewModel denemeProv) {
+  CustomAppBar buildAppBAr(BuildContext context, ExamTableViewModel examProv) {
     return CustomAppBar(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -119,7 +121,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
             onSelected: (value) async {
               if (value == 'option1') {
                 _showDialog(context, "DİKKAT!",
-                    "Tüm verileri silmek istiyor musunuz?", denemeProv);
+                    "Tüm verileri silmek istiyor musunuz?", examProv);
               }
               if (value == 'option2') {}
               if (value == 'option3') {}
@@ -143,29 +145,29 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
   }
 
   _showDialog(BuildContext context, String title, String content,
-      DenemeViewModel denemeProv) async {
+      ExamTableViewModel examProv) async {
     AlertView alert = AlertView(
       title: title,
       content: content,
       isOneButton: false,
       noFunction: () => {
-        denemeProv.setAlert = false,
+        examProv.setAlert = false,
         Navigator.of(context, rootNavigator: true)
             .pushNamed(NavigationConstants.homeView)
       },
       yesFunction: () async => {
-        DenemeDbProvider.db.clearDatabase(),
+        ExamDbProvider.db.clearDatabase(),
         navigation
             .navigateToPageClear(path: NavigationConstants.homeView, data: []),
-        denemeProv.setAlert = false,
+        examProv.setAlert = false,
         await Future.delayed(const Duration(milliseconds: 50), () {
-          denemeProv.initDenemeData(denemeProv.getLessonName);
+          //   examProv.initExamData(examProv.getLessonName);
         }),
       },
     );
 
-    if (denemeProv.getIsAlertOpen == false) {
-      denemeProv.setAlert = true;
+    if (examProv.getIsAlertOpen == false) {
+      examProv.setAlert = true;
       await showDialog(
           barrierDismissible: false,
           barrierColor: const Color(0x66000000),
@@ -173,7 +175,7 @@ class _DenemeTabbarViewState extends State<DenemeEditTabbarView>
           builder: (BuildContext context) {
             return alert;
           }).then(
-        (value) => denemeProv.setAlert = false,
+        (value) => examProv.setAlert = false,
       );
     }
   }

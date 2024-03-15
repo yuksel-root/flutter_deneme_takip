@@ -1,30 +1,44 @@
 import 'package:flutter/material.dart';
 
 class TabbarNavigationProvider with ChangeNotifier {
-  int _currentIndex = 0;
+  int _examListTabIndex = 0;
 
-  int _currentDenemeIndex = 0;
+  int _examTableTabIndex = 0;
 
-  int _currentEditDenemeIndex = 0;
+  int _editExamTabIndex = 0;
 
-  int get getLessonCurrentIndex => _currentIndex;
+  int _subjectsTabIndex = 0;
 
-  set setLessonCurrentIndex(int index) {
-    _currentIndex = index;
+  int _lessonsTabIndex = 0;
+
+  int get getLessonsTabIndex => _lessonsTabIndex;
+  int get getSubjectTabIndex => _subjectsTabIndex;
+  int get getExamListTabIndex => _examListTabIndex;
+  int get getExamTableTabIndex => _examTableTabIndex;
+  int get getEditExamTabIndex => _editExamTabIndex;
+
+  set setLessonTab(int index) {
+    _lessonsTabIndex = index;
     notifyListeners();
   }
 
-  int get getCurrentDenemeIndex => _currentDenemeIndex;
-
-  set setCurrentDenemeIndex(int index) {
-    _currentDenemeIndex = index;
+  set setSubjectTab(int index) {
+    _subjectsTabIndex = index;
     notifyListeners();
   }
 
-  set setCurrentEditDeneme(int index) {
-    _currentEditDenemeIndex = index;
+  set setExamListIndex(int index) {
+    _examListTabIndex = index;
     notifyListeners();
   }
 
-  int get getCurrentEditDeneme => _currentEditDenemeIndex;
+  set setExamTableIndex(int index) {
+    _examTableTabIndex = index;
+    notifyListeners();
+  }
+
+  set setCurrentEditexam(int index) {
+    _editExamTabIndex = index;
+    notifyListeners();
+  }
 }
