@@ -64,8 +64,10 @@ class AppTheme {
           selectedItemColor: const Color(0xFF000000),
           unselectedItemColor: Colors.white,
           unselectedLabelStyle: TextStyle(
+              fontFamily: 'Calibri',
               fontSize: dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
           selectedLabelStyle: TextStyle(
+            fontFamily: 'Calibri',
             fontSize: dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01),
           ),
         ),
@@ -105,7 +107,6 @@ class AppTheme {
         tabBarTheme: TabBarTheme(
           indicatorColor: const Color(0xFF5CB85C),
           labelColor: const Color(0xFF5CB85C),
-          tabAlignment: TabAlignment.start,
           unselectedLabelStyle: TextStyle(
               fontSize: dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
           labelStyle: TextStyle(
@@ -128,6 +129,7 @@ class AppTheme {
               color: Colors.deepPurple),
           alignLabelWithHint: true,
           hintStyle: TextStyle(
+              color: Colors.white,
               fontSize: dynamicSize(dynamicHSize: 0.005, dynamicWSize: 0.01)),
         ),
         colorScheme: const ColorScheme.dark(
