@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
+
 import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 
@@ -61,8 +62,8 @@ class FadedLoadingFormState extends State<FadedLoadingForm>
 
   @override
   Widget build(BuildContext context) {
-    final EditDenemeViewModel editProv =
-        Provider.of<EditDenemeViewModel>(context, listen: true);
+    final EditExamViewModel editProv =
+        Provider.of<EditExamViewModel>(context, listen: true);
 
     return Scaffold(
       body: Form(
@@ -90,7 +91,7 @@ class FadedLoadingFormState extends State<FadedLoadingForm>
   }
 
   Column fadedInputFormWidget(
-      EditDenemeViewModel editProv, int i, BuildContext context) {
+      EditExamViewModel editProv, int i, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -138,7 +139,7 @@ class FadedLoadingFormState extends State<FadedLoadingForm>
   }
 
   Container fadedAppBarWidget(
-      EditDenemeViewModel editProv, BuildContext context) {
+      EditExamViewModel editProv, BuildContext context) {
     return Container(
       decoration: BoxDecoration(gradient: _fadedGradient.value!),
       child: Wrap(
@@ -147,7 +148,7 @@ class FadedLoadingFormState extends State<FadedLoadingForm>
         spacing: 10,
         children: [
           Text(
-            '${editProv.getLessonName} Dersi Girişi',
+            '${"Tarih"} Dersi Girişi',
             style: TextStyle(
                 color: _fadedWidgetColor(Colors.white).value!,
                 fontSize: context.dynamicW(0.01) * context.dynamicH(0.005)),
