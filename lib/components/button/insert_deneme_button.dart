@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
-import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
+import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
 
-class InsertDenemeButton extends StatelessWidget {
-  const InsertDenemeButton({super.key});
+import 'package:provider/provider.dart';
+
+class InsertExamButton extends StatelessWidget {
+  const InsertExamButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final EditDenemeViewModel editProv =
-        Provider.of<EditDenemeViewModel>(context, listen: true);
+    final EditExamViewModel editProv =
+        Provider.of<EditExamViewModel>(context, listen: true);
 
     return ElevatedButton.icon(
       icon: const Icon(color: Colors.green, Icons.save),

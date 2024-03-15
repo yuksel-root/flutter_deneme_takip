@@ -1,31 +1,30 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_deneme_takip/components/form/update_lesson_form.dart';
+import 'package:flutter_deneme_takip/components/form/update_subject_form.dart';
 import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
-import 'package:flutter_deneme_takip/components/text_field/insert_lesson_text_field.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_deneme_takip/components/text_field/insert_subject_text_field.dart';
 import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
-import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/subject_view_model.dart';
 
-class LessonView extends StatelessWidget {
-  const LessonView({super.key});
+class SubjectView extends StatelessWidget {
+  const SubjectView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final lessonProv = Provider.of<LessonViewModel>(context);
+    final subjectProv = Provider.of<SubjectViewModel>(context);
 
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
     final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
-
     return Scaffold(
         backgroundColor: Colors.black,
         body: Column(
           children: [
             Card(
                 child: ListTile(
-              title: const InsertLessonTextField(),
+              title: const InsertSubjectTextField(),
               trailing: Wrap(
                 spacing: -5,
                 alignment: WrapAlignment.end,
@@ -37,14 +36,17 @@ class LessonView extends StatelessWidget {
                       color: Colors.greenAccent,
                     ),
                     onPressed: () async {
-                      await ExamDbProvider.db
-                          .insertLesson(lessonProv.getLessonName!);
+                      await ExamDbProvider.db.insertSubject(
+                          subjectProv.getInsertController.text,
+                          subjectProv.getLessonId!);
 
                       Future.delayed(Duration.zero, () {
-                        lessonProv.getInsertController.clear();
+                        subjectProv.getInsertController.clear();
                       });
-                      lessonProv.initLessonData();
-                      lessonProv.getInsertKey.currentState!.reset();
+
+                      subjectProv.initSubjectData(subjectProv.getLessonId);
+                      subjectProv.setUpdateController();
+                      subjectProv.getInsertKey.currentState!.reset();
                     },
                   ),
                   IconButton(
@@ -53,7 +55,7 @@ class LessonView extends StatelessWidget {
                       color: Colors.redAccent,
                     ),
                     onPressed: () {
-                      lessonProv.getInsertController.clear();
+                      subjectProv.getInsertController.clear();
                     },
                   ),
                 ],
@@ -62,28 +64,28 @@ class LessonView extends StatelessWidget {
             Expanded(
               child: FutureBuilder(
                 future: Future.delayed(Duration.zero, () {
-                  lessonProv.initLessonData();
+                  subjectProv.initSubjectData(subjectProv.getLessonId);
                 }),
                 builder: (context, snapshot) {
-                  if (context.read<LessonViewModel>().state ==
-                      LessonState.loading) {
+                  if (context.read<SubjectViewModel>().state ==
+                      SubjectState.loading) {
                     return const LoadingAlert(title: "Yükleniyor");
-                  } else if (lessonProv.getLessonData[0].lessonName == null) {
+                  } else if (subjectProv.getLessonId == null) {
                     return const SizedBox();
                   } else {
                     return ReorderableListView.builder(
-                      itemCount: lessonProv.getLessonData.length,
+                      itemCount: subjectProv.getSubjectData.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return lessonProv.getLessonData[index].lessonName !=
+                        return subjectProv.getSubjectData[index].subjectName !=
                                 null
                             ? buildItemCard(
-                                index, oddItemColor, evenItemColor, lessonProv)
+                                index, oddItemColor, evenItemColor, subjectProv)
                             : Card(
                                 key: Key('$index'),
                               );
                       },
                       onReorder: (int oldIndex, int newIndex) {
-                        lessonProv.updateItems(oldIndex, newIndex);
+                        subjectProv.updateItems(oldIndex, newIndex);
                       },
                     );
                   }
@@ -95,39 +97,46 @@ class LessonView extends StatelessWidget {
   }
 
   InkWell buildItemCard(int index, Color oddItemColor, Color evenItemColor,
-      LessonViewModel lessonProv) {
-    lessonProv.setUpdateIndex(index);
+      SubjectViewModel subjectProv) {
+    subjectProv.setUpdateIndex(index);
 
+    // print(
+    //  "subId ${subjectProv.getSubjectData[index].subjectId} subName  ${subjectProv.getSubjectData[index].subjectName} ");
     return InkWell(
       key: Key('$index'),
       onDoubleTap: () async {
-        lessonProv.setClickIndex(index);
+        subjectProv.setClickIndex(index);
 
-        lessonProv.setOnEditText = true;
-        lessonProv.setUpdateController(
-            index: lessonProv.getClickIndex,
-            initString:
-                lessonProv.getLessonData[lessonProv.getClickIndex].lessonName!);
+        subjectProv.setOnEditText = true;
+        subjectProv.setUpdateController(
+            index: subjectProv.getClickIndex,
+            initString: subjectProv
+                .getSubjectData[subjectProv.getClickIndex].subjectName!);
       },
       child: Card(
         child: ListTile(
             tileColor: index.isOdd ? oddItemColor : evenItemColor,
-            title: lessonProv.getOnEditText && index == lessonProv.getClickIndex
-                ? UpdateLessonForm(key: Key('$index'))
-                : Text(lessonProv.getLessonData[index].lessonName!),
+            title: subjectProv.getOnEditText &&
+                    (index == subjectProv.getClickIndex)
+                ? (UpdateSubjectForm(key: Key('$index')))
+                : Text(subjectProv.getSubjectData[index].subjectName!),
             trailing: Wrap(
               spacing: 10,
               children: [
-                lessonProv.getOnEditText && index == lessonProv.getClickIndex
+                subjectProv.getOnEditText &&
+                        (index == subjectProv.getClickIndex)
                     ? InkWell(
                         onTap: () {
-                          ExamDbProvider.db.updateLesson(
-                              lessonProv.getLessonData[lessonProv.getClickIndex]
-                                  .lessonId!,
-                              lessonProv
-                                  .getUpdateController[lessonProv.getClickIndex]
-                                  .text);
-                          lessonProv.setOnEditText = false;
+                          ExamDbProvider.db.updateSubject(
+                            subjectProv
+                                .getSubjectData[subjectProv.getClickIndex]
+                                .subjectId!,
+                            subjectProv
+                                .getUpdateController[subjectProv.getClickIndex]
+                                .text,
+                            1,
+                          );
+                          subjectProv.setOnEditText = false;
                         },
                         child: const Icon(
                           Icons.check,
@@ -137,15 +146,15 @@ class LessonView extends StatelessWidget {
                     : const SizedBox(),
                 InkWell(
                   onTap: () async {
-                    lessonProv.setClickIndex(index);
-                    print(
-                        "less index${lessonProv.getLessonData[lessonProv.getClickIndex].lessonIndex}");
-                    lessonProv.setOnEditText = true;
-                    lessonProv.setUpdateController(
-                        index: lessonProv.getClickIndex,
-                        initString: lessonProv
-                            .getLessonData[lessonProv.getClickIndex]
-                            .lessonName!);
+                    subjectProv.setClickIndex(index);
+                    subjectProv.setOnEditText = true;
+                    Future.delayed(Duration.zero, () {
+                      subjectProv.setUpdateController(
+                          index: subjectProv.getClickIndex,
+                          initString: subjectProv
+                              .getSubjectData[subjectProv.getClickIndex]
+                              .subjectName!);
+                    });
                   },
                   child: const Icon(
                     Icons.edit,
@@ -154,10 +163,11 @@ class LessonView extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    lessonProv.removeLesson(
-                        lessonProv.getLessonData[index].lessonId!);
-                    lessonProv.initLessonData();
-                    lessonProv.setOnEditText = false;
+                    subjectProv.removeSubject(
+                        subjectProv.getSubjectData[index].subjectId!,
+                        subjectProv.getLessonId!);
+                    subjectProv.initSubjectData(subjectProv.getLessonId);
+                    subjectProv.setOnEditText = false;
                   },
                   child: const Icon(
                     Icons.clear,
