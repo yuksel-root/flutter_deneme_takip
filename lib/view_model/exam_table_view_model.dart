@@ -1,21 +1,20 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/core/constants/app_data.dart';
+
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
+import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
-import 'package:flutter_deneme_takip/models/deneme.dart';
+import 'package:flutter_deneme_takip/models/exam_detail.dart';
 import 'package:flutter_deneme_takip/services/firebase_service.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
-import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/exam_list_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/login_view_model.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-enum DenemeState {
+enum ExamState {
   empty,
   loading,
   completed,
@@ -29,21 +28,21 @@ enum FirebaseState {
   catchError,
 }
 
-class DenemeViewModel extends ChangeNotifier {
-  late DenemeState? _state;
+class ExamTableViewModel extends ChangeNotifier {
+  late ExamState? _state;
   late FirebaseState? _firebaseState;
   late NavigationService _navigation;
 
   late String? _lessonName;
-  late String? _lessonTableName;
+
   late bool _isAlertOpen;
-  late List<Map<String, dynamic>>? listDeneme;
+  late List<Map<String, dynamic>>? listexam;
   late List<Map<String, dynamic>>? fakeData;
   late List<dynamic> rowData;
   late List<dynamic> columnData;
-  late List<Map<String, dynamic>> denemelerData;
+  late List<Map<String, dynamic>> examlerData;
   late List<List<int>> _listFalseCounts;
-  late String? _initPng;
+
   late bool _isOnline;
   final NavigationService navigation = NavigationService.instance;
 
@@ -54,38 +53,30 @@ class DenemeViewModel extends ChangeNotifier {
   final double subContainerDEFW = 200;
   final List<double> listContHeights = [];
 
-  DenemeViewModel() {
+  ExamTableViewModel() {
     _navigation = NavigationService.instance;
 
     _isAlertOpen = false;
     _isOnline = false;
-    _lessonName = 'Tarih';
-    _state = DenemeState.empty;
+    _lessonName = 'TarihY';
+    _state = ExamState.empty;
     _firebaseState = FirebaseState.empty;
 
-    listDeneme = [];
+    listexam = [];
     fakeData = [];
-    _lessonTableName =
-        AppData.tableNames[_lessonName] ?? AppData.tableNames['Tarih'];
 
-    _subContainerHeight = 100;
-    _subContainerWidth = 200;
-
-    initDenemeData(_lessonName!);
+    initExamData(_lessonName!);
     initFakeData();
 
-    _initPng =
-        AppData.lessonPngList[_lessonName] ?? AppData.lessonPngList['Tarih'];
-
-    columnData = List.of(findList(_lessonName ?? 'Tarih'));
+    columnData = List.of(findList(_lessonName ?? 'TarihY'));
 
     rowData = [];
-    denemelerData = [];
+    examlerData = [];
     _listFalseCounts = [];
   }
 
-  DenemeState get getDenemeState => _state!;
-  set setDenemestate(DenemeState state) {
+  ExamState get getexamState => _state!;
+  set setexamstate(ExamState state) {
     _state = state;
     notifyListeners();
   }
@@ -96,19 +87,19 @@ class DenemeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Map<String, dynamic>> filterByDenemeId(List<Map<String, dynamic>> data) {
+  List<Map<String, dynamic>> filterByexamId(List<Map<String, dynamic>> data) {
     Map<int, List<Map<String, dynamic>>> groupedData = {};
     List<Map<String, dynamic>> group = [];
 
     group.clear();
     groupedData.clear();
-    denemelerData.clear();
+    examlerData.clear();
     for (var item in data) {
-      final denemeId = item['denemeId'] as int;
-      if (!groupedData.containsKey(denemeId)) {
-        groupedData[denemeId] = [];
+      final examId = item['examId'] as int;
+      if (!groupedData.containsKey(examId)) {
+        groupedData[examId] = [];
       }
-      groupedData[denemeId]!.add(item);
+      groupedData[examId]!.add(item);
     }
 
     group.addAll(groupedData.values.expand((items) => items));
@@ -119,7 +110,7 @@ class DenemeViewModel extends ChangeNotifier {
   void convertToRow(List<Map<String, dynamic>> data) async {
     Map<int, List<Map<String, dynamic>>> idToRowMap = {};
 
-    for (var item in filterByDenemeId(data)) {
+    for (var item in filterByexamId(data)) {
       int id = item['id'];
       if (idToRowMap[id] == null) {
         idToRowMap[id] = [];
@@ -129,44 +120,44 @@ class DenemeViewModel extends ChangeNotifier {
 
     for (var entry in idToRowMap.entries) {
       Map<String, dynamic> rowItem = {"row": entry.value};
-      denemelerData.add(rowItem);
+      examlerData.add(rowItem);
     }
 
-    //print('denemelerData');
-    //print(denemelerData);
-    // print('denemelerData');
+    //print('examlerData');
+    //print(examlerData);
+    // print('examlerData');
   }
 
-  Map<int, List<int>> falseCountsByDenemeId(
-      List<Map<String, dynamic>> denemelerData) {
-    Map<int, List<int>> falseCountsByDenemeId = {};
+  Map<int, List<int>> falseCountsByexamId(
+      List<Map<String, dynamic>> examlerData) {
+    Map<int, List<int>> falseCountsByexamId = {};
 
-    for (var item in denemelerData) {
+    for (var item in examlerData) {
       var row = item['row'] as List<dynamic>;
       if (row.isNotEmpty) {
-        var denemeId = row[0]['denemeId'] as int;
+        var examId = row[0]['examId'] as int;
         var falseCount = row[0]['falseCount'] as int;
 
-        if (!falseCountsByDenemeId.containsKey(denemeId)) {
-          falseCountsByDenemeId[denemeId] = [];
+        if (!falseCountsByexamId.containsKey(examId)) {
+          falseCountsByexamId[examId] = [];
         }
 
-        falseCountsByDenemeId[denemeId]!.add(falseCount);
+        falseCountsByexamId[examId]!.add(falseCount);
       }
     }
-    return falseCountsByDenemeId;
+    return falseCountsByexamId;
   }
 
-  void insertRowData(List<Map<String, dynamic>> denemelerData) {
+  void insertRowData(List<Map<String, dynamic>> examlerData) {
     rowData.clear();
     _listFalseCounts.clear();
 
-    falseCountsByDenemeId(denemelerData).forEach((denemeId, falseCounts) {
+    falseCountsByexamId(examlerData).forEach((examId, falseCounts) {
       List<dynamic> arr =
           List.from(List.generate(columnData.length, (index) => 0));
 
       for (int j = 0; j < (columnData.length); j++) {
-        arr[0] = "Deneme\n $denemeId";
+        arr[0] = "exam\n $examId";
         arr[j] = falseCounts[j];
       }
 
@@ -179,18 +170,18 @@ class DenemeViewModel extends ChangeNotifier {
       String aTitle = a['row'][0].toString();
       String bTitle = b['row'][0].toString();
 
-      int aNumber = int.parse(aTitle.replaceAll("Deneme", ""));
-      int bNumber = int.parse(bTitle.replaceAll("Deneme", ""));
+      int aNumber = int.parse(aTitle.replaceAll("exam", ""));
+      int bNumber = int.parse(bTitle.replaceAll("exam", ""));
 
       return aNumber.compareTo(bNumber);
     });
   }
 
-  void totalInsertRowData(List<Map<String, dynamic>> denemeData) {
+  void totalInsertRowData(List<Map<String, dynamic>> examData) {
     rowData.clear();
     _listFalseCounts.clear();
 
-    falseCountsByDenemeId(denemeData).forEach((denemeId, falseCounts) {
+    falseCountsByexamId(examData).forEach((examId, falseCounts) {
       _listFalseCounts.add(falseCounts);
     });
 
@@ -201,13 +192,13 @@ class DenemeViewModel extends ChangeNotifier {
 
     for (int j = 0; j < sumList.length; j++) {
       if (j == 0) {
-        sumArr[0] = "Deneme 1-$getSelectedGroupSize";
+        sumArr[0] = "exam 1-$getSelectedGroupSize";
       } else {
         if (getSelectedGroupSize == 5) {
-          sumArr[0] = "Deneme ${(j * 5) + 1}-${(j * 5) + 5}";
+          sumArr[0] = "exam ${(j * 5) + 1}-${(j * 5) + 5}";
         } else {
           sumArr[0] =
-              "Deneme ${(j * getSelectedGroupSize)}-${(j * getSelectedGroupSize) + getSelectedGroupSize}";
+              "exam ${(j * getSelectedGroupSize)}-${(j * getSelectedGroupSize) + getSelectedGroupSize}";
         }
       }
 
@@ -265,25 +256,25 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   List<String> findList(String lessonName) {
-    return AppData.lessonListMap[lessonName] ?? [];
+    return []; // AppData.lessonListMap[lessonName] ?? [];
   }
 
-  void initDenemeData(String? lessonName) async {
-    setDenemestate = DenemeState.loading;
-    _lessonTableName =
-        AppData.tableNames[lessonName] ?? DenemeTables.historyTableName;
+  void initExamData(String? lessonName) async {
+    setexamstate = ExamState.loading;
+    //_lessonTableName = AppData.tableNames[lessonName];
 
-    listDeneme = await DenemeDbProvider.db.getAllDataByTable(_lessonTableName!);
+    listexam =
+        []; // await ExamDbProvider.db.getAllDataByTable(_lessonTableName!);
 
-    setDenemestate = DenemeState.completed;
+    setexamstate = ExamState.completed;
   }
 
   void initFakeData() async {
-    setDenemestate = DenemeState.loading;
+    setexamstate = ExamState.loading;
 
     fakeData = [];
 
-    setDenemestate = DenemeState.completed;
+    setexamstate = ExamState.completed;
   }
 
   bool compareLists(List<dynamic> list1, List<dynamic> list2) {
@@ -307,27 +298,27 @@ class DenemeViewModel extends ChangeNotifier {
     _navigation.navigateToPageClear(path: path, data: data);
   }
 
-  void saveDeneme(DenemeModel deneme, String lessonTable) {
+  void saveexam(ExamDetailModel exam, String lessonTable) {
     try {
-      DenemeDbProvider.db.insertDeneme(deneme, lessonTable);
+      //  ExamDbProvider.db.insertexam(exam, lessonTable);
     } catch (e) {
-      printFunct("saveDeneme error", e);
+      printFunct("saveexam error", e);
     }
     notifyListeners();
   }
 
   void deleteItemById(String lessonTable, int id, String idName) {
     try {
-      DenemeDbProvider.db.removeTableItem(lessonTable, id, idName);
+      ExamDbProvider.db.removeTableItem(lessonTable, id, idName);
     } catch (e) {
-      printFunct("deleteDeneme error", e);
+      printFunct("deleteexam error", e);
     }
     notifyListeners();
   }
 
   Future<void> getAllData(String dataTable) async {
     print("-------------$dataTable------------\n");
-    print(await DenemeDbProvider.db.getAllDataByTable(dataTable));
+    print(await ExamDbProvider.db.getAllDataByTable(dataTable));
     print("-------------$dataTable------------\n");
   }
 
@@ -338,7 +329,7 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   Future<int?> getLastId(String table, String id) async {
-    return await DenemeDbProvider.db.getFindLastId(table, id);
+    return await ExamDbProvider.db.getFindLastId(table, id);
   }
 
   int? extractNumber(String text) {
@@ -393,58 +384,31 @@ class DenemeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? get getLessonName {
-    return _lessonName ?? 'Tarih';
-  }
-
-  set setLessonName(String? newLesson) {
-    _lessonName = newLesson!;
-    notifyListeners();
-  }
-
-  String? get getInitPng {
-    return _initPng ?? 'hs'; //null problems
-  }
-
-  set setInitPng(String? newPng) {
-    _initPng = newPng ?? 'hs';
-    notifyListeners();
-  }
-
-  String? get getLessonTableName =>
-      _lessonTableName ?? DenemeTables.historyTableName;
-
-  set setLessonTableName(String? newTable) {
-    _lessonName = _lessonTableName =
-        AppData.tableNames[newTable] ?? DenemeTables.historyTableName;
-    notifyListeners();
-  }
-
   Future<void> removeAlert(BuildContext context, String title, String content,
-      DenemeViewModel denemeProv, itemDeneme) async {
+      ExamTableViewModel examProv, itemexam) async {
     AlertView alert = AlertView(
       title: title,
       content: content,
       isOneButton: false,
       noFunction: () => {
-        denemeProv.setAlert = false,
+        examProv.setAlert = false,
         Navigator.of(context, rootNavigator: true).pop(),
       },
       yesFunction: () async => {
-        print("cell ${denemeProv.extractNumber(itemDeneme)}"),
-        itemDeneme = denemeProv.extractNumber(itemDeneme),
-        denemeProv.deleteItemById(
-            denemeProv.getLessonTableName!, itemDeneme, 'denemeId'),
-        denemeProv.setAlert = false,
+        print("cell ${examProv.extractNumber(itemexam)}"),
+        itemexam = examProv.extractNumber(itemexam),
+        //  examProv.deleteItemById(
+        //       examProv.getLessonTableName!, itemexam, 'examId'),
+        examProv.setAlert = false,
         Navigator.of(context, rootNavigator: true).pop(),
         Future.delayed(const Duration(milliseconds: 50), () {
-          denemeProv.initDenemeData(denemeProv.getLessonName);
+          //   examProv.initExamData(examProv.getLessonName);
         }),
       },
     );
 
-    if (denemeProv.getIsAlertOpen == false) {
-      denemeProv.setAlert = true;
+    if (examProv.getIsAlertOpen == false) {
+      examProv.setAlert = true;
       await showDialog(
           barrierDismissible: false,
           barrierColor: const Color(0x66000000),
@@ -452,13 +416,13 @@ class DenemeViewModel extends ChangeNotifier {
           builder: (BuildContext context) {
             return alert;
           }).then(
-        (value) => denemeProv.setAlert = false,
+        (value) => examProv.setAlert = false,
       );
     }
   }
 
   Future<void> deleteUserInFirebase(BuildContext context, String userId,
-      DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) async {
+      ExamTableViewModel examProv, LoginViewModel loginProv) async {
     try {
       await FirebaseService()
           .deleteUserFromCollection(userId)
@@ -474,7 +438,7 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   Future<void> backUpAllTablesData(BuildContext context, String userId,
-      DenemeViewModel denemeProv, DenemeLoginViewModel loginProv) async {
+      ExamTableViewModel examProv, LoginViewModel loginProv) async {
     try {
       final isOnline = await FirebaseService().isFromCache(userId) ?? {};
 
@@ -482,22 +446,22 @@ class DenemeViewModel extends ChangeNotifier {
         Future.delayed(Duration.zero, () {
           navigation.navigateToPage(path: NavigationConstants.homeView);
 
-          denemeProv.errorAlert(context, "Uyarı",
-              "İnternet bağlantısı olduğuna emin olunuz!", denemeProv);
+          examProv.errorAlert(context, "Uyarı",
+              "İnternet bağlantısı olduğuna emin olunuz!", examProv);
         });
-        denemeProv.setAlert = false;
+        examProv.setAlert = false;
       } else {
         await FirebaseService().sendMultiplePostsToFirebase(userId);
 
         Future.delayed(Duration.zero, () {
-          denemeProv.setFirebaseState = FirebaseState.completed;
-          denemeProv.errorAlert(
-              context, "Bilgi", "Veriler başarıyla yedeklendi!", denemeProv);
-          denemeProv.setAlert = false;
+          examProv.setFirebaseState = FirebaseState.completed;
+          examProv.errorAlert(
+              context, "Bilgi", "Veriler başarıyla yedeklendi!", examProv);
+          examProv.setAlert = false;
         });
       }
     } catch (e) {
-      print("catch denemeVM  CATCH ERROR ${e.toString()}");
+      print("catch examVM  CATCH ERROR ${e.toString()}");
       setFirebaseState = FirebaseState.catchError;
     }
   }
@@ -517,26 +481,25 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   Future<void> restoreData(BuildContext context, String userId,
-      DenemeViewModel denemeProv, LessonViewModel lessonProv) async {
+      ExamTableViewModel examProv, ExamListViewModel lessonProv) async {
     try {
       final isOnline = await FirebaseService().isFromCache(userId) ?? {};
-      final denemePostData =
-          await denemeProv.getTablesFromFirebase(userId) ?? {};
+      final examPostData = await examProv.getTablesFromFirebase(userId) ?? {};
 
       if (isOnline.isEmpty) {
         Future.delayed(Duration.zero, () {
-          denemeProv.setAlert = false;
+          examProv.setAlert = false;
           Navigator.of(context, rootNavigator: true)
               .pushNamed(NavigationConstants.homeView);
-          denemeProv.errorAlert(
-              context, "Uyarı", "İnternet olduğundan emin olunuz!", denemeProv);
-          denemeProv.setAlert = false;
+          examProv.errorAlert(
+              context, "Uyarı", "İnternet olduğundan emin olunuz!", examProv);
+          examProv.setAlert = false;
         });
       } else {
-        await DenemeDbProvider.db.clearDatabase();
-        await denemeProv.sendFirebaseToSqlite(denemePostData).then((value) {
-          lessonProv.initLessonData(lessonProv.getLessonName);
-          denemeProv.initDenemeData(denemeProv.getLessonName);
+        await ExamDbProvider.db.clearDatabase();
+        await examProv.sendFirebaseToSqlite(examPostData).then((value) {
+          //lessonProv.initExamListData(lessonProv.getLessonName);
+          //   examProv.initExamData(examProv.getLessonName);
           Navigator.of(context, rootNavigator: true)
               .pushNamed(NavigationConstants.homeView);
           setFirebaseState = FirebaseState.completed;
@@ -558,22 +521,21 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   Future<void> sendFirebaseToSqlite(
-      Map<String, List<dynamic>>? denemeData) async {
-    await DenemeDbProvider.db.inserAllDenemeData(denemeData);
+      Map<String, List<dynamic>>? examData) async {
+    //await ExamDbProvider.db.inserAllexamData(examData);
   }
 
   Future<void> removeUserPostData(
-      String userId, BuildContext context, DenemeViewModel denemeProv) async {
+      String userId, BuildContext context, ExamTableViewModel examProv) async {
     try {
-      final denemePostData =
-          await denemeProv.getTablesFromFirebase(userId) ?? {};
-      if (denemePostData.isEmpty) {
+      final examPostData = await examProv.getTablesFromFirebase(userId) ?? {};
+      if (examPostData.isEmpty) {
         Future.delayed(Duration.zero, () {
           navigation.navigateToPage(path: NavigationConstants.homeView);
-          denemeProv.errorAlert(context, "Uyarı",
-              "İnternet bağlantısı olduğuna emin olunuz!", denemeProv);
+          examProv.errorAlert(context, "Uyarı",
+              "İnternet bağlantısı olduğuna emin olunuz!", examProv);
         });
-        denemeProv.setAlert = false;
+        examProv.setAlert = false;
       } else {
         await FirebaseService().removeUserPostData(userId);
       }
@@ -583,7 +545,7 @@ class DenemeViewModel extends ChangeNotifier {
   }
 
   Future<void> errorAlert(BuildContext context, String title, String content,
-      DenemeViewModel denemeProv) async {
+      ExamTableViewModel examProv) async {
     AlertView alert = AlertView(
       title: title,
       content: content,
@@ -593,19 +555,19 @@ class DenemeViewModel extends ChangeNotifier {
           Navigator.of(context, rootNavigator: true)
               .pushNamed(NavigationConstants.homeView);
         }),
-        denemeProv.setAlert = false,
+        examProv.setAlert = false,
       },
       yesFunction: () async => {
         Future.delayed(Duration.zero, () {
           Navigator.of(context, rootNavigator: true)
               .pushNamed(NavigationConstants.homeView);
         }),
-        denemeProv.setAlert = false
+        examProv.setAlert = false
       },
     );
-    print("err alert ${denemeProv.getIsAlertOpen}");
-    if (denemeProv.getIsAlertOpen == false) {
-      denemeProv.setAlert = true;
+    print("err alert ${examProv.getIsAlertOpen}");
+    if (examProv.getIsAlertOpen == false) {
+      examProv.setAlert = true;
       await showDialog(
           barrierDismissible: false,
           barrierColor: const Color(0x66000000),
@@ -613,7 +575,7 @@ class DenemeViewModel extends ChangeNotifier {
           builder: (BuildContext context) {
             return alert;
           }).then(
-        (value) => denemeProv.setAlert = false,
+        (value) => examProv.setAlert = false,
       );
     }
   }

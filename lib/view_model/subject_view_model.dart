@@ -2,21 +2,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
-import 'package:flutter_deneme_takip/core/local_database/sql_tables.dart';
-import 'package:flutter_deneme_takip/models/lesson.dart';
+import 'package:flutter_deneme_takip/models/subject.dart';
 
-enum LessonState {
+enum SubjectState {
   empty,
   loading,
   completed,
   error,
 }
 
-class LessonViewModel extends ChangeNotifier {
-  late LessonState? _state;
+class SubjectViewModel extends ChangeNotifier {
+  late SubjectState _state;
 
-  late String? _lessonName;
-  late List<LessonModel>? _lessonData;
+  late List<SubjectModel>? _subjectData;
+  late String _subjectName;
+  late int? _lessonId;
 
   late GlobalKey<FormState> _updateFormK;
   late GlobalKey<FormState> _insertFormK;
@@ -30,25 +30,41 @@ class LessonViewModel extends ChangeNotifier {
 
   final formKey0 = GlobalKey<FormState>();
   final formKey1 = GlobalKey<FormState>();
-  LessonViewModel() {
-    _state = LessonState.empty;
 
-    _lessonName = null;
-    _lessonData = [LessonModel()];
+  SubjectViewModel() {
+    _subjectData = [];
 
     _insertController = TextEditingController();
-    _updateController =
-        List.generate(_lessonData!.length, (index) => TextEditingController());
 
+    _updateController =
+        List.generate(_subjectData!.length, (index) => TextEditingController());
     _updateFormK = formKey0;
     _insertFormK = formKey1;
     _updateIndex = 0;
     _clickIndex = 0;
 
-    initLessonData();
+    _state = SubjectState.empty;
+    _subjectName = "";
+    _lessonId = 1;
+
+    initSubjectData(_lessonId);
   }
-  LessonState get state => _state!;
-  set state(LessonState state) {
+
+  List<SubjectModel> get getSubjectData {
+    return _subjectData!.isEmpty ? [SubjectModel()] : _subjectData!;
+  }
+
+  void initSubjectData(int? lessonId) async {
+    SubjectState.loading;
+    print(lessonId);
+    _subjectData = await ExamDbProvider.db.getAllSubject(lessonId ?? 1) ??
+        [SubjectModel()];
+    print(_subjectData![0].subjectName);
+    SubjectState.completed;
+  }
+
+  SubjectState get state => _state;
+  set state(SubjectState state) {
     _state = state;
     notifyListeners();
   }
@@ -59,32 +75,24 @@ class LessonViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initLessonData() async {
-    state = LessonState.loading;
-    _lessonData =
-        await ExamDbProvider.db.getAllLessonByTable() ?? [LessonModel()];
-
-    state = LessonState.completed;
-  }
-
-  List<LessonModel> get getLessonData =>
-      _lessonData!.isEmpty ? [LessonModel()] : _lessonData!;
-
-  void removeLesson(int lessonId) {
-    ExamDbProvider.db
-        .removeTableItem(SqlTables.lessonsTable, lessonId, "lesson_id");
-    initLessonData();
-
+  String get getSubjectName => _subjectName;
+  set setSubjectName(String newS) {
+    _subjectName = newS;
     notifyListeners();
   }
 
-  String? get getLessonName {
-    return _lessonName ?? "nullName";
+  int? get getLessonId => _lessonId ?? 1;
+  set setLessonId(int? newInt) {
+    _lessonId = newInt;
+    notifyListeners();
   }
 
-  set setLessonname(String? newLesson) {
-    _lessonName = newLesson!;
-
+  void removeSubject(int subjectId, int lessonId) {
+    try {
+      ExamDbProvider.db.removeSubjectByLesson(lessonId, subjectId);
+    } catch (e) {
+      print(e);
+    }
     notifyListeners();
   }
 
@@ -96,10 +104,11 @@ class LessonViewModel extends ChangeNotifier {
     return _updateFormK;
   }
 
-  void setUpdateController({required int index, required String initString}) {
+  void setUpdateController({int? index, String? initString}) {
     _updateController =
-        List.generate(_lessonData!.length, (index) => TextEditingController());
-    _updateController[index] = TextEditingController(text: initString);
+        List.generate(_subjectData!.length, (index) => TextEditingController());
+    _updateController[index ?? 0] =
+        TextEditingController(text: initString ?? "");
   }
 
   List<TextEditingController> get getUpdateController {
@@ -145,9 +154,8 @@ class LessonViewModel extends ChangeNotifier {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    final item = _lessonData!.removeAt(oldIndex);
-    _lessonData!.insert(newIndex, item);
-
+    final item = _subjectData!.removeAt(oldIndex);
+    _subjectData!.insert(newIndex, item);
     notifyListeners();
   }
 }

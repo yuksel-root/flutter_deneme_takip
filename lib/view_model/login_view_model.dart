@@ -17,7 +17,7 @@ enum LoginState {
   loginError,
 }
 
-class DenemeLoginViewModel extends ChangeNotifier {
+class LoginViewModel extends ChangeNotifier {
   LoginState? _loggedInStatus;
   User? _currentUser;
   bool? _isAnonymous;
@@ -25,7 +25,7 @@ class DenemeLoginViewModel extends ChangeNotifier {
   late bool _isAlertOpen;
   final LocalStorageManager _storageManager = LocalStorageManager.instance;
   final NavigationService navigation = NavigationService.instance;
-  DenemeLoginViewModel() {
+  LoginViewModel() {
     _loggedInStatus = LoginState.notLoggedIn;
     _isAlertOpen = false;
     _isAnonymous = false;
@@ -76,7 +76,7 @@ class DenemeLoginViewModel extends ChangeNotifier {
   }
 
   Future<void> loginWithGoogle(
-      BuildContext context, DenemeLoginViewModel loginProv) async {
+      BuildContext context, LoginViewModel loginProv) async {
     setState = LoginState.notLoggedIn;
     setCurrentUser = await AuthService().signInWithGoogle();
     setState = LoginState.authenticating;
@@ -115,7 +115,7 @@ class DenemeLoginViewModel extends ChangeNotifier {
   }
 
   Future<void> errorAlert(BuildContext context, String title, String content,
-      DenemeLoginViewModel loginProv) async {
+      LoginViewModel loginProv) async {
     AlertView alert = AlertView(
       title: title,
       content: content,

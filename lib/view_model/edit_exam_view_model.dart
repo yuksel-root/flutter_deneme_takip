@@ -1,23 +1,24 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/core/constants/app_data.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
-import 'package:flutter_deneme_takip/models/deneme.dart';
+import 'package:flutter_deneme_takip/core/constants/exam_subjects_data/kpss_subjects_data.dart';
+import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
+import 'package:flutter_deneme_takip/models/exam.dart';
+import 'package:flutter_deneme_takip/models/exam_detail.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 
-enum EditDenemeState {
+enum EditexamState {
   empty,
   loading,
   completed,
   error,
 }
 
-class EditDenemeViewModel extends ChangeNotifier {
+class EditExamViewModel extends ChangeNotifier {
   // late NavigationService _navigation;
   final DateTime _now = DateTime.now();
-  late EditDenemeState _state;
+  late EditexamState _state;
 
   late bool _isDiffZero;
   late bool _isNumberBig;
@@ -26,7 +27,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   late bool _isKeyboardOpen;
 
   late String? _lessonName;
-  late int? _lastDenemeId;
+  late int? _lastexamId;
   late String _date;
 
   late List<String>? _subjectList;
@@ -40,12 +41,12 @@ class EditDenemeViewModel extends ChangeNotifier {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final formKey0 = GlobalKey<FormState>();
 
-  EditDenemeViewModel() {
+  EditExamViewModel() {
     _falseCountsIntegers.clear();
     _subjectSavedList.clear();
 
     //  _navigation = NavigationService.instance;
-    _state = EditDenemeState.loading;
+    _state = EditexamState.loading;
     _date =
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(_now).toString();
 
@@ -56,12 +57,12 @@ class EditDenemeViewModel extends ChangeNotifier {
     _isKeyboardOpen = false;
 
     _lessonName = 'Tarih';
-    _subjectList = AppData.historySubjects;
+    _subjectList = KpssSubjects.historySubjects;
     _falseInputCount = _subjectList!.length;
     _formKey = formKey0;
     fakeData = [];
 
-    _lastDenemeId = 0;
+    _lastexamId = 0;
 
     _falseCountsIntegers = List.generate(_falseInputCount!, (index) => 0);
     _subjectSavedList = List.of(findList(_lessonName!));
@@ -71,33 +72,25 @@ class EditDenemeViewModel extends ChangeNotifier {
         List.generate(_falseCountsIntegers.length, (index) => FocusNode());
   }
 
-  EditDenemeState get getState => _state;
-  set setState(EditDenemeState state) {
+  EditexamState get getState => _state;
+  set setState(EditexamState state) {
     _state = state;
     notifyListeners();
   }
 
   void initFakeData() async {
-    setState = EditDenemeState.loading;
+    setState = EditexamState.loading;
 
     fakeData = [];
 
     await Future.delayed(const Duration(milliseconds: 350), () {
-      setState = EditDenemeState.completed;
+      setState = EditexamState.completed;
     });
   }
 
   List<String> findList(String lessonName) {
-    return AppData.lessonListMap[lessonName] ?? [];
-  }
-
-  set setLessonName(String newLesson) {
-    _lessonName = newLesson;
-    notifyListeners();
-  }
-
-  String get getLessonName {
-    return _lessonName ?? 'Tarih';
+    return [];
+    // return AppData.lessonListMap[lessonName] ?? [];
   }
 
   set setFormKey(GlobalKey<FormState> newKey) {
@@ -145,7 +138,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   }
 
   set setSubjectList(List<String>? newSubjects) {
-    _subjectList = newSubjects ?? AppData.subjectListNames['Tarih'];
+    //  _subjectList = newSubjects ?? AppData.subjectListNames['Tarih'];
   }
 
   List<String> get getSubjectList {
@@ -184,7 +177,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     return _listFocusNode;
   }
 
-  int getFindDenemeId(List<int> existingIds, int latestId) {
+  int getFindexamId(List<int> existingIds, int latestId) {
     int lastId = 1;
     final int latest = latestId;
     List<int> existingId = existingIds;
@@ -193,7 +186,7 @@ class EditDenemeViewModel extends ChangeNotifier {
     for (int i = 1; i <= latest; i++) {
       if (!existingIdSet.contains(i)) {
         lastId = i;
-        _lastDenemeId = lastId;
+        _lastexamId = lastId;
         return lastId;
       } else {
         lastId = (latest) + 1;
@@ -204,7 +197,7 @@ class EditDenemeViewModel extends ChangeNotifier {
 
   Future<void> saveButton(
       {required bool isUpdate,
-      int? updatingDenemeId,
+      int? updateExamId,
       int? cellId,
       String? lessonName,
       String? updateVal}) async {
@@ -215,58 +208,55 @@ class EditDenemeViewModel extends ChangeNotifier {
         DateFormat('HH:mm:ss | d MMMM EEEE', 'tr_TR').format(now).toString();
 
     _subjectSavedList = getSubjectList;
-    List<int> existingIds = await DenemeDbProvider.db
-        .getAllDenemeIds(AppData.tableNames[getLessonName]!);
-    int latestId = await DenemeDbProvider.db
-            .getFindLastId(AppData.tableNames[getLessonName]!, "denemeId") ??
-        0;
+    //  List<int> existingIds =
+//await ExamDbProvider.db.getAllexamIds(AppData.tableNames["Coğrafya"]!);
+    //  int latestId = await ExamDbProvider.db
+    //       .getFindLastId(AppData.tableNames["Coğrafya"]!, "examId") ??
+    //    0;
 
     //printFunct("falseCounters", _falseCountsIntegers);
     //printFunct("subjectSavedList", _subjectSavedList);
 
-    _lastDenemeId = getFindDenemeId(existingIds, latestId);
+    //  _lastexamId = getFindexamId(existingIds, latestId);
     if (isUpdate == false) {
       for (int i = 0; i < _falseCountsIntegers.length; i++) {
-        DenemeModel newDenemeModel = DenemeModel(
-            denemeId: _lastDenemeId,
+        /*  EditExamViewModel newEditModel = ExamDetailModel(
             subjectId: (i + 1),
             falseCount: _falseCountsIntegers[i],
-            denemeDate: _date,
+            examDate: _date,
             subjectName: _subjectSavedList[i]);
 
-        await saveDeneme(newDenemeModel);
+        await saveExam(newEditModel); */
         setFalseControllers = getFalseControllers.length;
       }
     } else {
-      _subjectSavedList = AppData.subjectListNames[lessonName ?? 'Tarih']!;
+      //  _subjectSavedList = AppData.subjectListNames[lessonName ?? 'Tarih']!;
 
-      DenemeModel updateDenemeModel = DenemeModel(
-        denemeId: updatingDenemeId,
+      ExamDetailModel updateexamModel = ExamDetailModel(
+        examId: updateExamId,
         subjectId: cellId! + 1,
-        subjectName: _subjectSavedList[cellId],
+        // subjectName: _subjectSavedList[cellId],
         falseCount: int.parse(updateVal!),
-        denemeDate: _date,
+//examDate: _date,
       );
-      await updateDeneme(updateDenemeModel, lessonName ?? 'Tarih');
+      await updateExam(updateexamModel, lessonName ?? 'Tarih');
     }
   }
 
-  Future<void> updateDeneme(DenemeModel deneme, String lessonName) async {
+  Future<void> updateExam(ExamDetailModel exam, String lessonName) async {
     try {
-      await DenemeDbProvider.db
-          .updateDeneme(deneme, AppData.tableNames[lessonName]!);
+      //   await ExamDbProvider.db.updateExam(exam, AppData.tableNames[lessonName]!);
     } catch (e) {
-      printFunct("updateDeneme error", e);
+      printFunct("update exam error", e);
     }
     notifyListeners();
   }
 
-  Future<void> saveDeneme(DenemeModel deneme) async {
+  Future<void> saveExam(ExamModel exam, ExamDetailModel examDetail) async {
     try {
-      await DenemeDbProvider.db
-          .insertDeneme(deneme, AppData.tableNames[getLessonName]!);
+      await ExamDbProvider.db.insertExam(exam, examDetail);
     } catch (e) {
-      printFunct("saveDeneme error", e);
+      printFunct("save exam error", e);
     }
     notifyListeners();
   }
@@ -278,7 +268,7 @@ class EditDenemeViewModel extends ChangeNotifier {
   }
 
   Future<void> errorAlert(BuildContext context, String title, String content,
-      EditDenemeViewModel editProv) async {
+      EditExamViewModel editProv) async {
     AlertView alert = AlertView(
       title: title,
       content: content,
@@ -310,7 +300,7 @@ class EditDenemeViewModel extends ChangeNotifier {
 
   Future<void> getAllData(String dataTable) async {
     print("-------------$dataTable------------\n");
-    print(await DenemeDbProvider.db.getAllDataByTable(dataTable));
+    print(await ExamDbProvider.db.getAllDataByTable(dataTable));
     print("-------------$dataTable------------\n");
   }
 
@@ -321,6 +311,6 @@ class EditDenemeViewModel extends ChangeNotifier {
   }
 
   Future<int?> getLastId(String table, String id) async {
-    return await DenemeDbProvider.db.getFindLastId(table, id);
+    return await ExamDbProvider.db.getFindLastId(table, id);
   }
 }
