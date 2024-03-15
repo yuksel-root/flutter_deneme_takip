@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
-import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
+import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
+import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
 import 'package:provider/provider.dart';
 
 class AppLifeCycleManager extends StatefulWidget {
@@ -29,7 +29,7 @@ class _AppLifeCycleManagerState extends State<AppLifeCycleManager>
   @override
   void dispose() {
     super.dispose();
-    DenemeDbProvider.db.closeDatabase();
+    ExamDbProvider.db.closeDatabase();
     WidgetsBinding.instance.removeObserver(this);
   }
 
@@ -41,9 +41,9 @@ class _AppLifeCycleManagerState extends State<AppLifeCycleManager>
         WidgetsBinding.instance.platformDispatcher.views.last.viewInsets.bottom;
 
     if (bottomInset != 0.0) {
-      context.read<EditDenemeViewModel>().setKeyboardVisibility = true;
+      context.read<EditExamViewModel>().setKeyboardVisibility = true;
     } else {
-      context.read<EditDenemeViewModel>().setKeyboardVisibility = false;
+      context.read<EditExamViewModel>().setKeyboardVisibility = false;
     }
   }
 
@@ -56,7 +56,7 @@ class _AppLifeCycleManagerState extends State<AppLifeCycleManager>
         print('LifeCycleState = $state');
         break;
       case AppLifecycleState.inactive:
-        DenemeDbProvider.db.closeDatabase();
+        ExamDbProvider.db.closeDatabase();
         print('LifeCycleState = $state');
         break;
       case AppLifecycleState.paused:

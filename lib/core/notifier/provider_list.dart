@@ -2,10 +2,12 @@ import 'package:flutter_deneme_takip/components/custom_painter/custom_painter.da
 import 'package:flutter_deneme_takip/core/navigation/navigation_service.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
-import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/exam_list_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/login_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/subject_view_model.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -19,10 +21,10 @@ class ApplicationProvider {
   ApplicationProvider._init();
   List<SingleChildWidget> dependItems = [
     ChangeNotifierProvider(
-      create: (context) => EditDenemeViewModel(),
+      create: (context) => EditExamViewModel(),
     ),
     ChangeNotifierProvider(
-      create: (context) => DenemeViewModel(),
+      create: (context) => ExamTableViewModel(),
     ),
     ChangeNotifierProvider(
       create: (context) => BottomNavigationProvider(),
@@ -31,10 +33,16 @@ class ApplicationProvider {
       create: (context) => TabbarNavigationProvider(),
     ),
     ChangeNotifierProvider(
-      create: (context) => LessonViewModel(),
+      create: (context) => ExamListViewModel(),
     ),
     ChangeNotifierProvider(
-      create: (context) => DenemeLoginViewModel(),
+      create: (context) => LoginViewModel(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => SubjectViewModel(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => LessonViewModel(),
     ),
     ChangeNotifierProvider(
       create: (context) => CustomWidgetPainter(),

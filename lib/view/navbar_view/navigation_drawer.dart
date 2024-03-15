@@ -4,18 +4,19 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
-import 'package:flutter_deneme_takip/components/utils/gradient_widget.dart';
+import 'package:flutter_deneme_takip/components/shader_mask/gradient_widget.dart';
 import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
+import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
 import 'package:flutter_deneme_takip/core/notifier/bottom_navigation_notifier.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
-import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
-import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
+
+import 'package:flutter_deneme_takip/view_model/exam_list_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/login_view_model.dart';
 import 'package:provider/provider.dart';
 
 class NavDrawer extends StatelessWidget {
@@ -23,10 +24,10 @@ class NavDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final denemeProv = Provider.of<DenemeViewModel>(context, listen: false);
-    final lessonProv = Provider.of<LessonViewModel>(context, listen: false);
-    final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: true);
-    final editProv = Provider.of<EditDenemeViewModel>(context, listen: true);
+    final examProv = Provider.of<ExamTableViewModel>(context, listen: false);
+    final lessonProv = Provider.of<ExamListViewModel>(context, listen: false);
+    final loginProv = Provider.of<LoginViewModel>(context, listen: true);
+    final editProv = Provider.of<EditExamViewModel>(context, listen: true);
     final bottomProv =
         Provider.of<BottomNavigationProvider>(context, listen: false);
     final currentUser = loginProv.getCurrentUser;
@@ -50,11 +51,11 @@ class NavDrawer extends StatelessWidget {
             Expanded(
                 flex: 18,
                 child: buildListTileHeader(
-                    context, loginProv, currentUser, denemeProv)),
+                    context, loginProv, currentUser, examProv)),
             Expanded(
                 flex: 55,
                 child: buildListTiles(currentUser, bottomProv, context,
-                    denemeProv, loginProv, lessonProv, editProv)),
+                    examProv, loginProv, lessonProv, editProv)),
           ],
         ),
       ),
@@ -62,8 +63,8 @@ class NavDrawer extends StatelessWidget {
   }
 }
 
-Column buildListTileHeader(BuildContext context, DenemeLoginViewModel loginProv,
-    User? currentUser, DenemeViewModel denemeProv) {
+Column buildListTileHeader(BuildContext context, LoginViewModel loginProv,
+    User? currentUser, ExamTableViewModel examProv) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +87,7 @@ Column buildListTileHeader(BuildContext context, DenemeLoginViewModel loginProv,
             children: [
               Expanded(
                   child: ClipOval(
-                child: buildProfileImage(context, denemeProv, currentUser),
+                child: buildProfileImage(context, examProv, currentUser),
               )),
             ],
           ),
@@ -97,11 +98,11 @@ Column buildListTileHeader(BuildContext context, DenemeLoginViewModel loginProv,
 }
 
 Widget buildProfileImage(
-    BuildContext context, DenemeViewModel denemeProv, User? currentUser) {
+    BuildContext context, ExamTableViewModel examProv, User? currentUser) {
   try {
     if (currentUser != null) {
-      denemeProv.isOnline(currentUser.uid);
-      if (denemeProv.getOnline) {
+      examProv.isOnline(currentUser.uid);
+      if (examProv.getOnline) {
         return Image.network(currentUser.photoURL!);
       }
     }
@@ -164,10 +165,10 @@ Column buildListTiles(
     User? currentUser,
     BottomNavigationProvider bottomProv,
     BuildContext context,
-    DenemeViewModel denemeProv,
-    DenemeLoginViewModel loginProv,
-    LessonViewModel lessonProv,
-    EditDenemeViewModel editProv) {
+    ExamTableViewModel examProv,
+    LoginViewModel loginProv,
+    ExamListViewModel examListProv,
+    EditExamViewModel editProv) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,16 +199,16 @@ Column buildListTiles(
                       .pushNamed(NavigationConstants.homeView);
                 });
                 await Future.delayed(const Duration(milliseconds: 50), () {
-                  if (context.read<DenemeLoginViewModel>().getState ==
+                  if (context.read<LoginViewModel>().getState ==
                       LoginState.notLoggedIn) {
                     loginProv.loginWithGoogle(context, loginProv);
-                  } else if (context.read<DenemeLoginViewModel>().getState ==
+                  } else if (context.read<LoginViewModel>().getState ==
                       LoginState.loginError) {
                     loginProv.errorAlert(
                         context, "Uyarı", loginProv.getError, loginProv);
                     loginProv.setState = LoginState.notLoggedIn;
                   } else {
-                    if (context.read<DenemeLoginViewModel>().getState ==
+                    if (context.read<LoginViewModel>().getState ==
                         LoginState.loggedIn) {
                       loginProv.errorAlert(
                           context, "Uyarı", loginProv.getError, loginProv);
@@ -228,7 +229,7 @@ Column buildListTiles(
             const LinearGradient(colors: [Colors.white, Colors.white]),
         cardGradient: ColorConstants.navCardGradient,
         textGradient: ColorConstants.navTextGradient,
-        title: "Dersler",
+        title: "Denemeler",
         icon: Icons.library_books,
         onTap: () async {
           bottomProv.setCurrentIndex = 0;
@@ -243,7 +244,7 @@ Column buildListTiles(
             const LinearGradient(colors: [Colors.white, Colors.white]),
         cardGradient: ColorConstants.navCardGradient,
         textGradient: ColorConstants.navTextGradient,
-        title: "Denemeler",
+        title: "Denemeler Tablosu",
         icon: Icons.group_work_rounded,
         onTap: () async {
           bottomProv.setCurrentIndex = 1;
@@ -294,8 +295,8 @@ Column buildListTiles(
         title: "Verileri Yedekle",
         icon: Icons.replay_circle_filled,
         onTap: () {
-          denemeProv.setAlert = false;
-          backUpFunction(context, denemeProv, currentUser, loginProv);
+          examProv.setAlert = false;
+          backUpFunction(context, examProv, currentUser, loginProv);
         },
       ),
       drawerCardMenu(
@@ -327,9 +328,9 @@ Column buildListTiles(
         title: "Verileri Yükle",
         icon: Icons.upload,
         onTap: () {
-          denemeProv.setAlert = false;
+          examProv.setAlert = false;
           restoreDataFunction(
-              context, loginProv, denemeProv, lessonProv, currentUser);
+              context, loginProv, examProv, examListProv, currentUser);
         },
       ),
       currentUser != null
@@ -342,7 +343,7 @@ Column buildListTiles(
               title: "Çıkış",
               icon: Icons.logout,
               onTap: () {
-                denemeProv.showAlert(context,
+                examProv.showAlert(context,
                     isOneButton: false,
                     title: "Uyarı",
                     content: "Mevcut hesaptan çıkış yapmak ister misiniz?",
@@ -376,7 +377,7 @@ Column buildListTiles(
               iconGradient:
                   const LinearGradient(colors: [Colors.white, Colors.white]),
               onTap: () {
-              denemeProv.showAlert(context,
+              examProv.showAlert(context,
                   isOneButton: false,
                   title: "Uyarı",
                   content: "Uygulamadan Çıkmak istiyor musunuz?",
@@ -405,14 +406,14 @@ Column buildListTiles(
         title: "Tüm Verileri Temizle",
         icon: Icons.delete,
         onTap: () {
-          denemeProv.showAlert(context,
+          examProv.showAlert(context,
               isOneButton: false,
               title: "Uyarı",
               content: "Tüm verileri silmek istiyor musunuz?",
               yesFunction: () async {
-            await DenemeDbProvider.db.clearDatabase();
-            lessonProv.initLessonData(lessonProv.getLessonName);
-            denemeProv.initDenemeData(denemeProv.getLessonName);
+            await ExamDbProvider.db.clearDatabase();
+            //  examListProv.initExamListData(examListProv.getLessonName);
+            // examProv.initExamData(examProv.getLessonName);
             Future.delayed(Duration.zero, () {
               Navigator.of(context, rootNavigator: true)
                   .pushNamed(NavigationConstants.homeView);
@@ -452,14 +453,14 @@ Column buildListTiles(
         icon: Icons.remove_circle,
         onTap: () async {
           currentUser != null
-              ? denemeProv.showAlert(context,
+              ? examProv.showAlert(context,
                   isOneButton: false,
                   title: "Uyarı",
                   content: "Mevcut kullanıcı hesabı silinecektir ?",
                   yesFunction: () async {
-                  await denemeProv
+                  await examProv
                       .deleteUserInFirebase(
-                          context, currentUser.uid, denemeProv, loginProv)
+                          context, currentUser.uid, examProv, loginProv)
                       .then((value) async {
                     await Future.delayed(const Duration(milliseconds: 100),
                         () async {
@@ -473,21 +474,21 @@ Column buildListTiles(
                   Future.delayed(Duration.zero, () {
                     Navigator.of(context, rootNavigator: true)
                         .pushNamed(NavigationConstants.homeView);
-                    denemeProv.setAlert = false;
+                    examProv.setAlert = false;
                   });
                 }, noFunction: () {
                   Navigator.of(context, rootNavigator: true).pop();
-                  denemeProv.setAlert = false;
+                  examProv.setAlert = false;
                 })
-              : currentUserNullAlert(context, denemeProv);
+              : currentUserNullAlert(context, examProv);
         },
       ),
     ],
   );
 }
 
-void currentUserNullAlert(BuildContext context, DenemeViewModel denemeProv) {
-  denemeProv.showAlert(context,
+void currentUserNullAlert(BuildContext context, ExamTableViewModel examProv) {
+  examProv.showAlert(context,
       isOneButton: true,
       title: "Uyarı",
       content: "Bu özellik için Lütfen giriş yapınız!", yesFunction: () {
@@ -499,16 +500,16 @@ void currentUserNullAlert(BuildContext context, DenemeViewModel denemeProv) {
   });
 }
 
-Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
+Future<void> backUpFunction(BuildContext context, ExamTableViewModel examProv,
     User? currentUser, loginProv) async {
   currentUser != null
-      ? denemeProv.showAlert(context,
+      ? examProv.showAlert(context,
           isOneButton: false,
           title: "Uyarı",
           content: "Şu anki veriler yedeklensin mi? ", yesFunction: () async {
           Navigator.of(context, rootNavigator: true)
               .pushNamed(NavigationConstants.homeView);
-          denemeProv.setFirebaseState = FirebaseState.loading;
+          examProv.setFirebaseState = FirebaseState.loading;
           await Future.delayed(const Duration(milliseconds: 20), () {
             showLoadingAlertDialog(
               context,
@@ -516,9 +517,9 @@ Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
             );
           });
           await Future.delayed(const Duration(milliseconds: 1500), () async {
-            await denemeProv
+            await examProv
                 .backUpAllTablesData(
-                    context, currentUser.uid, denemeProv, loginProv)
+                    context, currentUser.uid, examProv, loginProv)
                 .then((value) {
               Navigator.of(context, rootNavigator: true)
                   .pushNamed(NavigationConstants.homeView);
@@ -527,18 +528,18 @@ Future<void> backUpFunction(BuildContext context, DenemeViewModel denemeProv,
         }, noFunction: () {
           Navigator.of(context, rootNavigator: true).pop();
         })
-      : currentUserNullAlert(context, denemeProv);
+      : currentUserNullAlert(context, examProv);
 }
 
 Future<void> restoreDataFunction(
     BuildContext context,
-    DenemeLoginViewModel loginProv,
-    DenemeViewModel denemeProv,
-    LessonViewModel lessonProv,
+    LoginViewModel loginProv,
+    ExamTableViewModel examProv,
+    ExamListViewModel lessonProv,
     User? currentUser) async {
   try {
     currentUser != null
-        ? denemeProv.showAlert(context,
+        ? examProv.showAlert(context,
             isOneButton: false,
             title: "Uyarı",
             content: "Şu anki veriler yedeklenen veri ile değiştirilecektir",
@@ -555,13 +556,13 @@ Future<void> restoreDataFunction(
             await Future.delayed(const Duration(seconds: 1), () async {
               Navigator.of(context, rootNavigator: true)
                   .pushNamed(NavigationConstants.homeView);
-              await denemeProv.restoreData(
-                  context, currentUser.uid, denemeProv, lessonProv);
+              await examProv.restoreData(
+                  context, currentUser.uid, examProv, lessonProv);
             });
           }, noFunction: () {
             Navigator.of(context, rootNavigator: true).pop();
           })
-        : currentUserNullAlert(context, denemeProv);
+        : currentUserNullAlert(context, examProv);
   } catch (e) {
     print("restoreData catch drawer $e");
   }

@@ -12,7 +12,7 @@ import 'package:flutter_deneme_takip/firebase_options.dart';
 import 'package:flutter_deneme_takip/services/auth_service.dart';
 import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/app_life_cycle_manager.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_login_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/login_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -46,7 +46,7 @@ class MainApp extends StatelessWidget {
       WidgetsBinding.instance.platformDispatcher.views.single.display.size;
   @override
   Widget build(BuildContext context) {
-    final loginProv = Provider.of<DenemeLoginViewModel>(context, listen: false);
+    final loginProv = Provider.of<LoginViewModel>(context, listen: false);
     print(
         "table fontSize ${AppTheme.dynamicSize(dynamicHSize: 0.0045, dynamicWSize: 0.0085)}");
     print(
@@ -84,7 +84,7 @@ class MainApp extends StatelessWidget {
     );
   }
 
-  Future<bool?> checkIfAnonymous(DenemeLoginViewModel loginProv) async {
+  Future<bool?> checkIfAnonymous(LoginViewModel loginProv) async {
     bool? isAnonymous = await loginProv.getIsAnonymous ?? false;
     //   print("anonMain $isAnonymous");
     return Future.value(isAnonymous);

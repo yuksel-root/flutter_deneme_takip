@@ -2,9 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/components/custom_painter/custom_painter.dart';
 import 'package:flutter_deneme_takip/components/indicator_alert/loading_indicator_alert.dart';
-import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
+import 'package:flutter_deneme_takip/core/constants/exam_subjects_data/kpss_subjects_data.dart';
+import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
+
 import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -15,7 +16,7 @@ class ImageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final painterProv = Provider.of<CustomWidgetPainter>(context);
-    final denemeProv = Provider.of<DenemeViewModel>(context);
+    final examProv = Provider.of<ExamTableViewModel>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -37,7 +38,7 @@ class ImageView extends StatelessWidget {
               painterProv.setHeight = 160;
               painterProv.setCenterScaleX = 10;
               painterProv.setCenterScaleY = 2;
-              painterProv.generateAndSaveImage(denemeProv);
+              painterProv.generateAndSaveImage(examProv);
             },
             child: const Text('Show PNG'),
           ),
@@ -51,7 +52,7 @@ class ImageView extends StatelessWidget {
               painterProv.setHeight = 150;
               painterProv.setCenterScaleX = 10;
               painterProv.setCenterScaleY = 2;
-              painterProv.generateAndSaveImage(denemeProv);
+              painterProv.generateAndSaveImage(examProv);
             },
             child: const Text('Create PNG'),
           ),
@@ -90,7 +91,7 @@ class ImageView extends StatelessWidget {
                             ? FutureBuilder(
                                 future: Future.delayed(Duration.zero, () {
                                   painterProv.setSubjectText =
-                                      painterProv.getText(denemeProv, j, i);
+                                      painterProv.getText(examProv, j, i);
                                 }),
                                 builder: (context, snapshot) {
                                   return Container(
@@ -122,7 +123,7 @@ class ImageView extends StatelessWidget {
                                       )),
                                       image: DecorationImage(
                                         image: AssetImage(
-                                            'assets/img/table_columns/${AppData.lessonPng[j]}/$i.png'),
+                                            'assets/img/table_columns/${KpssSubjects.citizenSubject[j]}/$i.png'),
                                         fit: BoxFit.fill,
                                         alignment: Alignment.center,
                                         repeat: ImageRepeat.noRepeat,

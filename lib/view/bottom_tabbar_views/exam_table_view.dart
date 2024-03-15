@@ -1,43 +1,43 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_deneme_takip/components/custom_painter/custom_painter.dart';
+
 import 'package:flutter_deneme_takip/components/text_dialog/update_text_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/app_theme.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
-import 'package:flutter_deneme_takip/view_model/edit_deneme_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
+import 'package:flutter_deneme_takip/view_model/lesson_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
-class DenemeView extends StatelessWidget {
-  const DenemeView({super.key});
+class ExamTableView extends StatelessWidget {
+  const ExamTableView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final denemeProv = Provider.of<DenemeViewModel>(context);
-    final editProv = Provider.of<EditDenemeViewModel>(context);
-    final paintProv = Provider.of<CustomWidgetPainter>(context);
-    final denemeData = context.read<DenemeViewModel>().listDeneme ?? [];
+    final examTableProv = Provider.of<ExamTableViewModel>(context);
+    final editProv = Provider.of<EditExamViewModel>(context);
+    final lessonProv = Provider.of<LessonViewModel>(context);
+    final examData = context.read<ExamTableViewModel>().listexam ?? [];
 
-    return buildFutureView(denemeProv, denemeData, editProv, paintProv);
+    return buildFutureView(examTableProv, examData, editProv, lessonProv);
   }
 
-  FutureBuilder buildFutureView(DenemeViewModel denemeProv, denemeData,
-      EditDenemeViewModel editProv, CustomWidgetPainter paintProv) {
+  FutureBuilder buildFutureView(ExamTableViewModel examProv, examData,
+      EditExamViewModel editProv, LessonViewModel lessonProv) {
     return FutureBuilder(
         future: Future.delayed(Duration.zero, () async {
-          return denemeData;
+          return examData;
         }),
         builder: (BuildContext context, _) {
-          if (context.watch<DenemeViewModel>().getDenemeState ==
-              DenemeState.loading) {
+          if (context.watch<ExamTableViewModel>().getexamState ==
+              ExamState.loading) {
             return Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
-                child:
-                    buildDataTable(context, denemeProv, editProv, paintProv));
-          } else if (context.watch<DenemeViewModel>().listDeneme!.isEmpty) {
+                child: buildDataTable(context, examProv, editProv, lessonProv));
+          } else if (context.watch<ExamTableViewModel>().listexam!.isEmpty) {
             return Center(
                 child: Text(
                     style: TextStyle(
@@ -46,11 +46,11 @@ class DenemeView extends StatelessWidget {
                             dynamicHSize: 0.005, dynamicWSize: 0.01)),
                     'Gösterilecek veri yok'));
           } else {
-            denemeProv.convertToRow(denemeData);
-            if (denemeProv.getIsTotal == false) {
-              denemeProv.insertRowData(denemeProv.denemelerData);
+            examProv.convertToRow(examData);
+            if (examProv.getIsTotal == false) {
+              examProv.insertRowData(examProv.examlerData);
             } else {
-              denemeProv.totalInsertRowData(denemeProv.denemelerData);
+              examProv.totalInsertRowData(examProv.examlerData);
             }
 
             return Scaffold(
@@ -67,7 +67,7 @@ class DenemeView extends StatelessWidget {
                         child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: buildDataTable(
-                                context, denemeProv, editProv, paintProv)),
+                                context, examProv, editProv, lessonProv)),
                       ),
                     ),
                   ],
@@ -78,8 +78,8 @@ class DenemeView extends StatelessWidget {
         });
   }
 
-  Widget buildDataTable(BuildContext context, DenemeViewModel denemeProv,
-      EditDenemeViewModel editProv, CustomWidgetPainter paintProv) {
+  Widget buildDataTable(BuildContext context, ExamTableViewModel examProv,
+      EditExamViewModel editProv, LessonViewModel lessonProv) {
     return Center(
         child: Column(children: <Widget>[
       SizedBox(
@@ -90,32 +90,23 @@ class DenemeView extends StatelessWidget {
           border: TableBorder.all(
               color: Colors.black, style: BorderStyle.solid, width: 1),
           children: [
-            getColumns(context, denemeProv, paintProv),
-            ...getRows(context, denemeProv, editProv),
+            getColumns(context, examProv, lessonProv),
+            ...getRows(context, examProv, editProv),
           ],
         ),
       ),
     ]));
   }
 
-  TableRow getColumns(BuildContext context, DenemeViewModel denemeProv,
-      CustomWidgetPainter paintProv) {
+  TableRow getColumns(BuildContext context, ExamTableViewModel examProv,
+      LessonViewModel lessonProv) {
     return TableRow(
-      children: List.generate(
-        denemeProv.columnData.length,
-        (index) => FutureBuilder(
-            future: Future.delayed(Duration.zero, () {
-              paintProv.setSubjectText = denemeProv
-                  .findList(denemeProv.getLessonName ?? "Tarih")[index];
-            }),
-            builder: (context, snapshot) =>
-                getColumnCell(context, denemeProv, index, paintProv)),
-      ),
-    );
+        children: List.generate(examProv.columnData.length,
+            (index) => getColumnCell(context, examProv, index, lessonProv)));
   }
 
-  TableCell getColumnCell(BuildContext context, DenemeViewModel denemeProv,
-      int index, CustomWidgetPainter paintProv) {
+  TableCell getColumnCell(BuildContext context, ExamTableViewModel examProv,
+      int index, LessonViewModel lessonProv) {
     return TableCell(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -139,7 +130,7 @@ class DenemeView extends StatelessWidget {
                     dynamicHSize: 0.014, dynamicWSize: 0.02),
                 child: Center(
                   child: Text(
-                    "Deneme\n Sıra\n No",
+                    "exam\n Sıra\n No",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -166,15 +157,16 @@ class DenemeView extends StatelessWidget {
                 width: AppTheme.dynamicSize(
                     dynamicHSize: 0.014, dynamicWSize: 0.02),
                 child: Center(
-                    child: buildResizableText(context, denemeProv, index))),
+                    child: buildResizableText(
+                        context, lessonProv, index, examProv))),
       ],
     ));
   }
 
-  Widget buildResizableText(
-      BuildContext context, DenemeViewModel denemeProv, int index) {
+  Widget buildResizableText(BuildContext context, LessonViewModel lessonProv,
+      int index, ExamTableViewModel examProv) {
     return Text(
-      denemeProv.findList(denemeProv.getLessonName ?? "Tarih")[index],
+      examProv.findList(lessonProv.getLessonName ?? "Coğrafya")[index],
       style: TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.normal,
@@ -190,9 +182,9 @@ class DenemeView extends StatelessWidget {
   }
 }
 
-double findMax(DenemeViewModel denemeProv) {
+double findMax(ExamTableViewModel examProv) {
   double largestH = 0;
-  for (double height in denemeProv.listContHeights) {
+  for (double height in examProv.listContHeights) {
     if (height > largestH) {
       largestH = height;
     }
@@ -201,7 +193,7 @@ double findMax(DenemeViewModel denemeProv) {
 }
 
 Widget getRowCell(BuildContext context, int i, dynamic cell,
-    DenemeViewModel denemeProv, EditDenemeViewModel editProv, int rowIndex) {
+    ExamTableViewModel examProv, EditExamViewModel editProv, int rowIndex) {
   return TableCell(
       child: i == 0
           ? Container(
@@ -216,29 +208,29 @@ Widget getRowCell(BuildContext context, int i, dynamic cell,
                 ),
               ),
               child: InkWell(
-                onDoubleTap: denemeProv.getIsTotal != true
+                onDoubleTap: examProv.getIsTotal != true
                     ? () async {
                         await Future.delayed(const Duration(milliseconds: 0),
                             () {
-                          denemeProv.removeAlert(
+                          examProv.removeAlert(
                             context,
                             'UYARI',
-                            '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                            denemeProv,
+                            '${examProv.extractNumber(cell)}.denemeyi silmek istediğinize emin misiniz?',
+                            examProv,
                             cell,
                           );
                         });
                       }
                     : () {},
-                onLongPress: denemeProv.getIsTotal != true
+                onLongPress: examProv.getIsTotal != true
                     ? () async {
                         await Future.delayed(const Duration(milliseconds: 0),
                             () {
-                          denemeProv.removeAlert(
+                          examProv.removeAlert(
                             context,
                             'UYARI',
-                            '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                            denemeProv,
+                            '${examProv.extractNumber(cell)}.denemeyi silmek istediğinize emin misiniz?',
+                            examProv,
                             cell,
                           );
                         });
@@ -294,18 +286,18 @@ Widget getRowCell(BuildContext context, int i, dynamic cell,
               ),
               child: InkWell(
                 onDoubleTap: () async {
-                  denemeProv.setAlert = false;
+                  examProv.setAlert = false;
                   editProv.setLoading = true;
-                  denemeProv.getIsTotal == false
+                  examProv.getIsTotal == false
                       ? await showTextDialog(context,
                               title: 'Yanlış Sayısı Değiştir',
                               value: cell.toString(),
                               index: i,
                               rowIndex: (rowIndex + 1),
-                              alert: denemeProv.getIsAlertOpen)
+                              alert: examProv.getIsAlertOpen)
                           .then((value) {
-                          denemeProv.initDenemeData(denemeProv.getLessonName);
-                          denemeProv.setIsTotal = false;
+                          // examProv.initExamData(lessonProv.getLessonName);
+                          examProv.setIsTotal = false;
                         })
                       : () {};
                 },
@@ -342,7 +334,7 @@ Widget getRowCell(BuildContext context, int i, dynamic cell,
 }
 
 Widget getRowCell2(BuildContext context, int i, dynamic cell,
-    DenemeViewModel denemeProv, int rowIndex) {
+    ExamTableViewModel examProv, int rowIndex) {
   return TableCell(
       child: i == 0
           ? Container(
@@ -357,29 +349,29 @@ Widget getRowCell2(BuildContext context, int i, dynamic cell,
                 ),
               ),
               child: InkWell(
-                onDoubleTap: denemeProv.getIsTotal != true
+                onDoubleTap: examProv.getIsTotal != true
                     ? () async {
                         await Future.delayed(const Duration(milliseconds: 0),
                             () {
-                          denemeProv.removeAlert(
+                          examProv.removeAlert(
                             context,
                             'UYARI',
-                            '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                            denemeProv,
+                            '${examProv.extractNumber(cell)}.examyi silmek istediğinize emin misiniz?',
+                            examProv,
                             cell,
                           );
                         });
                       }
                     : () {},
                 onLongPress: () async {
-                  denemeProv.getIsTotal == false
+                  examProv.getIsTotal == false
                       ? await Future.delayed(const Duration(milliseconds: 0),
                           () {
-                          denemeProv.removeAlert(
+                          examProv.removeAlert(
                             context,
                             'UYARI',
-                            '${denemeProv.extractNumber(cell)}.Denemeyi silmek istediğinize emin misiniz?',
-                            denemeProv,
+                            '${examProv.extractNumber(cell)}.examyi silmek istediğinize emin misiniz?',
+                            examProv,
                             cell,
                           );
                         })
@@ -431,18 +423,18 @@ Widget getRowCell2(BuildContext context, int i, dynamic cell,
               ),
               child: InkWell(
                 onDoubleTap: () async {
-                  denemeProv.setAlert = false;
+                  examProv.setAlert = false;
 
-                  denemeProv.getIsTotal == false
+                  examProv.getIsTotal == false
                       ? await showTextDialog(context,
                               title: 'Yanlış Sayısı Değiştir',
                               value: cell.toString(),
                               index: i,
                               rowIndex: (rowIndex + 1),
-                              alert: denemeProv.getIsAlertOpen)
+                              alert: examProv.getIsAlertOpen)
                           .then((value) {
-                          denemeProv.initDenemeData(denemeProv.getLessonName);
-                          denemeProv.setIsTotal = false;
+                          //    examProv.initExamData(examProv.getLessonName);
+                          examProv.setIsTotal = false;
                         })
                       : () {};
                 },
@@ -480,10 +472,10 @@ Widget getRowCell2(BuildContext context, int i, dynamic cell,
             ));
 }
 
-List<TableRow> getRows(BuildContext context, DenemeViewModel denemeProv,
-    EditDenemeViewModel editProv) {
+List<TableRow> getRows(BuildContext context, ExamTableViewModel examProv,
+    EditExamViewModel editProv) {
   int k = -1;
-  List<Map<String, dynamic>> rowXdata = List.from(denemeProv.rowData);
+  List<Map<String, dynamic>> rowXdata = List.from(examProv.rowData);
 
   return rowXdata.map((row) {
     k++;
@@ -492,9 +484,9 @@ List<TableRow> getRows(BuildContext context, DenemeViewModel denemeProv,
       (i) {
         dynamic cell = row['row'][i];
         if (((k % 2) == 0)) {
-          return getRowCell(context, i, cell, denemeProv, editProv, k);
+          return getRowCell(context, i, cell, examProv, editProv, k);
         } else {
-          return getRowCell2(context, i, cell, denemeProv, k);
+          return getRowCell2(context, i, cell, examProv, k);
         }
       },
     );

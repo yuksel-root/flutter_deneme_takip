@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_print
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_db_provider.dart';
-import 'package:flutter_deneme_takip/core/local_database/deneme_tables.dart';
-import 'package:flutter_deneme_takip/models/deneme_post_model.dart';
+import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
+
+import 'package:flutter_deneme_takip/models/exam_post_model.dart';
 
 class FirebaseService {
   late FirebaseFirestore? _firestore;
@@ -23,15 +23,15 @@ class FirebaseService {
           return null;
         }
       });
-      if (postData!['denemePosts'] != null) {
-        postModels = {
-          DenemeTables.historyTableName: postData['denemePosts']
-              [DenemeTables.historyTableName]['tableData'],
-          DenemeTables.geographyTable: postData['denemePosts']
-              [DenemeTables.geographyTable]['tableData'],
-          DenemeTables.citizenTable: postData['denemePosts']
-              [DenemeTables.citizenTable]['tableData'],
-        };
+      if (postData!['examPosts'] != null) {
+        /*  postModels = {
+          examTables.historyTableName: postData['examPosts']
+              [examTables.historyTableName]['tableData'],
+          examTables.geographyTable: postData['examPosts']
+              [examTables.geographyTable]['tableData'],
+          examTables.citizenTable: postData['examPosts']
+              [examTables.citizenTable]['tableData'],
+        }; */
 
         return postModels;
       }
@@ -68,9 +68,9 @@ class FirebaseService {
       if (userDoc.exists) {
         Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
-        if (userData.containsKey('denemePosts')) {
+        if (userData.containsKey('examPosts')) {
           await firestore.collection('users').doc(userId).update({
-            'denemePosts': FieldValue.delete(),
+            'examPosts': FieldValue.delete(),
           });
 
           print('Belge başarıyla silindi: ');
@@ -86,31 +86,31 @@ class FirebaseService {
   }
 
   Future<void> sendMultiplePostsToFirebase(String userId) async {
-    List<DenemePostModel> postModels = [];
-    final hT = await DenemeDbProvider.db
-        .getAllDataByTable(DenemeTables.historyTableName);
-    final gT = await DenemeDbProvider.db
-        .getAllDataByTable(DenemeTables.geographyTable);
+    List<ExamPostModel> postModels = [];
+    /*  final hT = await examDbProvider.db
+        .getAllDataByTable(examTables.historyTableName);
+    final gT = await examDbProvider.db
+        .getAllDataByTable(examTables.geographyTable);
     final cT =
-        await DenemeDbProvider.db.getAllDataByTable(DenemeTables.citizenTable);
+        await examDbProvider.db.getAllDataByTable(examTables.citizenTable);
 
     postModels = [
-      DenemePostModel(
+      examPostModel(
         userId: userId,
-        tableName: DenemeTables.historyTableName,
+        tableName: examTables.historyTableName,
         tableData: hT,
       ),
-      DenemePostModel(
+      examPostModel(
         userId: userId,
-        tableName: DenemeTables.geographyTable,
+        tableName: examTables.geographyTable,
         tableData: gT,
       ),
-      DenemePostModel(
+      examPostModel(
         userId: userId,
-        tableName: DenemeTables.citizenTable,
+        tableName: examTables.citizenTable,
         tableData: cT,
       ),
-    ];
+    ]; */
 
     Map<String, dynamic> combinedData = {};
 
@@ -126,7 +126,7 @@ class FirebaseService {
       await _firestore!
           .collection('users')
           .doc(userId)
-          .set({'denemePosts': combinedData}, SetOptions(merge: true));
+          .set({'examPosts': combinedData}, SetOptions(merge: true));
     } catch (e) {
       print('Cathch fS sendTable $e');
     }
@@ -139,7 +139,7 @@ class FirebaseService {
 
       if (!userDoc.exists) {
         await _firestore!.collection('users').doc(userId).set({
-          'denemeUser': {
+          'examUser': {
             'name': name,
             'email': email,
           }

@@ -2,9 +2,10 @@
 
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
 import 'dart:ui' as ui;
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_deneme_takip/view_model/deneme_view_model.dart';
+
 import 'dart:io';
 
 class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
@@ -181,8 +182,8 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
     }
   }
 
-  String getText(DenemeViewModel denemeProv, int k, int i) {
-    List<String> list = denemeProv.findList(k == 0
+  String getText(ExamTableViewModel examProv, int k, int i) {
+    List<String> list = examProv.findList(k == 0
         ? "Vatandaşlık"
         : k == 1
             ? 'Coğrafya'
@@ -205,7 +206,7 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
     return _mapSubjectText['Vatandaşlık']![i];
   }
 
-  Future<void> generateAndSaveImage(denemeProv) async {
+  Future<void> generateAndSaveImage(examProv) async {
     for (int k = 0; k < 3; k++) {
       for (int i = 1; i < 11; i++) {
         try {
@@ -221,7 +222,7 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
             setFileName = 'Tarih$i.png';
           }
 
-          setSubjectText = getText(denemeProv, k, i);
+          setSubjectText = getText(examProv, k, i);
           //painter.shouldRepaint(painter);
           ui.PictureRecorder recorder = ui.PictureRecorder();
 
@@ -275,7 +276,7 @@ class CustomWidgetPainter extends CustomPainter with ChangeNotifier {
     TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: getSubjectText,
-        style:const  TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w100,
           fontFamily: 'Calibri',
