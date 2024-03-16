@@ -61,8 +61,7 @@ class LessonViewModel extends ChangeNotifier {
 
   void initLessonData() async {
     state = LessonState.loading;
-    _lessonData =
-        await ExamDbProvider.db.getAllLessonByTable() ?? [LessonModel()];
+    _lessonData = await ExamDbProvider.db.getAllLessonData() ?? [LessonModel()];
 
     state = LessonState.completed;
   }
@@ -145,8 +144,20 @@ class LessonViewModel extends ChangeNotifier {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    final item = _lessonData!.removeAt(oldIndex);
-    _lessonData!.insert(newIndex, item);
+    final newData = getLessonData[newIndex];
+    final oldData = getLessonData[oldIndex];
+
+    ExamDbProvider.db.updateLesson(
+      lessonId: oldData.lessonId!,
+      lessonName: oldData.lessonName!,
+      lessonIndex: newData.lessonIndex!,
+    );
+
+    ExamDbProvider.db.updateLesson(
+      lessonId: newData.lessonId!,
+      lessonName: newData.lessonName!,
+      lessonIndex: oldData.lessonIndex!,
+    );
 
     notifyListeners();
   }

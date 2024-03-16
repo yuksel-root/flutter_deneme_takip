@@ -84,6 +84,10 @@ class LessonView extends StatelessWidget {
                       },
                       onReorder: (int oldIndex, int newIndex) {
                         lessonProv.updateItems(oldIndex, newIndex);
+                        for (var e in lessonProv.getLessonData) {
+                          print(
+                              'Lesson Name: ${e.lessonName}, Lesson Index: ${e.lessonIndex}');
+                        }
                       },
                     );
                   }
@@ -122,11 +126,14 @@ class LessonView extends StatelessWidget {
                     ? InkWell(
                         onTap: () {
                           ExamDbProvider.db.updateLesson(
-                              lessonProv.getLessonData[lessonProv.getClickIndex]
-                                  .lessonId!,
-                              lessonProv
-                                  .getUpdateController[lessonProv.getClickIndex]
-                                  .text);
+                            lessonId: lessonProv
+                                .getLessonData[lessonProv.getClickIndex]
+                                .lessonId!,
+                            lessonName: lessonProv
+                                .getUpdateController[lessonProv.getClickIndex]
+                                .text,
+                            lessonIndex: index,
+                          );
                           lessonProv.setOnEditText = false;
                         },
                         child: const Icon(
@@ -138,8 +145,7 @@ class LessonView extends StatelessWidget {
                 InkWell(
                   onTap: () async {
                     lessonProv.setClickIndex(index);
-                    print(
-                        "less index${lessonProv.getLessonData[lessonProv.getClickIndex].lessonIndex}");
+
                     lessonProv.setOnEditText = true;
                     lessonProv.setUpdateController(
                         index: lessonProv.getClickIndex,

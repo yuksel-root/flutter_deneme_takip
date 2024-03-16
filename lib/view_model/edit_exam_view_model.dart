@@ -298,11 +298,7 @@ class EditExamViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> getAllData(String dataTable) async {
-    print("-------------$dataTable------------\n");
-    print(await ExamDbProvider.db.getAllDataByTable(dataTable));
-    print("-------------$dataTable------------\n");
-  }
+ 
 
   void printFunct(String label, Object? data) {
     print("----------- $label --------------");

@@ -41,7 +41,7 @@ class ExamListViewModel extends ChangeNotifier {
 
   void initLessonTab() async {
     state = ExamListState.loading;
-    _listLesson = await ExamDbProvider.db.getAllLessonByTable();
+    _listLesson = await ExamDbProvider.db.getAllLessonData();
     state = ExamListState.completed;
   }
 

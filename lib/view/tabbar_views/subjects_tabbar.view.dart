@@ -78,8 +78,11 @@ class _ExamTabbarViewState extends State<SubjectsTabbarView>
             if (!tabController.indexIsChanging) {
               editexamProv.setKeyboardVisibility = false;
 
-              subjectProv.setLessonId =
-                  lessonProv.getLessonData[tabController.index].lessonId!;
+              subjectProv.setLessonIndex =
+                  lessonProv.getLessonData[tabController.index].lessonIndex;
+
+              subjectProv.setLessonId = lessonProv
+                  .getLessonData[subjectProv.getLessonIndex!].lessonId!;
             }
           });
           return buildScaffold(examProv, context, lessonProv);

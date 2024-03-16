@@ -50,7 +50,7 @@ class ExamDbProvider {
           },
           version: 1,
           onOpen: (Database db) async {
-            //    await SqlTables.reCreateTable(db);
+            // await SqlTables.reCreateTable(db);
           });
       return db;
     } catch (e) {
@@ -241,25 +241,6 @@ class ExamDbProvider {
     return null;
   }
 
-  Future<List<Map<String, dynamic>>> getAllDataByTable(String tableName) async {
-    try {
-      final db = await getDatabase;
-      //  final res = await db.query(tableName);
-      final res = await db.rawQuery('SELECT * FROM $tableName');
-
-      if (res.isEmpty) {
-        return [];
-      } else {
-        final examMap = res.toList();
-
-        return examMap.isNotEmpty ? examMap : [];
-      }
-    } catch (e) {
-      print("$e getAllDataByTable catch");
-    }
-    return [];
-  }
-
   Future<void> insertLesson(String lessonName) async {
     try {
       final db = await getDatabase;
@@ -276,15 +257,19 @@ class ExamDbProvider {
     }
   }
 
-  Future<void> updateLesson(int lessonId, String lessonName) async {
+  Future<void> updateLesson({
+    required int lessonId,
+    required String lessonName,
+    required int lessonIndex,
+  }) async {
     try {
       final db = await getDatabase;
 
       await db.rawUpdate('''
       UPDATE ${SqlTables.lessonsTable}
-     SET lesson_name = ?
+      SET lesson_name = ?, lesson_index = ?
       WHERE lesson_id = ?
-    ''', [lessonName, lessonId]);
+    ''', [lessonName, lessonIndex, lessonId]);
     } catch (e) {
       print("$e  updateLesson catch ");
     }
@@ -314,16 +299,20 @@ class ExamDbProvider {
     }
   }
 
-  Future<void> updateSubject(
-      int subjectId, String subjectName, int lessonId) async {
+  Future<void> updateSubject({
+    required int subjectId,
+    required String subjectName,
+    required int lessonId,
+    required int subjectIndex,
+  }) async {
     try {
       final db = await getDatabase;
 
       await db.rawUpdate('''
       UPDATE ${SqlTables.subjectsTable}
-      SET subject_name = ?
+      SET subject_name = ?, subject_index = ?
       WHERE subject_id = ? AND lesson_id = ?
-    ''', [subjectName, subjectId, lessonId]);
+    ''', [subjectName, subjectIndex, subjectId, lessonId]);
     } catch (e) {
       print("$e  updateSubject catch ");
     }
@@ -342,12 +331,12 @@ class ExamDbProvider {
     }
   }
 
-  Future<List<LessonModel>?> getAllLessonByTable() async {
+  Future<List<LessonModel>?> getAllLessonData() async {
     try {
       final db = await getDatabase;
 
-      final result =
-          await db.rawQuery('SELECT * FROM ${SqlTables.lessonsTable}');
+      final result = await db.rawQuery(
+          'SELECT * FROM ${SqlTables.lessonsTable} ORDER BY lesson_index');
 
       if (result.isEmpty) {
         return null;
@@ -362,30 +351,14 @@ class ExamDbProvider {
     return null;
   }
 
-  Future<List<SubjectModel>?>? getAllSubject(int lessonId) async {
-    final db = await getDatabase;
-    final result = await db.rawQuery('''
-      SELECT * FROM ${SqlTables.subjectsTable}
-      WHERE lesson_id = ?
-    ''', [lessonId]);
-    if (result.isEmpty) {
-      return null;
-    } else {
-      return result.isNotEmpty
-          ? result.map((subject) => SubjectModel().fromJson(subject)).toList()
-          : null;
-    }
-  }
-
-  Future<List<SubjectModel>?>? getAllSubjectByIndex(int lessonIndex) async {
+  Future<List<SubjectModel>?>? getAllSubjectData(int lessonId) async {
     try {
       final db = await getDatabase;
       final result = await db.rawQuery('''
-      SELECT * FROM ${SqlTables.subjectsTable} AS sub
-      JOIN ${SqlTables.lessonsTable} AS les ON sub.lesson_id = les.lesson_id
-      WHERE les.lesson_index = ?
-    ''', [lessonIndex]);
-
+      SELECT * FROM ${SqlTables.subjectsTable}
+      WHERE lesson_id = ?
+      ORDER BY subject_index
+    ''', [lessonId]);
       if (result.isEmpty) {
         return null;
       } else {
@@ -394,9 +367,9 @@ class ExamDbProvider {
             : null;
       }
     } catch (e) {
-      print("$e getAllSubjectOrderedByLessonIndex catch");
-      return null;
+      print("$e get allSubjectData catch");
     }
+    return null;
   }
 
   Future<int?> getFindLastId(String tableName, String idName) async {

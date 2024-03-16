@@ -17,6 +17,7 @@ class SubjectViewModel extends ChangeNotifier {
   late List<SubjectModel>? _subjectData;
   late String _subjectName;
   late int? _lessonId;
+  late int? _lessonIndex;
 
   late GlobalKey<FormState> _updateFormK;
   late GlobalKey<FormState> _insertFormK;
@@ -46,6 +47,7 @@ class SubjectViewModel extends ChangeNotifier {
     _state = SubjectState.empty;
     _subjectName = "";
     _lessonId = 1;
+    _lessonIndex = 0;
 
     initSubjectData(_lessonId);
   }
@@ -56,10 +58,10 @@ class SubjectViewModel extends ChangeNotifier {
 
   void initSubjectData(int? lessonId) async {
     SubjectState.loading;
-    print(lessonId);
-    _subjectData = await ExamDbProvider.db.getAllSubject(lessonId ?? 1) ??
+
+    _subjectData = await ExamDbProvider.db.getAllSubjectData(lessonId ?? 1) ??
         [SubjectModel()];
-    print(_subjectData![0].subjectName);
+
     SubjectState.completed;
   }
 
@@ -84,6 +86,12 @@ class SubjectViewModel extends ChangeNotifier {
   int? get getLessonId => _lessonId ?? 1;
   set setLessonId(int? newInt) {
     _lessonId = newInt;
+    notifyListeners();
+  }
+
+  int? get getLessonIndex => _lessonIndex ?? 0;
+  set setLessonIndex(int? newInt) {
+    _lessonIndex = newInt;
     notifyListeners();
   }
 
@@ -150,12 +158,28 @@ class SubjectViewModel extends ChangeNotifier {
     return _insertFormK;
   }
 
-  void updateItems(int oldIndex, int newIndex) {
+  void updateItems(int oldIndex, int newIndex) async {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    final item = _subjectData!.removeAt(oldIndex);
-    _subjectData!.insert(newIndex, item);
+
+    final newData = _subjectData![newIndex];
+    final oldData = _subjectData![oldIndex];
+
+    await ExamDbProvider.db.updateSubject(
+      subjectId: oldData.subjectId!,
+      subjectName: oldData.subjectName!,
+      lessonId: oldData.lessonId!,
+      subjectIndex: newIndex,
+    );
+
+    await ExamDbProvider.db.updateSubject(
+      subjectId: newData.subjectId!,
+      subjectName: newData.subjectName!,
+      lessonId: newData.lessonId!,
+      subjectIndex: oldIndex,
+    );
+
     notifyListeners();
   }
 }

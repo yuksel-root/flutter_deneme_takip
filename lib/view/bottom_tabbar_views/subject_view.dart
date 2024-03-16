@@ -69,7 +69,7 @@ class SubjectView extends StatelessWidget {
                 builder: (context, snapshot) {
                   if (context.read<SubjectViewModel>().state ==
                       SubjectState.loading) {
-                    return const LoadingAlert(title: "Yükleniyor");
+                    return const LoadingAlert(title: "Yükleniyor...");
                   } else if (subjectProv.getLessonId == null) {
                     return const SizedBox();
                   } else {
@@ -86,6 +86,11 @@ class SubjectView extends StatelessWidget {
                       },
                       onReorder: (int oldIndex, int newIndex) {
                         subjectProv.updateItems(oldIndex, newIndex);
+
+                        for (var e in subjectProv.getSubjectData) {
+                          print(
+                              'Subject Names: ${e.subjectName}, Subject Indexs: ${e.subjectIndex}');
+                        }
                       },
                     );
                   }
@@ -100,8 +105,6 @@ class SubjectView extends StatelessWidget {
       SubjectViewModel subjectProv) {
     subjectProv.setUpdateIndex(index);
 
-    // print(
-    //  "subId ${subjectProv.getSubjectData[index].subjectId} subName  ${subjectProv.getSubjectData[index].subjectName} ");
     return InkWell(
       key: Key('$index'),
       onDoubleTap: () async {
@@ -128,13 +131,14 @@ class SubjectView extends StatelessWidget {
                     ? InkWell(
                         onTap: () {
                           ExamDbProvider.db.updateSubject(
-                            subjectProv
+                            subjectId: subjectProv
                                 .getSubjectData[subjectProv.getClickIndex]
                                 .subjectId!,
-                            subjectProv
+                            subjectName: subjectProv
                                 .getUpdateController[subjectProv.getClickIndex]
                                 .text,
-                            1,
+                            lessonId: subjectProv.getLessonId!,
+                            subjectIndex: index,
                           );
                           subjectProv.setOnEditText = false;
                         },

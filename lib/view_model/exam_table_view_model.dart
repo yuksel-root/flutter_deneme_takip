@@ -316,12 +316,7 @@ class ExamTableViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getAllData(String dataTable) async {
-    print("-------------$dataTable------------\n");
-    print(await ExamDbProvider.db.getAllDataByTable(dataTable));
-    print("-------------$dataTable------------\n");
-  }
-
+ 
   void printFunct(String label, Object? data) {
     print("----------- $label --------------");
     print(data);

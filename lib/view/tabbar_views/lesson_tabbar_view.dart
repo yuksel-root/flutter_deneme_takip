@@ -70,7 +70,6 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
           tabController.addListener(() {
             if (!tabController.indexIsChanging) {
               editexamProv.setKeyboardVisibility = false;
-              print("controller ${lessonProv.getLessonData.length}");
             }
           });
           return buildScaffold(lessonProv, examTableProv);
