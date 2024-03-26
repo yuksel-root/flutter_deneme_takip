@@ -56,7 +56,7 @@ class SubjectViewModel extends ChangeNotifier {
     return _subjectData!.isEmpty ? [SubjectModel()] : _subjectData!;
   }
 
-  void initSubjectData(int? lessonId) async {
+  Future<void> initSubjectData(int? lessonId) async {
     SubjectState.loading;
 
     _subjectData = await ExamDbProvider.db.getAllSubjectData(lessonId ?? 1) ??
@@ -112,11 +112,10 @@ class SubjectViewModel extends ChangeNotifier {
     return _updateFormK;
   }
 
-  void setUpdateController({int? index, String? initString}) {
+  void setUpdateController({required int index, required String initString}) {
     _updateController =
         List.generate(_subjectData!.length, (index) => TextEditingController());
-    _updateController[index ?? 0] =
-        TextEditingController(text: initString ?? "");
+    _updateController[index] = TextEditingController(text: initString);
   }
 
   List<TextEditingController> get getUpdateController {

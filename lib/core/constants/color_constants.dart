@@ -220,6 +220,15 @@ class ColorConstants {
     end: Alignment.bottomRight,
   );
 
+  static const Gradient examCheckGradient = LinearGradient(
+    colors: [
+      Color(0xFF00008B),
+      Color(0xFF1C0F45),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
   static Gradient navTextGradient =
       const LinearGradient(colors: [Colors.white, Colors.white]);
 

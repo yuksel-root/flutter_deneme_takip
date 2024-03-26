@@ -1,11 +1,13 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/components/alert_dialog/load_lesson_alert.dart';
+import 'package:flutter_deneme_takip/components/shader_mask/gradient_widget.dart';
+import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/view/bottom_tabbar_views/lesson_view.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_deneme_takip/components/alert_dialog/alert_dialog.dart';
 import 'package:flutter_deneme_takip/components/app_bar/custom_app_bar.dart';
-import 'package:flutter_deneme_takip/components/text_dialog/lesson_alert_text_dialog.dart';
 import 'package:flutter_deneme_takip/core/constants/color_constants.dart';
 import 'package:flutter_deneme_takip/core/constants/navigation_constants.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
@@ -39,7 +41,8 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
     listLesson =
         Provider.of<LessonViewModel>(context, listen: false).getLessonData;
 
-    tabController = TabController(length: listLesson.length, vsync: this);
+    tabController =
+        TabController(length: AppData.examNames.length, vsync: this);
 
     super.initState();
   }
@@ -62,7 +65,7 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
   DefaultTabController buildDefTabController(LessonViewModel lessonProv,
       EditExamViewModel editexamProv, ExamTableViewModel examTableProv) {
     return DefaultTabController(
-      length: lessonProv.getLessonData.length,
+      length: AppData.examNames.length,
       initialIndex: 0,
       child: Builder(
         builder: (BuildContext context) {
@@ -83,6 +86,12 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
     return Scaffold(
       drawer: const NavDrawer(),
       appBar: buildAppBAr(context, examProv),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showLoadLesson(context, examProv);
+        },
+        child: Icon(Icons.add),
+      ),
       body: const LessonView(),
     );
   }
@@ -90,36 +99,20 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
   TabBarView buildTabbarView(LessonViewModel lessonProv) {
     return TabBarView(
       children: List.generate(
-        lessonProv.getLessonData.length,
+        AppData.examNames.length,
         (index) => const LessonView(),
       ),
     );
   }
 
   List<Widget> generateTabs() {
-    final lessonProv = Provider.of<LessonViewModel>(context, listen: true);
-
     return List.generate(
-      lessonProv.getLessonData.length,
+      AppData.examNames.length,
       (index) {
-        final lesson = lessonProv.getLessonData[index];
+        final examNames = AppData.examNames[index];
 
-        return GestureDetector(
-          onDoubleTap: () {
-            lessonProv.removeLesson(lesson.lessonId!);
-
-            Navigator.of(context, rootNavigator: true)
-                .pushNamed(NavigationConstants.homeView);
-          },
-          child: Tab(
-            iconMargin: const EdgeInsets.only(bottom: 2, left: 40),
-            text: lesson.lessonName,
-            icon: const Icon(
-              Icons.remove_circle_outlined,
-              color: Colors.red,
-              size: 20,
-            ),
-          ),
+        return Tab(
+          text: examNames,
         );
       },
     );
@@ -136,17 +129,50 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
               return <PopupMenuEntry>[
                 PopupMenuItem(
                   value: 'option1',
-                  child: Text(
-                    'Veriyi Temizle',
-                    style: TextStyle(
-                        fontSize:
-                            context.dynamicW(0.01) * context.dynamicH(0.004)),
+                  child: Row(
+                    children: [
+                      GradientWidget(
+                          blendModes: BlendMode.dstOut,
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.grey.shade300.withOpacity(0.3),
+                              Colors.grey.shade200.withOpacity(0.3)
+                            ],
+                          ),
+                          widget: const Icon(Icons.settings)),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Ders Ayarları',
+                        style: TextStyle(
+                            fontSize: context.dynamicW(0.01) *
+                                context.dynamicH(0.004)),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'option2',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.delete, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Veriyi Temizle',
+                        style: TextStyle(
+                            fontSize: context.dynamicW(0.01) *
+                                context.dynamicH(0.004)),
+                      ),
+                    ],
                   ),
                 ),
               ];
             },
             onSelected: (value) async {
               if (value == 'option1') {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed(NavigationConstants.settingsView);
+              }
+              if (value == 'option2') {
                 _showDialog(
                     context,
                     "DİKKAT!",
@@ -154,61 +180,23 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
                     examProv,
                     lessonProv);
               }
-              if (value == 'option2') {}
               if (value == 'option3') {}
             },
           ),
         ],
         title: const Center(child: Text('Dersler')),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: Selector<LessonViewModel, int>(
-              selector: (context, value) => value.getLessonData.length,
-              builder: (context, lessonCount, child) =>
-                  lessonProv.getLessonData[0].lessonId != null
-                      ? TabBar(
-                          isScrollable: true,
-                          dragStartBehavior: DragStartBehavior.start,
-                          tabAlignment: TabAlignment.start,
-                          automaticIndicatorColorAdjustment: false,
-                          tabs: [
-                            ...generateTabs(),
-                          ],
-                        )
-                      : TabBar(tabs: [
-                          buildNewLesson(
-                            examProv,
-                            context,
-                            lessonProv,
-                          ),
-                        ])),
+        bottom: TabBar(
+          isScrollable: true,
+          dragStartBehavior: DragStartBehavior.start,
+          tabAlignment: TabAlignment.start,
+          automaticIndicatorColorAdjustment: false,
+          tabs: [
+            ...generateTabs(),
+          ],
         ),
       ),
       dynamicPreferredSize: context.dynamicH(0.15),
       gradients: ColorConstants.appBarGradient,
-    );
-  }
-
-  GestureDetector buildNewLesson(ExamTableViewModel examProv,
-      BuildContext context, LessonViewModel lessonProv) {
-    return GestureDetector(
-      onTap: () async {
-        examProv.setAlert = false;
-
-        await showLessonDialog(context,
-            title: "Ders İsmi Giriniz",
-            value: "",
-            alert: examProv.getIsAlertOpen, onPressFunc: () async {
-          ExamDbProvider.db.insertLesson(
-            lessonProv.getLessonName ?? "nullLessName",
-          );
-          lessonProv.initLessonData();
-          Navigator.of(context, rootNavigator: true)
-              .pushNamed(NavigationConstants.homeView);
-        });
-      },
-      child: const Center(
-          child: Icon(size: 40, color: Colors.green, Icons.add_circle)),
     );
   }
 
@@ -238,6 +226,23 @@ class _ExamTabbarViewState extends State<LessonTabbarView>
       examProv.setAlert = true;
       await showDialog(
           barrierDismissible: false,
+          barrierColor: const Color(0x66000000),
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          }).then(
+        (value) => examProv.setAlert = false,
+      );
+    }
+  }
+
+  _showLoadLesson(BuildContext context, ExamTableViewModel examProv) async {
+    LoadLessonAlert alert = const LoadLessonAlert();
+
+    if (examProv.getIsAlertOpen == false) {
+      examProv.setAlert = false;
+      await showDialog(
+          barrierDismissible: true,
           barrierColor: const Color(0x66000000),
           context: context,
           builder: (BuildContext context) {

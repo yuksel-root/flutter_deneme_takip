@@ -66,6 +66,12 @@ class _ExamListTabbarViewState extends State<ExamListTabbarView>
         return Scaffold(
             drawer: const NavDrawer(),
             appBar: buildAppBar(context, examListProv, examProv),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                Navigator.pushNamed(context, NavigationConstants.insertExam);
+              },
+              child: Icon(Icons.add),
+            ),
             body: TabBarView(
               children: List.generate(AppData.kpssLessonNames.length, (index) {
                 return const ExamListView();

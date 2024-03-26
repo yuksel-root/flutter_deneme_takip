@@ -299,6 +299,18 @@ class ExamDbProvider {
     }
   }
 
+  Future<void> removeAllSubjectsByLesson(int lessonId) async {
+    try {
+      final db = await getDatabase;
+      await db.rawDelete('''
+      DELETE FROM ${SqlTables.subjectsTable}
+      WHERE lesson_id = ?
+    ''', [lessonId]);
+    } catch (e) {
+      print("$e  removeAllSubjectsByLesson catch ");
+    }
+  }
+
   Future<void> updateSubject({
     required int subjectId,
     required String subjectName,

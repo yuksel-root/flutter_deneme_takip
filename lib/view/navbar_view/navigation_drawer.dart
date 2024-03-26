@@ -263,7 +263,7 @@ Column buildListTiles(
         onTap: () async {
           bottomProv.setCurrentIndex = 2;
           Navigator.of(context, rootNavigator: true)
-              .pushNamed(NavigationConstants.homeView);
+              .pushNamed(NavigationConstants.insertExam);
         },
       ),
       drawerCardMenu(

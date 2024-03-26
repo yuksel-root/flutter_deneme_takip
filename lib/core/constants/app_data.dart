@@ -1,4 +1,10 @@
 class AppData {
+  static List<String> examNames = <String>[
+    "KPSS",
+    "AYT",
+    "TYT",
+  ];
+
   static List<String> kpssLessonNames = <String>[
     "Tarih",
     "Coğrafya",

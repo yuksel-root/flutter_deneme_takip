@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_deneme_takip/core/constants/app_data.dart';
 import 'package:flutter_deneme_takip/core/local_database/exam_db_provider.dart';
 import 'package:flutter_deneme_takip/core/local_database/sql_tables.dart';
 import 'package:flutter_deneme_takip/models/lesson.dart';
@@ -30,6 +31,10 @@ class LessonViewModel extends ChangeNotifier {
 
   final formKey0 = GlobalKey<FormState>();
   final formKey1 = GlobalKey<FormState>();
+
+  final List<bool> _checkedList =
+      List.generate(AppData.examNames.length, (index) => false);
+
   LessonViewModel() {
     _state = LessonState.empty;
 
@@ -47,6 +52,14 @@ class LessonViewModel extends ChangeNotifier {
 
     initLessonData();
   }
+
+  Future<void> initLessonData() async {
+    state = LessonState.loading;
+    _lessonData = await ExamDbProvider.db.getAllLessonData() ?? [LessonModel()];
+
+    state = LessonState.completed;
+  }
+
   LessonState get state => _state!;
   set state(LessonState state) {
     _state = state;
@@ -59,19 +72,15 @@ class LessonViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initLessonData() async {
-    state = LessonState.loading;
-    _lessonData = await ExamDbProvider.db.getAllLessonData() ?? [LessonModel()];
-
-    state = LessonState.completed;
-  }
-
   List<LessonModel> get getLessonData =>
       _lessonData!.isEmpty ? [LessonModel()] : _lessonData!;
 
-  void removeLesson(int lessonId) {
-    ExamDbProvider.db
+  void removeLesson(int lessonId) async {
+    await ExamDbProvider.db
         .removeTableItem(SqlTables.lessonsTable, lessonId, "lesson_id");
+
+    await ExamDbProvider.db.removeAllSubjectsByLesson(lessonId);
+
     initLessonData();
 
     notifyListeners();
@@ -159,6 +168,12 @@ class LessonViewModel extends ChangeNotifier {
       lessonIndex: oldData.lessonIndex!,
     );
 
+    notifyListeners();
+  }
+
+  List<bool> get getCheckList => _checkedList;
+  void checkedItemChange(int index, bool value) {
+    _checkedList[index] = value;
     notifyListeners();
   }
 }

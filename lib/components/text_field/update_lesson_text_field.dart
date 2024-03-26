@@ -18,7 +18,6 @@ class UpdateLessonTextField extends StatefulWidget {
 class _UpdateLessonTextFieldState extends State<UpdateLessonTextField> {
   late FocusNode _focusNode;
 
-  int i = 0;
   @override
   void initState() {
     _focusNode = FocusNode();
@@ -51,7 +50,7 @@ class _UpdateLessonTextFieldState extends State<UpdateLessonTextField> {
                 controller:
                     lessonProv.getUpdateController[lessonProv.getUpdateIndex],
                 focusNode: _focusNode,
-                canRequestFocus: true,
+                canRequestFocus: false,
                 autofocus: false,
                 keyboardType: TextInputType.text,
                 autovalidateMode: AutovalidateMode.onUserInteraction,

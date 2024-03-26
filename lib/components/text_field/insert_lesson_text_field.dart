@@ -99,7 +99,6 @@ class _InsertLessonTextFieldState extends State<InsertLessonTextField> {
         onChanged: (value) {
           try {
             lessonProv.setLessonname = lessonProv.getInsertController.text;
-            print("value $value ");
           } catch (e) {
             print(e);
           }

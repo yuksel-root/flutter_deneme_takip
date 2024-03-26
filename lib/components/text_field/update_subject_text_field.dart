@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deneme_takip/core/extensions/context_extensions.dart';
 import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
-
 import 'package:flutter_deneme_takip/view_model/subject_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +18,6 @@ class UpdateSubjectTextField extends StatefulWidget {
 class _UpdateSubjectTextFieldState extends State<UpdateSubjectTextField> {
   late FocusNode _focusNode;
 
-  int i = 0;
   @override
   void initState() {
     _focusNode = FocusNode();
@@ -52,8 +50,8 @@ class _UpdateSubjectTextFieldState extends State<UpdateSubjectTextField> {
                 controller:
                     subjectProv.getUpdateController[subjectProv.getUpdateIndex],
                 focusNode: _focusNode,
-                canRequestFocus: true,
-                autofocus: true,
+                canRequestFocus: false,
+                autofocus: false,
                 keyboardType: TextInputType.text,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onTap: () {
@@ -115,7 +113,11 @@ class _UpdateSubjectTextFieldState extends State<UpdateSubjectTextField> {
                     print(e);
                   }
                 },
-                decoration: const InputDecoration(),
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                ),
               ),
             ),
           ],

@@ -19,7 +19,7 @@ class _UpdateSubjectFormState extends State<UpdateSubjectForm> {
     subjectProv.setUpdateFormKey = _formKey;
 
     return Form(
-      key: subjectProv.getUpdateKey,
+      key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: SingleChildScrollView(
           child: UpdateSubjectTextField(

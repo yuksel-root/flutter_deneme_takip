@@ -60,10 +60,9 @@ class LessonView extends StatelessWidget {
               ),
             )),
             Expanded(
-              child: FutureBuilder(
-                future: Future.delayed(Duration.zero, () {
-                  lessonProv.initLessonData();
-                }),
+              child: FutureBuilder<void>(
+                future: Future.delayed(
+                    Duration.zero, () => lessonProv.initLessonData()),
                 builder: (context, snapshot) {
                   if (context.read<LessonViewModel>().state ==
                       LessonState.loading) {
@@ -98,82 +97,70 @@ class LessonView extends StatelessWidget {
         ));
   }
 
-  InkWell buildItemCard(int index, Color oddItemColor, Color evenItemColor,
+  Card buildItemCard(int index, Color oddItemColor, Color evenItemColor,
       LessonViewModel lessonProv) {
     lessonProv.setUpdateIndex(index);
 
-    return InkWell(
-      key: Key('$index'),
-      onDoubleTap: () async {
-        lessonProv.setClickIndex(index);
+    return Card(
+      key: Key("$index"),
+      child: ListTile(
+          tileColor: index.isOdd ? oddItemColor : evenItemColor,
+          title: lessonProv.getOnEditText && index == lessonProv.getClickIndex
+              ? UpdateLessonForm(key: Key('$index'))
+              : Text(lessonProv.getLessonData[index].lessonName!),
+          trailing: Wrap(
+            spacing: 10,
+            children: [
+              lessonProv.getOnEditText && (index == lessonProv.getClickIndex)
+                  ? InkWell(
+                      onTap: () {
+                        ExamDbProvider.db.updateLesson(
+                          lessonId: lessonProv
+                              .getLessonData[lessonProv.getClickIndex]
+                              .lessonId!,
+                          lessonName: lessonProv
+                              .getUpdateController[lessonProv.getClickIndex]
+                              .text,
+                          lessonIndex: index,
+                        );
+                        lessonProv.setOnEditText = false;
+                      },
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.greenAccent,
+                      ),
+                    )
+                  : const SizedBox(),
+              InkWell(
+                onTap: () async {
+                  lessonProv.setClickIndex(index);
 
-        lessonProv.setOnEditText = true;
-        lessonProv.setUpdateController(
-            index: lessonProv.getClickIndex,
-            initString:
-                lessonProv.getLessonData[lessonProv.getClickIndex].lessonName!);
-      },
-      child: Card(
-        child: ListTile(
-            tileColor: index.isOdd ? oddItemColor : evenItemColor,
-            title: lessonProv.getOnEditText && index == lessonProv.getClickIndex
-                ? UpdateLessonForm(key: Key('$index'))
-                : Text(lessonProv.getLessonData[index].lessonName!),
-            trailing: Wrap(
-              spacing: 10,
-              children: [
-                lessonProv.getOnEditText && index == lessonProv.getClickIndex
-                    ? InkWell(
-                        onTap: () {
-                          ExamDbProvider.db.updateLesson(
-                            lessonId: lessonProv
-                                .getLessonData[lessonProv.getClickIndex]
-                                .lessonId!,
-                            lessonName: lessonProv
-                                .getUpdateController[lessonProv.getClickIndex]
-                                .text,
-                            lessonIndex: index,
-                          );
-                          lessonProv.setOnEditText = false;
-                        },
-                        child: const Icon(
-                          Icons.check,
-                          color: Colors.greenAccent,
-                        ),
-                      )
-                    : const SizedBox(),
-                InkWell(
-                  onTap: () async {
-                    lessonProv.setClickIndex(index);
-
-                    lessonProv.setOnEditText = true;
-                    lessonProv.setUpdateController(
-                        index: lessonProv.getClickIndex,
-                        initString: lessonProv
-                            .getLessonData[lessonProv.getClickIndex]
-                            .lessonName!);
-                  },
-                  child: const Icon(
-                    Icons.edit,
-                    color: Colors.orangeAccent,
-                  ),
+                  lessonProv.setOnEditText = true;
+                  lessonProv.setUpdateController(
+                      index: lessonProv.getClickIndex,
+                      initString: lessonProv
+                          .getLessonData[lessonProv.getClickIndex].lessonName!);
+                },
+                child: const Icon(
+                  Icons.edit,
+                  color: Colors.orangeAccent,
                 ),
-                InkWell(
-                  onTap: () {
-                    lessonProv.removeLesson(
-                        lessonProv.getLessonData[index].lessonId!);
-                    lessonProv.initLessonData();
-                    lessonProv.setOnEditText = false;
-                  },
-                  child: const Icon(
-                    Icons.clear,
-                    color: Colors.redAccent,
-                  ),
+              ),
+              InkWell(
+                onTap: () {
+                  lessonProv
+                      .removeLesson(lessonProv.getLessonData[index].lessonId!);
+                  lessonProv.initLessonData();
+                  lessonProv.setOnEditText = false;
+                },
+                child: const Icon(
+                  Icons.clear,
+                  color: Colors.redAccent,
                 ),
-                const Icon(Icons.drag_handle),
-              ],
-            )),
-      ),
+              ),
+              const Icon(Icons.drag_handle),
+            ],
+          )),
     );
   }
 }

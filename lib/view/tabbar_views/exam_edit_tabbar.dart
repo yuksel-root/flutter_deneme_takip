@@ -12,6 +12,7 @@ import 'package:flutter_deneme_takip/core/notifier/tabbar_navigation_notifier.da
 import 'package:flutter_deneme_takip/view/insert_views/insert_deneme_view.dart';
 
 import 'package:flutter_deneme_takip/view/navbar_view/navigation_drawer.dart';
+import 'package:flutter_deneme_takip/view/tabbar_views/bottom_tabbar_view.dart';
 import 'package:flutter_deneme_takip/view_model/exam_table_view_model.dart';
 import 'package:flutter_deneme_takip/view_model/edit_exam_view_model.dart';
 
