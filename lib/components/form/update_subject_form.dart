@@ -21,9 +21,7 @@ class _UpdateSubjectFormState extends State<UpdateSubjectForm> {
     return Form(
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
-      child: SingleChildScrollView(
-          child: UpdateSubjectTextField(
-              key: Key("${subjectProv.getUpdateIndex}"))),
+      child: UpdateSubjectTextField(key: Key("${subjectProv.getUpdateIndex}")),
     );
   }
 }

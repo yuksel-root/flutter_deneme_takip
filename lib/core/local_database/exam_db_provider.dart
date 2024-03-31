@@ -177,6 +177,8 @@ class ExamDbProvider {
     }
   }
 
+  Future<void>? loadExamData() {}
+
   Future<List<Map<String, dynamic>>?> getExamsByExamId(
       String lessonTable, int examId) async {
     try {

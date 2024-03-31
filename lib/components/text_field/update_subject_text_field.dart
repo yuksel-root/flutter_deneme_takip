@@ -50,8 +50,8 @@ class _UpdateSubjectTextFieldState extends State<UpdateSubjectTextField> {
                 controller:
                     subjectProv.getUpdateController[subjectProv.getUpdateIndex],
                 focusNode: _focusNode,
-                canRequestFocus: false,
-                autofocus: false,
+                canRequestFocus: true,
+                autofocus: true,
                 keyboardType: TextInputType.text,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onTap: () {

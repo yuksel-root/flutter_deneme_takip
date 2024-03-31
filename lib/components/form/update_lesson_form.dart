@@ -23,9 +23,7 @@ class _InsertExamFormState extends State<UpdateLessonForm> {
     return Form(
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
-      child: SingleChildScrollView(
-        child: UpdateLessonTextField(key: Key("${lessonProv.getUpdateIndex}")),
-      ),
+      child: UpdateLessonTextField(key: Key("${lessonProv.getUpdateIndex}")),
     );
   }
 }

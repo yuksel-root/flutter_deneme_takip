@@ -50,8 +50,8 @@ class _UpdateLessonTextFieldState extends State<UpdateLessonTextField> {
                 controller:
                     lessonProv.getUpdateController[lessonProv.getUpdateIndex],
                 focusNode: _focusNode,
-                canRequestFocus: false,
-                autofocus: false,
+                canRequestFocus: true,
+                autofocus: true,
                 keyboardType: TextInputType.text,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onTap: () {

@@ -28,6 +28,7 @@ Future<void> main() async {
 
 Future<void> _init() async {
   await initializeDateFormatting();
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
